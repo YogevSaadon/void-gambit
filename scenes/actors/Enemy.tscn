@@ -1,0 +1,27 @@
+[gd_scene load_steps=6 format=3 uid="uid://cqys07fn4fne5"]
+
+[ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_hut24"]
+[ext_resource type="Script" path="res://scripts/actors/Enemy.gd" id="2_1th0i"]
+[ext_resource type="Script" path="res://scripts/other/EnemyCollisionNode.gd" id="3_bnbrh"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_08v5x"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_jejao"]
+radius = 1.41421
+
+[node name="Enemy" instance=ExtResource("1_hut24")]
+script = ExtResource("2_1th0i")
+damage = 10
+
+[node name="Sprite" parent="." index="0"]
+modulate = Color(1, 0.266667, 1, 1)
+position = Vector2(-2.38419e-07, 1.19209e-06)
+scale = Vector2(8, 18)
+texture = SubResource("CanvasTexture_08v5x")
+
+[node name="EnemyCollisionNode" type="Area2D" parent="." index="2"]
+script = ExtResource("3_bnbrh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyCollisionNode" index="0"]
+shape = SubResource("CircleShape2D_jejao")
+debug_color = Color(0.641239, 0.521339, 0.152979, 0.42)

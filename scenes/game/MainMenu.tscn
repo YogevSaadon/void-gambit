@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://b2s7bmy8sj8q4"]
+
+[ext_resource type="Script" path="res://scripts/game/MainMenu.gd" id="1_w4gnx"]
+
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("1_w4gnx")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="BoxContainer" type="BoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="MarginContainer/BoxContainer"]
+layout_mode = 2
+text = "Space Haven"
+
+[node name="StartGame" type="Button" parent="MarginContainer/BoxContainer"]
+layout_mode = 2
+text = "Start game"
+
+[node name="Options" type="Button" parent="MarginContainer/BoxContainer"]
+layout_mode = 2
+text = "Options"
+
+[node name="Quit" type="Button" parent="MarginContainer/BoxContainer"]
+layout_mode = 2
+text = "Quit"
