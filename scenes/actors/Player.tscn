@@ -14,12 +14,8 @@ position = Vector2(1, -5)
 script = ExtResource("2_ehrxk")
 crit_chance = 5.0
 luck = 1.0
+weapon_range = 500.0
 piercing = 0
-range_bonus = 0.2
-damage_multiplier = 0.1
-fire_rate_multiplier = 1.0
-blink_cooldown = 5.0
-invuln_duration = 0.5
 
 [node name="Sprite" parent="." index="0"]
 scale = Vector2(12, 14.1352)

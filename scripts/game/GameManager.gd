@@ -1,3 +1,5 @@
+# File: res://scripts/GameManager.gd
+
 extends Node
 class_name GameManager
 

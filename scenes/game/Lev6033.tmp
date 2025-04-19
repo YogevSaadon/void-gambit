@@ -17,3 +17,4 @@ script = ExtResource("2_8hdw5")
 
 [node name="Player" parent="." instance=ExtResource("2_3rjn1")]
 position = Vector2(562, 308)
+weapon_range = 500.0
