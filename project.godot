@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Space Haven Game"
-run/main_scene="res://scenes/game/Level.tscn"
+run/main_scene="res://scenes/game/MainMenu.tscn"
 config/features=PackedStringArray("4.3", "GL Compatibility")
 config/icon="res://icon.svg"
 

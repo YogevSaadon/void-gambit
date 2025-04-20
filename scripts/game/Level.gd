@@ -1,54 +1,53 @@
 extends Node2D
 class_name Level
 
-# Just declare the types here; assign them in _ready()
 @export var enemy_scene: PackedScene
-var player
-var wave_manager
 
-func _ready() -> void:
-	# 1) Load the enemy scene
-	enemy_scene = preload("res://scenes/actors/Enemy.tscn")
+@onready var player = $Player
+@onready var wave_manager = $WaveManager
+@onready var gm = get_tree().root.get_node("GameManager")
 
-	# 2) Grab our child nodes
-	player = $Player
-	wave_manager = $WaveManager
-
-	# 3) Equip player from GameManager
-	var gm = get_tree().get_root().get_node("GameManager")
-	player.clear_all_weapons()
-	for i in range(gm.equipped_weapons.size()):
-		var ws = gm.equipped_weapons[i]
-		if ws:
-			player.equip_weapon(ws, i)
-
-	# 4) Wire up wave signals
-	wave_manager.connect("wave_started",    Callable(self, "_on_wave_started"))
-	wave_manager.connect("enemy_spawned",   Callable(self, "_on_enemy_spawned"))
-	wave_manager.connect("wave_completed",  Callable(self, "_on_wave_completed"))
-	wave_manager.connect("level_completed", Callable(self, "_on_level_completed"))
-
-	# 5) Start the waves
+func _ready():
+	wave_manager.enemy_scene = preload("res://scenes/actors/Enemy.tscn")
+	_connect_wave_signals()
+	_equip_player_weapons()
 	wave_manager.start_level()
 
+func _connect_wave_signals() -> void:
+	wave_manager.wave_started.connect(_on_wave_started)
+	wave_manager.enemy_spawned.connect(_on_enemy_spawned)
+	wave_manager.wave_completed.connect(_on_wave_completed)
+	wave_manager.level_completed.connect(_on_level_completed)
+
+func _equip_player_weapons() -> void:
+	player.clear_all_weapons()
+	for i in gm.equipped_weapons.size():
+		var weapon_scene = gm.equipped_weapons[i]
+		if weapon_scene:
+			player.equip_weapon(weapon_scene, i)
+
 func _on_wave_started(wave_number: int) -> void:
-	print("Wave %d started" % wave_number)
+	print("Wave %d started!" % wave_number)
 
 func _on_enemy_spawned(enemy: Node) -> void:
-	# Add the enemy under this scene and place it
 	add_child(enemy)
-	var x = randi() % 800
-	var y := -50 if randi() % 2 == 0 else 650
-	enemy.global_position = Vector2(x, y)
+	enemy.global_position = _get_random_spawn_position()
 
 func _on_wave_completed(wave_number: int) -> void:
-	print("Wave %d completed" % wave_number)
-	var gm = get_tree().get_root().get_node("GameManager")
-	gm.add_coins(wave_number * 5)
+	print("Wave %d complete!" % wave_number)
+	gm.add_coins(wave_number * 10)
 
 func _on_level_completed(level_number: int) -> void:
-	print("Level %d completed!" % level_number)
-	var gm = get_tree().get_root().get_node("GameManager")
-	gm.advance_level()
-	player.clear_all_weapons()
-	get_tree().change_scene("res://scenes/Hangar.tscn")
+	print("Level %d finished!" % level_number)
+	gm.next_level()
+	get_tree().change_scene_to_file("res://scenes/game/Hanger.tscn")
+
+func _get_random_spawn_position() -> Vector2:
+	var screen_size = get_viewport_rect().size
+	var side = randi() % 4
+	match side:
+		0: return Vector2(randf_range(0, screen_size.x), 0)
+		1: return Vector2(randf_range(0, screen_size.x), screen_size.y)
+		2: return Vector2(0, randf_range(0, screen_size.y))
+		3: return Vector2(screen_size.x, randf_range(0, screen_size.y))
+	return Vector2.ZERO

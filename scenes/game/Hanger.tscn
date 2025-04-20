@@ -1,3 +1,8 @@
 [gd_scene format=3 uid="uid://dfdvb6clr6tx"]
 
 [node name="Hanger" type="Node2D"]
+
+[node name="TextEdit" type="TextEdit" parent="."]
+offset_right = 382.0
+offset_bottom = 95.0
+text = "hanger"

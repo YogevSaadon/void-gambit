@@ -16,6 +16,7 @@ crit_chance = 5.0
 luck = 1.0
 weapon_range = 500.0
 piercing = 0
+blink_cooldown = 5.0
 
 [node name="Sprite" parent="." index="0"]
 scale = Vector2(12, 14.1352)
@@ -25,17 +26,23 @@ texture = SubResource("CanvasTexture_bq0gt")
 
 [node name="WeaponSlots" type="Node2D" parent="." index="3"]
 
-[node name="Weapon1" type="Node2D" parent="WeaponSlots" index="0"]
-position = Vector2(3, 5)
+[node name="Weapon0" type="Node2D" parent="WeaponSlots" index="0"]
+position = Vector2(4, 4)
 
-[node name="Weapon2" type="Node2D" parent="WeaponSlots" index="1"]
-position = Vector2(-4, 5)
+[node name="Weapon1" type="Node2D" parent="WeaponSlots" index="1"]
+position = Vector2(-4, 4)
 
-[node name="Weapon3" type="Node2D" parent="WeaponSlots" index="2"]
-position = Vector2(3, -4)
+[node name="Weapon2" type="Node2D" parent="WeaponSlots" index="2"]
+position = Vector2(4, 0)
 
-[node name="Weapon4" type="Node2D" parent="WeaponSlots" index="3"]
+[node name="Weapon3" type="Node2D" parent="WeaponSlots" index="3"]
+position = Vector2(-4, 0)
+
+[node name="Weapon4" type="Node2D" parent="WeaponSlots" index="4"]
 position = Vector2(-4, -4)
+
+[node name="Weapon5" type="Node2D" parent="WeaponSlots" index="5"]
+position = Vector2(4, -4)
 
 [node name="Hitbox" type="Area2D" parent="." index="4"]
 script = ExtResource("3_r1wfv")

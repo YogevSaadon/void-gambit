@@ -1,27 +1,26 @@
-# File: res://scripts/GameManager.gd
-
 extends Node
 class_name GameManager
 
-# Global game state persisted across scenes
+@export var starting_weapon: PackedScene = preload("res://scenes/weapons/FiringWeapon.tscn")
+
 var coins: int = 0
-var equipped_weapons: Array = []
 var level_number: int = 1
+var equipped_weapons: Array[PackedScene] = []
 
-func _ready():
-	# Initialize weapon slots (6 slots total) and give a default weapon
-	equipped_weapons.resize(6)
-	equipped_weapons[0] = preload("res://scenes/weapons/FiringWeapon.tscn")
+func _ready() -> void:
+	_initialize_loadout()
 
-func reset_run():
-	# Reset state for a new game run
-	coins = 0
-	level_number = 1
+func _initialize_loadout() -> void:
 	equipped_weapons.clear()
 	equipped_weapons.resize(6)
-	equipped_weapons[0] = preload("res://scenes/weapons/FiringWeapon.tscn")
+	equipped_weapons[0] = starting_weapon
 
-func next_level():
+func reset_run() -> void:
+	coins = 0
+	level_number = 1
+	_initialize_loadout()
+
+func next_level() -> void:
 	level_number += 1
 
 func add_coins(amount: int) -> void:
