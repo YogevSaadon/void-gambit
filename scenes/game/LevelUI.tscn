@@ -1,0 +1,41 @@
+[gd_scene load_steps=2 format=3 uid="uid://bydtgr2motkkk"]
+
+[ext_resource type="Script" path="res://scripts/game/LevelUI.gd" id="1_6dthg"]
+
+[node name="LevelUi" type="CanvasLayer"]
+script = ExtResource("1_6dthg")
+
+[node name="Bars" type="VBoxContainer" parent="."]
+offset_left = 4.0
+offset_right = 40.0
+offset_bottom = 66.0
+
+[node name="ShieldBarContainer" type="VBoxContainer" parent="Bars"]
+layout_mode = 2
+
+[node name="ShieldBar" type="ProgressBar" parent="Bars/ShieldBarContainer"]
+modulate = Color(0.0235294, 0.0352941, 1, 1)
+layout_mode = 2
+show_percentage = false
+
+[node name="ShieldText" type="Label" parent="Bars/ShieldBarContainer"]
+layout_mode = 2
+
+[node name="HPBarContainer" type="VBoxContainer" parent="Bars"]
+layout_mode = 2
+
+[node name="HPBar" type="ProgressBar" parent="Bars/HPBarContainer"]
+modulate = Color(1, 0, 0, 1)
+layout_mode = 2
+value = 100.0
+show_percentage = false
+
+[node name="HPText" type="Label" parent="Bars/HPBarContainer"]
+layout_mode = 2
+
+[node name="LevelLabel" type="Label" parent="."]
+offset_left = 572.0
+offset_top = 1.0
+offset_right = 612.0
+offset_bottom = 24.0
+text = "level x"

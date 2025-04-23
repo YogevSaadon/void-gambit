@@ -1,5 +1,4 @@
 extends Area2D
-class_name Hitbox
 
 @export var tick_interval: float = 0.5  # Set this to match the player's invulnerability duration
 var tick_timer: float = 0.0
@@ -15,9 +14,13 @@ func _ready():
 
 func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Enemies"):
-		# Only add if not already in the array.
 		if not overlapping_enemies.has(body):
 			overlapping_enemies.append(body)
+			
+			var player = get_parent()
+			if player and player.has_method("receive_damage"):
+				player.receive_damage(body.damage)
+
 
 func _on_body_exited(body: Node) -> void:
 	if body.is_in_group("Enemies"):

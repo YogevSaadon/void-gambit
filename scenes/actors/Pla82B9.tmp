@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cjja0oj0j46qx"]
+[gd_scene load_steps=6 format=3 uid="uid://cjja0oj0j46qx"]
 
 [ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_uvhjo"]
 [ext_resource type="Script" path="res://scripts/actors/Player.gd" id="2_ehrxk"]
@@ -8,11 +8,6 @@
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_dotcn"]
 radius = 8.0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_uhf55"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_q6xqf"]
-bg_color = Color(1, 1, 1, 1)
 
 [node name="Player" instance=ExtResource("1_uvhjo")]
 position = Vector2(1, -5)
@@ -24,7 +19,6 @@ piercing = 0
 blink_cooldown = 5.0
 base_fire_rate = 2.0
 attack_speed = 1.0
-invulnerability_duration = 0.2
 
 [node name="Sprite" parent="." index="0"]
 scale = Vector2(12, 14.1352)
@@ -58,20 +52,3 @@ script = ExtResource("3_r1wfv")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" index="0"]
 shape = SubResource("CircleShape2D_dotcn")
 debug_color = Color(0.975917, 0, 0.415806, 0.42)
-
-[node name="ShootBarUI" type="Control" parent="." index="5"]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="Bar" type="ProgressBar" parent="ShootBarUI" index="0"]
-layout_mode = 0
-offset_left = -8.0
-offset_top = 10.0
-offset_right = 8.0
-offset_bottom = 12.0
-theme_override_styles/background = SubResource("StyleBoxFlat_uhf55")
-theme_override_styles/fill = SubResource("StyleBoxFlat_q6xqf")
-max_value = 1.0
-show_percentage = false

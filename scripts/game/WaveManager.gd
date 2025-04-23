@@ -15,6 +15,7 @@ signal level_completed(level_number: int)
 
 @onready var gm = get_tree().root.get_node("GameManager")
 
+var current_level: int = 1
 var _current_wave: int = -1
 var _spawned_enemies: int = 0
 var _spawn_timer: float = 0.0
@@ -31,7 +32,14 @@ func _start_next_wave() -> void:
 		emit_signal("level_completed", gm.level_number)
 		return
 
-	_current_wave_data = waves[_current_wave]
+	# Clone the base wave definition
+	_current_wave_data = waves[_current_wave].duplicate()
+
+	# Scale enemy count by current level
+	var base_count = _current_wave_data["enemy_count"]
+	var scaled_count = base_count + (current_level - 1) * 5
+	_current_wave_data["enemy_count"] = scaled_count
+
 	_wave_timer = _current_wave_data["duration"]
 	_spawn_timer = 0.0
 	_spawned_enemies = 0
@@ -57,3 +65,7 @@ func _process(delta: float) -> void:
 		emit_signal("wave_completed", _current_wave + 1)
 		await get_tree().create_timer(3.0).timeout
 		_start_next_wave()
+		
+
+func set_level(level: int) -> void:
+	current_level = level

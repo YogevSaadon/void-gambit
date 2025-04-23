@@ -4,13 +4,16 @@ class_name Level
 @export var enemy_scene: PackedScene
 
 @onready var player = $Player
+@onready var level_ui = $LevelUI
 @onready var wave_manager = $WaveManager
 @onready var gm = get_tree().root.get_node("GameManager")
 
 func _ready():
+	level_ui.set_player(player)
 	wave_manager.enemy_scene = preload("res://scenes/actors/Enemy.tscn")
 	_connect_wave_signals()
 	_equip_player_weapons()
+	wave_manager.set_level(gm.level_number)
 	wave_manager.start_level()
 
 func _connect_wave_signals() -> void:
@@ -39,7 +42,6 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
-	gm.next_level()
 	get_tree().change_scene_to_file("res://scenes/game/Hanger.tscn")
 
 func _get_random_spawn_position() -> Vector2:
