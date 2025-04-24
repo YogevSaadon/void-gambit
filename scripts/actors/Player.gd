@@ -12,10 +12,6 @@ class_name Player
 @export var base_fire_rate: float = 2.0
 @export var attack_speed: float = 1.0
 
-@export var invulnerability_duration: float = 0.2
-var is_invulnerable: bool = false
-var invuln_timer: float = 0.0
-
 var fire_interval: float = 0.5
 var stop_to_shoot_delay: float = 0.2
 
@@ -34,8 +30,8 @@ const STOP_BUFFER_LIFETIME := 0.2
 
 func _ready() -> void:
 	add_to_group("Player")
-	health = 100
-	max_health = 100
+	health = 10000
+	max_health = 10000
 	shield = 50
 	max_shield = 50
 	shield_recharge_rate = 5.0
@@ -50,7 +46,6 @@ func _update_attack_timing():
 func _physics_process(delta: float) -> void:
 	_update_shoot_bar()
 	_handle_blink_cooldown(delta)
-	_handle_invulnerability(delta)
 	_handle_movement(delta)
 	_auto_fire_weapons(delta)
 
@@ -78,11 +73,6 @@ func _handle_blink_cooldown(delta: float) -> void:
 	if blink_timer < blink_cooldown:
 		blink_timer += delta
 
-func _handle_invulnerability(delta: float) -> void:
-	if is_invulnerable:
-		invuln_timer -= delta
-		if invuln_timer <= 0:
-			is_invulnerable = false
 
 func _handle_movement(delta: float) -> void:
 	if is_stopped:
@@ -127,8 +117,10 @@ func unstop() -> void:
 		has_buffered_click = false
 
 func _update_shoot_bar() -> void:
-	var fill = clamp(shoot_ready_timer / stop_to_shoot_delay, 0.0, 1.0)
+	# Ease it so 90% time feels like full bar
+	var fill =pow(clamp(shoot_ready_timer / stop_to_shoot_delay, 0.0, 1.0), 0.8) 
 	shoot_bar.value = fill
+	shoot_bar.visible = (fill < 1.0 and velocity.length() == 0)
 
 
 # ====== Weapon Management ======
@@ -181,10 +173,3 @@ func _auto_fire_weapons(delta: float) -> void:
 				if child.has_method("auto_fire") and shoot_cooldown_timer <= 0:
 					child.auto_fire(delta)
 					shoot_cooldown_timer = fire_interval
-
-func receive_damage(amount: int) -> void:
-	if is_invulnerable:
-		return
-	take_damage(amount)
-	is_invulnerable = true
-	invuln_timer = invulnerability_duration

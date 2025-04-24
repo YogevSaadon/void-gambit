@@ -16,10 +16,12 @@ func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Enemies"):
 		if not overlapping_enemies.has(body):
 			overlapping_enemies.append(body)
-			
 			var player = get_parent()
-			if player and player.has_method("receive_damage"):
-				player.receive_damage(body.damage)
+			if player and player.has_method("take_damage"):
+				if body.has_method("can_deal_damage") and body.can_deal_damage():
+					player.take_damage(body.damage)
+					body.reset_damage_timer()
+
 
 
 func _on_body_exited(body: Node) -> void:
