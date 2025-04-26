@@ -42,7 +42,7 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
-	get_tree().change_scene_to_file("res://scenes/game/Hanger.tscn")
+	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
 func _get_random_spawn_position() -> Vector2:
 	var screen_size = get_viewport_rect().size

@@ -3,9 +3,7 @@ class_name WaveManager
 
 @export var enemy_scene: PackedScene
 @export var waves: Array[Dictionary] = [
-	{ "duration": 20.0, "enemy_count": 10, "spawn_interval": 2.0 },
-	{ "duration": 30.0, "enemy_count": 15, "spawn_interval": 1.5 },
-	{ "duration": 40.0, "enemy_count": 20, "spawn_interval": 1.0 },
+	{ "duration": 5.0, "enemy_count": 2, "spawn_interval": 1.0 },
 ]
 
 signal wave_started(wave_number: int)
@@ -32,12 +30,11 @@ func _start_next_wave() -> void:
 		emit_signal("level_completed", gm.level_number)
 		return
 
-	# Clone the base wave definition
 	_current_wave_data = waves[_current_wave].duplicate()
 
-	# Scale enemy count by current level
+	# Scale enemy count by current level (still working!)
 	var base_count = _current_wave_data["enemy_count"]
-	var scaled_count = base_count + (current_level - 1) * 5
+	var scaled_count = base_count + (current_level - 1) * 2  # Small scaling now
 	_current_wave_data["enemy_count"] = scaled_count
 
 	_wave_timer = _current_wave_data["duration"]
@@ -63,9 +60,8 @@ func _process(delta: float) -> void:
 	if _wave_timer <= 0:
 		_wave_running = false
 		emit_signal("wave_completed", _current_wave + 1)
-		await get_tree().create_timer(3.0).timeout
+		await get_tree().create_timer(1.0).timeout
 		_start_next_wave()
-		
 
 func set_level(level: int) -> void:
 	current_level = level

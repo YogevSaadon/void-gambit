@@ -1,0 +1,105 @@
+[gd_scene load_steps=2 format=3 uid="uid://c3asvvqqrvvu3"]
+
+[ext_resource type="Script" path="res://scripts/game/Hangar.gd" id="1_pr6oe"]
+
+[node name="Hangar" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_pr6oe")
+
+[node name="NextLevelButton" type="Button" parent="."]
+layout_mode = 2
+offset_right = 83.0
+offset_bottom = 31.0
+text = "next level"
+
+[node name="TopBar" type="HBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="WaveLabel" type="Label" parent="TopBar"]
+layout_mode = 2
+
+[node name="SwitchButton" type="Button" parent="TopBar"]
+layout_mode = 2
+
+[node name="LeftPanel" type="VBoxContainer" parent="."]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PlayerStatsPanel" type="VBoxContainer" parent="LeftPanel"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
+layout_mode = 2
+
+[node name="ShieldLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
+layout_mode = 2
+
+[node name="BlinksLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
+layout_mode = 2
+
+[node name="WeaponSlotsPanel" type="HBoxContainer" parent="LeftPanel"]
+layout_mode = 2
+
+[node name="Slot0" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="Slot1" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="Slot2" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="Slot3" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="Slot4" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="Slot5" type="Panel" parent="LeftPanel/WeaponSlotsPanel"]
+layout_mode = 2
+
+[node name="InventoryScroll" type="ScrollContainer" parent="LeftPanel"]
+layout_mode = 2
+
+[node name="InventoryGrid" type="GridContainer" parent="LeftPanel/InventoryScroll"]
+layout_mode = 2
+
+[node name="StoreSlotMachinePanel" type="Control" parent="."]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StoreCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="RerollButton" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="StoreItem0" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="StoreItem1" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="StoreItem2" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="StoreItem3" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+layout_mode = 2
+
+[node name="SlotMachinePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SlotMachineCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+layout_mode = 2
