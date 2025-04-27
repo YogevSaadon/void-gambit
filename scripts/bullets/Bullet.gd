@@ -1,30 +1,33 @@
 extends Area2D
 class_name Bullet
 
-@export var speed: float = 400.0
-@export var lifetime: float = 3.0
-
-var damage: float = 0.0
-var piercing: int = 0
+# ====== Exports ======
+@export var speed: float = 600.0
 var direction: Vector2 = Vector2.ZERO
+var damage: float = 10.0
+var piercing: int = 0
 
-func _enter_tree():
-	collision_layer = 1 << 0
-	collision_mask = 1 << 1
+# ====== Built-in Methods ======
 
-func _ready():
-	connect("body_entered", Callable(self, "_on_Bullet_body_entered"))
+func _ready() -> void:
+	connect("body_entered", Callable(self, "_on_body_entered"))
 
 func _physics_process(delta: float) -> void:
 	position += direction * speed * delta
-	rotation = direction.angle()
-	lifetime -= delta
-	if lifetime <= 0:
-		queue_free()
 
-func _on_Bullet_body_entered(body: Node) -> void:
+# ====== Collision Handling ======
+
+func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Enemies"):
-		body.take_damage(damage)
+		if body.has_method("take_damage"):
+			body.take_damage(damage)
+
 		piercing -= 1
 		if piercing < 0:
 			queue_free()
+
+# ====== Utility ======
+
+func set_collision_properties() -> void:
+	collision_layer = 1 << 4    # Bullet on Layer 4
+	collision_mask = 1 << 2     # Detect Enemies on Layer 2
