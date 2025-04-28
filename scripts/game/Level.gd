@@ -21,6 +21,10 @@ func _ready() -> void:
 	_connect_wave_signals()
 	_equip_player_weapons()
 	_start_level()
+	
+	var pem = get_tree().root.get_node("PassiveEffectManager")
+	pem.register_signals(player)
+
 
 # ====== Initialization Helpers ======
 

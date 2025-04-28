@@ -9,14 +9,18 @@ script = ExtResource("1_pr6oe")
 
 [node name="NextLevelButton" type="Button" parent="."]
 layout_mode = 2
-offset_right = 83.0
-offset_bottom = 31.0
+offset_left = 517.0
+offset_top = 526.0
+offset_right = 600.0
+offset_bottom = 557.0
 text = "next level"
 
 [node name="TopBar" type="HBoxContainer" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 429.0
+offset_top = 27.0
+offset_right = 469.0
+offset_bottom = 67.0
 
 [node name="WaveLabel" type="Label" parent="TopBar"]
 layout_mode = 2
@@ -26,8 +30,10 @@ layout_mode = 2
 
 [node name="LeftPanel" type="VBoxContainer" parent="."]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 989.0
+offset_top = 189.0
+offset_right = 1029.0
+offset_bottom = 274.0
 
 [node name="PlayerStatsPanel" type="VBoxContainer" parent="LeftPanel"]
 layout_mode = 2
@@ -70,8 +76,10 @@ layout_mode = 2
 
 [node name="StoreSlotMachinePanel" type="Control" parent="."]
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 422.0
+offset_top = 106.0
+offset_right = 462.0
+offset_bottom = 146.0
 
 [node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
 layout_mode = 0

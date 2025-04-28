@@ -44,23 +44,43 @@ func _connect_signals() -> void:
 	reroll_button.pressed.connect(_on_reroll_pressed)
 
 func _refresh_ui() -> void:
-	# Update wave info
 	wave_label.text = "Level %d" % gm.level_number
+	
+	player_stats_panel.get_node("HealthLabel").text = "HP: %d/%d" % [
+		gm.player_stats.get("hp", 0),
+		gm.player_stats.get("max_hp", 0)
+	]
 
-	# Player Stats Panel
-	player_stats_panel.get_node("HealthLabel").text = "HP: %d/%d" % [gm.player_stats["hp"], gm.player_stats["max_hp"]]
-	player_stats_panel.get_node("ShieldLabel").text = "Shield: %d/%d" % [gm.player_stats["shield"], gm.player_stats["max_shield"]]
-	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % gm.player_stats["blinks"]
+	player_stats_panel.get_node("ShieldLabel").text = "Shield: %d/%d" % [
+		gm.player_stats.get("shield", 0),
+		gm.player_stats.get("max_shield", 0)
+	]
 
-	# Store
+	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % gm.player_stats.get("blinks", 0)
+
 	store_currency_label.text = "Credits: %d" % gm.coins
-	reroll_button.text = "Reroll (%d)" % gm.player_stats["rerolls"]
+	reroll_button.text = "Reroll (%d)" % gm.player_stats.get("rerolls", 0)
+	reroll_button.disabled = gm.player_stats.get("rerolls", 0) <= 0
 
-	# Slot Machine
 	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
 
-	# Default to showing Store
 	_show_store()
+	_populate_store()
+
+func _populate_store() -> void:
+	var all_items = PassiveItem.get_all_items()
+	all_items.shuffle()
+	
+	for i in range(store_items.size()):
+		if i < all_items.size():
+			var item = all_items[i]
+			var store_slot = store_items[i]
+			
+			store_slot.set_item(item)  # Assume StoreItem script has set_item()
+			store_slot.visible = true
+		else:
+			store_items[i].visible = false
+
 
 func _show_store() -> void:
 	store_panel.visible = true
@@ -81,10 +101,9 @@ func _on_switch_pressed() -> void:
 		_show_store()
 
 func _on_reroll_pressed() -> void:
-	if gm.player_stats["rerolls"] > 0:
+	if gm.player_stats.get("rerolls", 0) > 0:
 		gm.player_stats["rerolls"] -= 1
 		_refresh_ui()
-		print("Store rerolled!")
 
 func _on_next_level_pressed() -> void:
 	gm.next_level()

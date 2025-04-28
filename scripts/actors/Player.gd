@@ -32,20 +32,36 @@ var buffered_target: Vector2
 var has_buffered_click: bool = false
 var stop_buffer_timer: float = 0.0
 
+# ====== Passive Items and Stats ======
+var passive_items: Array = []
+
+var player_stats: Dictionary = {
+	"max_hp": 10000,
+	"hp": 10000,
+	"max_shield": 50,
+	"shield": 50,
+	"blinks": 3,
+	"rerolls": 1,
+}
+
+# ====== PassiveEffectManager signals ======
+signal player_blinked(position: Vector2)
+
 # ====== Built-in Methods ======
 
 func _ready() -> void:
 	add_to_group("Player")
-	# Override inherited Actor values for Player specific stats
-	max_health = 10000
-	health = max_health
-	max_shield = 50
-	shield = max_shield
+	max_health = player_stats["max_hp"]
+	health = player_stats["hp"]
+	max_shield = player_stats["max_shield"]
+	shield = player_stats["shield"]
 	shield_recharge_rate = 5.0
 	speed = 200.0
-	
+
 	target_position = global_position
 	_update_attack_timing()
+	passive_items = PassiveItem.get_all_items()
+	apply_passives()
 
 func _physics_process(delta: float) -> void:
 	_update_shoot_bar()
@@ -121,6 +137,13 @@ func blink_to_position(pos: Vector2) -> void:
 	global_position = pos
 	target_position = pos
 	velocity = Vector2.ZERO
+	
+	emit_signal("player_blinked", global_position)
+
+
+func _trigger_blink_explosion() -> void:
+	print("Blink explosion triggered")
+	# Implement real explosion later
 
 func _handle_blink_cooldown(delta: float) -> void:
 	if blink_timer < blink_cooldown:
@@ -187,3 +210,11 @@ func equip_weapon(scene: PackedScene, slot_index: int) -> void:
 		})
 
 	slot.add_child(weapon)
+
+# ====== Passive Item Handling ======
+
+func apply_passives() -> void:
+	for item in passive_items:
+		for stat in item.stat_modifiers.keys():
+			if player_stats.has(stat):
+				player_stats[stat] += item.stat_modifiers[stat]
