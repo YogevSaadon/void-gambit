@@ -62,6 +62,10 @@ func _ready() -> void:
 	_update_attack_timing()
 	passive_items = PassiveItem.get_all_items()
 	apply_passives()
+	
+	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
+	if pem:
+		pem.register_signals(self)
 
 func _physics_process(delta: float) -> void:
 	_update_shoot_bar()

@@ -59,7 +59,7 @@ func _on_enemy_spawned(enemy: Node) -> void:
 
 func _on_wave_completed(wave_number: int) -> void:
 	print("Wave %d complete!" % wave_number)
-	gm.add_coins(wave_number * 10)
+	gm.add_coins(wave_number * 100)
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)

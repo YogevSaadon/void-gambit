@@ -29,7 +29,7 @@ class_name Hangar
 @onready var slot_machine_currency_label = $StoreSlotMachinePanel/SlotMachinePanel/SlotMachineCurrencyLabel
 
 @onready var gm = get_tree().root.get_node("GameManager")
-
+@onready var pem = get_tree().root.get_node("PassiveEffectManager")
 # ====== Built-in Methods ======
 func _ready() -> void:
 	_connect_signals()
@@ -40,6 +40,8 @@ func _connect_signals() -> void:
 	next_level_button.pressed.connect(_on_next_level_pressed)
 	switch_button.pressed.connect(_on_switch_pressed)
 	reroll_button.pressed.connect(_on_reroll_pressed)
+	for store_button in store_items:
+		store_button.pressed.connect(_on_store_item_pressed.bind(store_button))
 
 func _refresh_ui() -> void:
 	wave_label.text = "Level %d" % gm.level_number
@@ -105,3 +107,17 @@ func _on_reroll_pressed() -> void:
 func _on_next_level_pressed() -> void:
 	gm.next_level()
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
+	
+func _on_store_item_pressed(button: Button) -> void:
+	if not button is StoreItem:
+		return
+
+	var item = button.item
+	if gm.coins >= item.price:
+		gm.coins -= item.price
+		pem.d_item(item)
+
+		# Immediately remove the item from UI
+		button.visible = false
+
+		_refresh_ui()  # Optional: to update coins + other visuals

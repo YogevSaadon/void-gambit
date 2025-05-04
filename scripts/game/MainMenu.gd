@@ -19,10 +19,16 @@ func _bootstrap_managers():
 		var pem = preload("res://scripts/game/PassiveEffectManager.gd").new()
 		pem.name = "PassiveEffectManager"
 		root.call_deferred("add_child", pem)
+		pem.register_game_manager(gm)
 
 
 func _on_start_pressed():
 	gm.reset_run()
+	
+	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
+	if pem:
+		pem.reset()
+	
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
 
 func _on_quit_pressed():
