@@ -97,36 +97,17 @@ layout_mode = 2
 layout_mode = 2
 script = ExtResource("2_pxfni")
 
-[node name="IconTexture" type="TextureRect" parent="StoreSlotMachinePanel/StorePanel/StoreItem0"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-stretch_mode = 5
-
 [node name="StoreItem1" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
-
-[node name="IconTexture" type="TextureRect" parent="StoreSlotMachinePanel/StorePanel/StoreItem1"]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
 
 [node name="StoreItem2" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
 
-[node name="IconTexture" type="TextureRect" parent="StoreSlotMachinePanel/StorePanel/StoreItem2"]
-offset_right = 40.0
-offset_bottom = 40.0
-
 [node name="StoreItem3" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
-
-[node name="IconTexture" type="TextureRect" parent="StoreSlotMachinePanel/StorePanel/StoreItem3"]
-offset_right = 40.0
-offset_bottom = 40.0
 
 [node name="SlotMachinePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
 layout_mode = 0

@@ -31,13 +31,11 @@ class_name Hangar
 @onready var gm = get_tree().root.get_node("GameManager")
 
 # ====== Built-in Methods ======
-
 func _ready() -> void:
 	_connect_signals()
 	_refresh_ui()
 
 # ====== UI Management ======
-
 func _connect_signals() -> void:
 	next_level_button.pressed.connect(_on_next_level_pressed)
 	switch_button.pressed.connect(_on_switch_pressed)
@@ -70,17 +68,17 @@ func _refresh_ui() -> void:
 func _populate_store() -> void:
 	var all_items = PassiveItem.get_all_items()
 	all_items.shuffle()
-	
+
 	for i in range(store_items.size()):
 		if i < all_items.size():
 			var item = all_items[i]
 			var store_slot = store_items[i]
-			
-			store_slot.set_item(item)  # Assume StoreItem script has set_item()
-			store_slot.visible = true
+
+			if store_slot.has_method("set_item"):
+				store_slot.set_item(item)
+				store_slot.visible = true
 		else:
 			store_items[i].visible = false
-
 
 func _show_store() -> void:
 	store_panel.visible = true
@@ -93,7 +91,6 @@ func _show_slot_machine() -> void:
 	switch_button.text = "Store"
 
 # ====== Buttons Actions ======
-
 func _on_switch_pressed() -> void:
 	if store_panel.visible:
 		_show_slot_machine()
