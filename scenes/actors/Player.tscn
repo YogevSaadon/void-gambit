@@ -17,13 +17,6 @@ bg_color = Color(1, 1, 1, 1)
 [node name="Player" instance=ExtResource("1_uvhjo")]
 position = Vector2(1, -5)
 script = ExtResource("2_ehrxk")
-crit_chance = 5.0
-luck = 1.0
-weapon_range = 500.0
-piercing = 0
-blink_cooldown = 5.0
-base_fire_rate = 2.0
-attack_speed = 1.0
 
 [node name="Sprite" parent="." index="0"]
 scale = Vector2(12, 14.1352)

@@ -1,37 +1,41 @@
 extends CharacterBody2D
 class_name Actor
 
-# ====== Exports ======
-@export var max_health: int = 5
-@export var health: int = 5
-@export var shield: int = 0
+# ========================
+# EXPORTS (Configurable Stats)
+# ========================
+@export var max_health: int = 100
+@export var health: int = 100
 @export var max_shield: int = 0
+@export var shield: int = 0
 @export var speed: float = 0.0
 @export var shield_recharge_rate: float = 0.0
 
-# ====== Constants ======
-const PLAYER_LAYER = 1
-const ENEMY_LAYER = 2
-
-# ====== Runtime Variables ======
+# ========================
+# INTERNAL STATE
+# ========================
 var velocity_direction: Vector2 = Vector2.ZERO
 
-# ====== Built-in Methods ======
 
-func _enter_tree() -> void:
-	# Set up collision layers/masks via code
-	collision_layer = 1 << ENEMY_LAYER
-	collision_mask = (1 << 0) | (1 << PLAYER_LAYER)
-
+# ========================
+# MOVEMENT + SHIELD
+# ========================
 func move(direction: Vector2, _delta: float) -> void:
 	velocity = direction * speed
 	move_and_slide()
 
+func recharge_shield(delta: float) -> void:
+	if shield < max_shield:
+		shield = min(shield + shield_recharge_rate * delta, max_shield)
+
+# ========================
+# DAMAGE + DEATH
+# ========================
 func take_damage(amount: int) -> void:
 	if shield > 0:
 		shield -= amount
 		if shield < 0:
-			health += shield  # Remaining damage spills to health
+			health += shield  # shield is negative, subtracts from health
 			shield = 0
 	else:
 		health -= amount
@@ -40,8 +44,17 @@ func take_damage(amount: int) -> void:
 		destroy()
 
 func destroy() -> void:
-	queue_free()  # Default behavior; subclasses can override
+	queue_free()
 
-func recharge_shield(delta: float) -> void:
-	if shield < max_shield:
-		shield = int(min(shield + shield_recharge_rate * delta, max_shield))
+# ========================
+# GETTERS
+# ========================
+func get_actor_stats() -> Dictionary:
+	return {
+		"max_hp": max_health,
+		"hp": health,
+		"max_shield": max_shield,
+		"shield": shield,
+		"speed": speed,
+		"shield_recharge_rate": shield_recharge_rate,
+	}

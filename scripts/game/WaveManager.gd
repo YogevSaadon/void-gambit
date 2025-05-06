@@ -75,10 +75,14 @@ func _handle_enemy_spawning() -> void:
 	if _spawn_timer <= 0.0:
 		_spawn_timer = _current_wave_data["spawn_interval"]
 
+		if enemy_scene == null:
+			push_error("WaveManager: enemy_scene is null! Cannot instantiate.")
+			return
+
 		var enemy = enemy_scene.instantiate()
 		emit_signal("enemy_spawned", enemy)
-
 		_spawned_enemies += 1
+
 
 func _finish_wave() -> void:
 	_wave_running = false

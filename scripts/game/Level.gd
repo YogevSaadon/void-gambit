@@ -2,34 +2,48 @@ extends Node2D
 class_name Level
 
 # ====== Exports ======
-@export var enemy_scene: PackedScene  # Optional override if needed
+@export var enemy_scene: PackedScene
 
-# ====== Onready Variables ======
-@onready var player = $Player
+# ====== Nodes ======
+var player: Node = null
 @onready var level_ui = $LevelUI
 @onready var wave_manager = $WaveManager
-@onready var gm = get_tree().root.get_node("GameManager")
+
+@onready var game_manager = get_tree().root.get_node("GameManager")
+@onready var player_data = get_tree().root.get_node("PlayerData")
+@onready var pem = get_tree().root.get_node("PassiveEffectManager")
 
 # ====== Constants ======
-const SCREEN_SIDES: int = 4  # Top, Bottom, Left, Right
+const SCREEN_SIDES := 4
 
 # ====== Built-in Methods ======
-
 func _ready() -> void:
-	level_ui.set_player(player)
-	_set_wave_enemy_scene()
-	_connect_wave_signals()
-	_equip_player_weapons()
-	_start_level()
-	
-	var pem = get_tree().root.get_node("PassiveEffectManager")
+	# Inject PlayerData into Player
+	player = $Player
+	player.player_data = player_data
+	player.initialize(player_data)  # optional if you use it
+
+	# Setup PEM with PlayerData and player
+	pem.initialize_from_player_data(player_data)
 	pem.register_signals(player)
 
+	# Assign enemy scene BEFORE starting level
+	_set_wave_enemy_scene()
 
-# ====== Initialization Helpers ======
+	# Setup rest
+	level_ui.set_player(player)
+	_connect_wave_signals()
+	_equip_player_weapons()
 
+	# START LEVEL only after everything is ready
+	_start_level()
+
+
+# ====== Wave Setup ======
 func _set_wave_enemy_scene() -> void:
-	wave_manager.enemy_scene = preload("res://scenes/actors/Enemy.tscn")
+	if enemy_scene == null:
+		enemy_scene = preload("res://scenes/actors/Enemy.tscn")
+	wave_manager.enemy_scene = enemy_scene
 
 func _connect_wave_signals() -> void:
 	wave_manager.wave_started.connect(_on_wave_started)
@@ -39,17 +53,16 @@ func _connect_wave_signals() -> void:
 
 func _equip_player_weapons() -> void:
 	player.clear_all_weapons()
-	for i in gm.equipped_weapons.size():
-		var weapon_scene = gm.equipped_weapons[i]
-		if weapon_scene:
+	for i in game_manager.equipped_weapons.size():
+		var weapon_scene = game_manager.equipped_weapons[i]
+		if weapon_scene != null:
 			player.equip_weapon(weapon_scene, i)
 
 func _start_level() -> void:
-	wave_manager.set_level(gm.level_number)
+	wave_manager.set_level(game_manager.level_number)
 	wave_manager.start_level()
 
 # ====== Wave Signal Handlers ======
-
 func _on_wave_started(wave_number: int) -> void:
 	print("Wave %d started!" % wave_number)
 
@@ -59,21 +72,21 @@ func _on_enemy_spawned(enemy: Node) -> void:
 
 func _on_wave_completed(wave_number: int) -> void:
 	print("Wave %d complete!" % wave_number)
-	gm.add_coins(wave_number * 100)
+	game_manager.add_coins(wave_number * 100)
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
+	player_data.sync_from_player(player)
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
-# ====== Utility Methods ======
-
+# ====== Utility ======
 func _get_random_spawn_position() -> Vector2:
 	var screen_size = get_viewport_rect().size
 	var side = randi() % SCREEN_SIDES
 
 	match side:
-		0: return Vector2(randf_range(0.0, screen_size.x), 0.0)  # Top
-		1: return Vector2(randf_range(0.0, screen_size.x), screen_size.y)  # Bottom
-		2: return Vector2(0.0, randf_range(0.0, screen_size.y))  # Left
-		3: return Vector2(screen_size.x, randf_range(0.0, screen_size.y))  # Right
+		0: return Vector2(randf_range(0.0, screen_size.x), 0.0)
+		1: return Vector2(randf_range(0.0, screen_size.x), screen_size.y)
+		2: return Vector2(0.0, randf_range(0.0, screen_size.y))
+		3: return Vector2(screen_size.x, randf_range(0.0, screen_size.y))
 	return Vector2.ZERO

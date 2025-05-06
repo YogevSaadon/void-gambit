@@ -10,6 +10,7 @@ var piercing: int = 0
 # ====== Built-in Methods ======
 
 func _ready() -> void:
+	set_collision_properties()
 	connect("body_entered", Callable(self, "_on_body_entered"))
 
 func _physics_process(delta: float) -> void:
@@ -18,6 +19,7 @@ func _physics_process(delta: float) -> void:
 # ====== Collision Handling ======
 
 func _on_body_entered(body: Node) -> void:
+
 	if body.is_in_group("Enemies"):
 		if body.has_method("take_damage"):
 			body.take_damage(damage)

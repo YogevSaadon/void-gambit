@@ -1,71 +1,54 @@
 extends "res://scripts/actors/Actor.gd"
 class_name Player
 
-# ====== Exports ======
-@export var crit_chance: float = 5.0
-@export var luck: float = 1.0
-@export var weapon_range: float = 500.0
-@export var piercing: int = 0
-@export var blink_cooldown: float = 5.0
-@export var base_fire_rate: float = 2.0
-@export var attack_speed: float = 1.0
+# ====== Dependencies (Injected) ======
+var player_data: Node = null  # must be set from Level.gd
 
 # ====== Constants ======
 const STOP_BUFFER_LIFETIME := 0.2
 const MOVE_STOP_THRESHOLD_SQUARED := 4.0
 
-# ====== Runtime Variables ======
+# ====== Runtime State ======
 @onready var shoot_bar = $ShootBarUI/Bar
 
-var fire_interval: float = 0.5
-var stop_to_shoot_delay: float = 0.2
-
-var shoot_ready_timer: float = 0.0
-var shoot_cooldown_timer: float = 0.0
-
-var blink_timer: float = 0.0
 var target_position: Vector2
 var is_stopped: bool = false
-
-# Buffer system for smart movement after stop
 var buffered_target: Vector2
 var has_buffered_click: bool = false
 var stop_buffer_timer: float = 0.0
 
-# ====== Passive Items and Stats ======
-var passive_items: Array = []
+var shoot_ready_timer: float = 0.0
+var shoot_cooldown_timer: float = 0.0
+var blink_timer: float = 0.0
 
-var player_stats: Dictionary = {
-	"max_hp": 10000,
-	"hp": 10000,
-	"max_shield": 50,
-	"shield": 50,
-	"blinks": 3,
-	"rerolls": 1,
-}
+var fire_interval: float = 0.5
+var stop_to_shoot_delay: float = 0.2
 
-# ====== PassiveEffectManager signals ======
 signal player_blinked(position: Vector2)
 
-# ====== Built-in Methods ======
+# ====== Built-in ======
 
-func _ready() -> void:
+func initialize(p_data: Node) -> void:
+	player_data = p_data
 	add_to_group("Player")
-	max_health = player_stats["max_hp"]
-	health = player_stats["hp"]
-	max_shield = player_stats["max_shield"]
-	shield = player_stats["shield"]
-	shield_recharge_rate = 5.0
-	speed = 200.0
+	collision_layer = 1 << 1       # Player layer
+	collision_mask = 0      
+
+	var stats = player_data.player_stats
+	max_health = stats.get("max_hp", 100)
+	health = stats.get("hp", max_health)
+	max_shield = stats.get("max_shield", 0)
+	shield = stats.get("shield", max_shield)
+	shield_recharge_rate = stats.get("shield_recharge_rate", 5.0)
+	speed = stats.get("speed", 200.0)
 
 	target_position = global_position
 	_update_attack_timing()
-	passive_items = PassiveItem.get_all_items()
-	apply_passives()
-	
-	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
-	if pem:
-		pem.register_signals(self)
+
+func _update_attack_timing() -> void:
+	var stats = player_data.player_stats
+	fire_interval = 1.0 / (stats.get("base_fire_rate", 2.0) * stats.get("attack_speed", 1.0))
+	stop_to_shoot_delay = clamp(0.4 / stats.get("attack_speed", 1.0), 0.1, 0.4)
 
 func _physics_process(delta: float) -> void:
 	_update_shoot_bar()
@@ -73,21 +56,19 @@ func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
 	_auto_fire_weapons(delta)
 
+# ====== Input & Movement ======
+
 func _input(event) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		_on_right_click()
 	elif event is InputEventKey:
 		if event.pressed:
 			match event.keycode:
-				KEY_S:
-					stop()
-				KEY_F:
-					_try_blink()
+				KEY_S: stop()
+				KEY_F: _try_blink()
 		else:
 			if event.keycode == KEY_S:
 				unstop()
-
-# ====== Movement & Blink ======
 
 func _on_right_click() -> void:
 	if is_stopped:
@@ -132,8 +113,15 @@ func unstop() -> void:
 		target_position = buffered_target
 		has_buffered_click = false
 
+func receive_damage(amount: int) -> void:
+	take_damage(amount)
+
+
+# ====== Blink System ======
+
 func _try_blink() -> void:
-	if blink_timer >= blink_cooldown:
+	var cooldown = player_data.player_stats.get("blink_cooldown", 5.0)
+	if blink_timer >= cooldown:
 		blink_to_position(get_global_mouse_position())
 		blink_timer = 0.0
 
@@ -141,23 +129,12 @@ func blink_to_position(pos: Vector2) -> void:
 	global_position = pos
 	target_position = pos
 	velocity = Vector2.ZERO
-	
 	emit_signal("player_blinked", global_position)
 
-
-func _trigger_blink_explosion() -> void:
-	print("Blink explosion triggered")
-	# Implement real explosion later
-
 func _handle_blink_cooldown(delta: float) -> void:
-	if blink_timer < blink_cooldown:
-		blink_timer += delta
+	blink_timer += delta
 
 # ====== Shooting ======
-
-func _update_attack_timing():
-	fire_interval = 1.0 / (base_fire_rate * attack_speed)
-	stop_to_shoot_delay = clamp(0.4 / attack_speed, 0.1, 0.4)
 
 func _update_shoot_bar() -> void:
 	var fill = pow(clamp(shoot_ready_timer / stop_to_shoot_delay, 0.0, 1.0), 0.8)
@@ -178,17 +155,10 @@ func _auto_fire_weapons(delta: float) -> void:
 					child.auto_fire(delta)
 					shoot_cooldown_timer = fire_interval
 
-# ====== Weapon Management ======
+# ====== Weapons ======
 
 func get_weapon_slot(index: int) -> Node:
-	match index:
-		0: return $WeaponSlots/Weapon0
-		1: return $WeaponSlots/Weapon1
-		2: return $WeaponSlots/Weapon2
-		3: return $WeaponSlots/Weapon3
-		4: return $WeaponSlots/Weapon4
-		5: return $WeaponSlots/Weapon5
-		_: return null
+	return get_node("WeaponSlots/Weapon%d" % index)
 
 func clear_all_weapons() -> void:
 	for i in 6:
@@ -198,6 +168,10 @@ func clear_all_weapons() -> void:
 				child.queue_free()
 
 func equip_weapon(scene: PackedScene, slot_index: int) -> void:
+	if scene == null:
+		push_error("Attempted to equip a null weapon scene in slot %d" % slot_index)
+		return
+
 	var slot = get_weapon_slot(slot_index)
 	if slot == null:
 		push_error("Weapon slot %d not found" % slot_index)
@@ -207,18 +181,6 @@ func equip_weapon(scene: PackedScene, slot_index: int) -> void:
 	weapon.owner_player = self
 
 	if weapon.has_method("apply_weapon_modifiers"):
-		weapon.apply_weapon_modifiers({
-			"crit": crit_chance,
-			"piercing": piercing,
-			"range": weapon_range
-		})
+		weapon.apply_weapon_modifiers(player_data.player_stats)
 
 	slot.add_child(weapon)
-
-# ====== Passive Item Handling ======
-
-func apply_passives() -> void:
-	for item in passive_items:
-		for stat in item.stat_modifiers.keys():
-			if player_stats.has(stat):
-				player_stats[stat] += item.stat_modifiers[stat]

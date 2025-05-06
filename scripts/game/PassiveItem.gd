@@ -39,3 +39,9 @@ static func get_all_items() -> Array:
 		create_reinforced_hull(),
 		# Add more items below...
 	]
+
+static func get_item_by_name(name: String) -> PassiveItem:
+	for item in get_all_items():
+		if item.name == name:
+			return item
+	return null

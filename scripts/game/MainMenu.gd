@@ -1,7 +1,5 @@
 extends Control
 
-var gm: Node = null
-
 func _ready():
 	_bootstrap_managers()
 	$MarginContainer/BoxContainer/StartGame.pressed.connect(_on_start_pressed)
@@ -11,7 +9,7 @@ func _bootstrap_managers():
 	var root = get_tree().root
 	
 	if not root.has_node("GameManager"):
-		gm = preload("res://scripts/game/GameManager.gd").new()
+		var gm = preload("res://scripts/game/GameManager.gd").new()
 		gm.name = "GameManager"
 		root.call_deferred("add_child", gm)
 	
@@ -19,16 +17,26 @@ func _bootstrap_managers():
 		var pem = preload("res://scripts/game/PassiveEffectManager.gd").new()
 		pem.name = "PassiveEffectManager"
 		root.call_deferred("add_child", pem)
-		pem.register_game_manager(gm)
 
+	if not root.has_node("PlayerData"):
+		var pd = preload("res://scripts/game/PlayerData.gd").new()
+		pd.name = "PlayerData"
+		root.call_deferred("add_child", pd)
+
+func get_game_manager() -> Node:
+	return get_tree().root.get_node("GameManager")
+
+func get_player_data() -> Node:
+	return get_tree().root.get_node("PlayerData")
 
 func _on_start_pressed():
-	gm.reset_run()
-	
+	get_game_manager().reset_run()
+	get_player_data().reset()
+
 	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
 	if pem:
 		pem.reset()
-	
+
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
 
 func _on_quit_pressed():

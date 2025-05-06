@@ -7,6 +7,9 @@ var _damage_timer: float = 0.0
 
 func _ready():
 	add_to_group("Enemies")
+	collision_layer = 1 << 2       # Layer 2 = Enemy
+	collision_mask = 1 << 4        # Only detect Bullets (Layer 4)
+
 	max_health = 20
 	health = 20
 	speed = 50
