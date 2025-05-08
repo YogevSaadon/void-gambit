@@ -15,9 +15,10 @@ var player_stats: Dictionary = {
 	"piercing": 0,
 	"blink_cooldown": 5.0,
 	"blinks": 3,
-	"rerolls": 1,
+	"rerolls_per_wave": 1,
 }
 
+var current_rerolls: int = 0
 var passive_item_names: Array[String] = []
 var active_behavior_flags: Dictionary = {}
 
@@ -36,8 +37,9 @@ func reset() -> void:
 		"piercing": 0,
 		"blink_cooldown": 5.0,
 		"blinks": 3,
-		"rerolls": 1,
+		"rerolls_per_wave": 1,
 	}
+	current_rerolls = 0
 	passive_item_names.clear()
 	active_behavior_flags.clear()
 

@@ -35,6 +35,7 @@ class_name Hangar
 
 # ====== Built-in Methods ======
 func _ready() -> void:
+	pd.current_rerolls = pd.player_stats.get("rerolls_per_wave", 1)
 	_connect_signals()
 	_refresh_ui()
 
@@ -50,7 +51,7 @@ func _refresh_ui() -> void:
 	var stats = pd.player_stats
 
 	wave_label.text = "Level %d" % gm.level_number
-	
+
 	player_stats_panel.get_node("HealthLabel").text = "HP: %d/%d" % [
 		stats.get("hp", 0),
 		stats.get("max_hp", 0)
@@ -64,8 +65,8 @@ func _refresh_ui() -> void:
 	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % stats.get("blinks", 0)
 
 	store_currency_label.text = "Credits: %d" % gm.coins
-	reroll_button.text = "Reroll (%d)" % stats.get("rerolls", 0)
-	reroll_button.disabled = stats.get("rerolls", 0) <= 0
+	reroll_button.text = "Reroll (%d)" % pd.current_rerolls
+	reroll_button.disabled = pd.current_rerolls <= 0
 
 	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
 
@@ -105,14 +106,14 @@ func _on_switch_pressed() -> void:
 		_show_store()
 
 func _on_reroll_pressed() -> void:
-	if pd.player_stats.get("rerolls", 0) > 0:
-		pd.player_stats["rerolls"] -= 1
+	if pd.current_rerolls > 0:
+		pd.current_rerolls -= 1
 		_refresh_ui()
 
 func _on_next_level_pressed() -> void:
 	gm.next_level()
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
-	
+
 func _on_store_item_pressed(button: Button) -> void:
 	if not button is StoreItem:
 		return
@@ -121,7 +122,6 @@ func _on_store_item_pressed(button: Button) -> void:
 	if gm.coins >= item.price:
 		gm.coins -= item.price
 
-		# ✅ Apply item effects and re-sync PEM
 		pd.add_item(item)
 		pem.initialize_from_player_data(pd)
 
