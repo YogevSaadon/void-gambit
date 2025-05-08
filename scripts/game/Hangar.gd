@@ -28,8 +28,11 @@ class_name Hangar
 
 @onready var slot_machine_currency_label = $StoreSlotMachinePanel/SlotMachinePanel/SlotMachineCurrencyLabel
 
+# ====== Managers ======
 @onready var gm = get_tree().root.get_node("GameManager")
 @onready var pem = get_tree().root.get_node("PassiveEffectManager")
+@onready var pd = get_tree().root.get_node("PlayerData")
+
 # ====== Built-in Methods ======
 func _ready() -> void:
 	_connect_signals()
@@ -44,23 +47,25 @@ func _connect_signals() -> void:
 		store_button.pressed.connect(_on_store_item_pressed.bind(store_button))
 
 func _refresh_ui() -> void:
+	var stats = pd.player_stats
+
 	wave_label.text = "Level %d" % gm.level_number
 	
 	player_stats_panel.get_node("HealthLabel").text = "HP: %d/%d" % [
-		gm.player_stats.get("hp", 0),
-		gm.player_stats.get("max_hp", 0)
+		stats.get("hp", 0),
+		stats.get("max_hp", 0)
 	]
 
 	player_stats_panel.get_node("ShieldLabel").text = "Shield: %d/%d" % [
-		gm.player_stats.get("shield", 0),
-		gm.player_stats.get("max_shield", 0)
+		stats.get("shield", 0),
+		stats.get("max_shield", 0)
 	]
 
-	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % gm.player_stats.get("blinks", 0)
+	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % stats.get("blinks", 0)
 
 	store_currency_label.text = "Credits: %d" % gm.coins
-	reroll_button.text = "Reroll (%d)" % gm.player_stats.get("rerolls", 0)
-	reroll_button.disabled = gm.player_stats.get("rerolls", 0) <= 0
+	reroll_button.text = "Reroll (%d)" % stats.get("rerolls", 0)
+	reroll_button.disabled = stats.get("rerolls", 0) <= 0
 
 	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
 
@@ -100,8 +105,8 @@ func _on_switch_pressed() -> void:
 		_show_store()
 
 func _on_reroll_pressed() -> void:
-	if gm.player_stats.get("rerolls", 0) > 0:
-		gm.player_stats["rerolls"] -= 1
+	if pd.player_stats.get("rerolls", 0) > 0:
+		pd.player_stats["rerolls"] -= 1
 		_refresh_ui()
 
 func _on_next_level_pressed() -> void:
@@ -115,9 +120,10 @@ func _on_store_item_pressed(button: Button) -> void:
 	var item = button.item
 	if gm.coins >= item.price:
 		gm.coins -= item.price
-		pem.d_item(item)
 
-		# Immediately remove the item from UI
+		# ✅ Apply item effects and re-sync PEM
+		pd.add_item(item)
+		pem.initialize_from_player_data(pd)
+
 		button.visible = false
-
-		_refresh_ui()  # Optional: to update coins + other visuals
+		_refresh_ui()
