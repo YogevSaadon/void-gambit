@@ -118,12 +118,5 @@ func _on_store_item_pressed(button: Button) -> void:
 	if not button is StoreItem:
 		return
 
-	var item = button.item
-	if gm.coins >= item.price:
-		gm.coins -= item.price
-
-		pd.add_item(item)
-		pem.initialize_from_player_data(pd)
-
-		button.visible = false
+	if button.purchase_item(pd, gm, pem):
 		_refresh_ui()

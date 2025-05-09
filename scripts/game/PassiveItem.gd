@@ -6,10 +6,9 @@ class_name PassiveItem
 @export var stat_modifiers: Dictionary = {}
 @export var behavior_flags: Dictionary = {}
 @export var icon: Texture
-
-# Temporary visuals (for store layout before images/texts are final)
 @export var store_color: Color = Color.WHITE
 @export var price: int = 10
+@export var rarity: String = "common"  # New field
 
 static func create_warp_detonator() -> PassiveItem:
 	var item = PassiveItem.new()
@@ -18,8 +17,9 @@ static func create_warp_detonator() -> PassiveItem:
 	item.stat_modifiers = {}
 	item.behavior_flags = {"blink_explosion": true}
 	item.icon = preload("res://assets/dummy-icon.jpg")
-	item.store_color = Color.RED
+	item.store_color = Color.WHITE
 	item.price = 20
+	item.rarity = "epic"
 	return item
 
 static func create_reinforced_hull() -> PassiveItem:
@@ -29,8 +29,9 @@ static func create_reinforced_hull() -> PassiveItem:
 	item.stat_modifiers = {"max_shield": 50}
 	item.behavior_flags = {}
 	item.icon = preload("res://assets/dummy-icon.jpg")
-	item.store_color = Color.BLUE
+	item.store_color = Color.WHITE
 	item.price = 15
+	item.rarity = "rare"
 	return item
 
 static func get_all_items() -> Array:
