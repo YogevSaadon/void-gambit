@@ -8,7 +8,8 @@ class_name PassiveItem
 @export var icon: Texture
 @export var store_color: Color = Color.WHITE
 @export var price: int = 10
-@export var rarity: String = "common"  # New field
+@export var rarity: String = "common"
+@export var is_unique: bool = false  
 
 static func create_warp_detonator() -> PassiveItem:
 	var item = PassiveItem.new()
@@ -20,6 +21,7 @@ static func create_warp_detonator() -> PassiveItem:
 	item.store_color = Color.WHITE
 	item.price = 20
 	item.rarity = "epic"
+	item.is_unique = true  
 	return item
 
 static func create_reinforced_hull() -> PassiveItem:
@@ -32,6 +34,7 @@ static func create_reinforced_hull() -> PassiveItem:
 	item.store_color = Color.WHITE
 	item.price = 15
 	item.rarity = "rare"
+	item.is_unique = false 
 	return item
 
 static func get_all_items() -> Array:

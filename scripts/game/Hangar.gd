@@ -74,8 +74,12 @@ func _refresh_ui() -> void:
 	_populate_store()
 
 func _populate_store() -> void:
-	var all_items = PassiveItem.get_all_items()
+	var owned_items = pd.passive_item_names
+	var all_items = PassiveItem.get_all_items().filter(func(item):
+		return not item.is_unique or not owned_items.has(item.name)
+)
 	all_items.shuffle()
+
 
 	for i in range(store_items.size()):
 		if i < all_items.size():

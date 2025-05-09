@@ -1,6 +1,7 @@
 extends Node
 class_name PlayerData
 
+# Core player stats (modifiers from items apply here)
 var player_stats: Dictionary = {
 	"max_hp": 100,
 	"hp": 100,
@@ -18,10 +19,12 @@ var player_stats: Dictionary = {
 	"rerolls_per_wave": 1,
 }
 
+# Runtime data
 var current_rerolls: int = 0
 var passive_item_names: Array[String] = []
 var active_behavior_flags: Dictionary = {}
 
+# Resets stats and clears inventory
 func reset() -> void:
 	player_stats = {
 		"max_hp": 100,
@@ -43,8 +46,10 @@ func reset() -> void:
 	passive_item_names.clear()
 	active_behavior_flags.clear()
 
+# Adds an item to the player. Unique items are only added once.
 func add_item(item: PassiveItem) -> void:
-	if item.name in passive_item_names:
+	var already_owned = item.name in passive_item_names
+	if item.is_unique and already_owned:
 		return
 
 	passive_item_names.append(item.name)
@@ -53,13 +58,13 @@ func add_item(item: PassiveItem) -> void:
 		if player_stats.has(stat):
 			player_stats[stat] += item.stat_modifiers[stat]
 		else:
-			print("⚠ New stat added to player_stats: ", stat)
 			player_stats[stat] = item.stat_modifiers[stat]
 
 	for flag in item.behavior_flags:
 		if item.behavior_flags[flag]:
 			active_behavior_flags[flag] = true
 
+# Returns full item references for all currently owned items
 func get_passive_items() -> Array:
 	var items: Array = []
 	for name in passive_item_names:
@@ -68,9 +73,11 @@ func get_passive_items() -> Array:
 			items.append(item)
 	return items
 
+# Checks if the player has a given behavior flag active
 func has_behavior(flag: String) -> bool:
 	return active_behavior_flags.has(flag)
 
+# Syncs health/shield values back from the player to persist across waves
 func sync_from_player(p: Node) -> void:
 	player_stats["hp"] = p.health
 	player_stats["shield"] = p.shield
