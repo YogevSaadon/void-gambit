@@ -16,16 +16,6 @@ class_name Hangar
 @onready var center_panel = $StoreSlotMachinePanel
 @onready var store_panel = $StoreSlotMachinePanel/StorePanel
 @onready var slot_machine_panel = $StoreSlotMachinePanel/SlotMachinePanel
-
-@onready var store_currency_label = $StoreSlotMachinePanel/StorePanel/StoreCurrencyLabel
-@onready var reroll_button = $StoreSlotMachinePanel/StorePanel/RerollButton
-@onready var store_items = [
-	$StoreSlotMachinePanel/StorePanel/StoreItem0,
-	$StoreSlotMachinePanel/StorePanel/StoreItem1,
-	$StoreSlotMachinePanel/StorePanel/StoreItem2,
-	$StoreSlotMachinePanel/StorePanel/StoreItem3
-]
-
 @onready var slot_machine_currency_label = $StoreSlotMachinePanel/SlotMachinePanel/SlotMachineCurrencyLabel
 
 # ====== Managers ======
@@ -33,19 +23,18 @@ class_name Hangar
 @onready var pem = get_tree().root.get_node("PassiveEffectManager")
 @onready var pd = get_tree().root.get_node("PlayerData")
 
-# ====== Built-in Methods ======
+# ====== Built-in ======
 func _ready() -> void:
 	pd.current_rerolls = pd.player_stats.get("rerolls_per_wave", 1)
+	store_panel.initialize(gm, pd, pem)
 	_connect_signals()
 	_refresh_ui()
+	_show_store()
 
-# ====== UI Management ======
+# ====== UI ======
 func _connect_signals() -> void:
 	next_level_button.pressed.connect(_on_next_level_pressed)
 	switch_button.pressed.connect(_on_switch_pressed)
-	reroll_button.pressed.connect(_on_reroll_pressed)
-	for store_button in store_items:
-		store_button.pressed.connect(_on_store_item_pressed.bind(store_button))
 
 func _refresh_ui() -> void:
 	var stats = pd.player_stats
@@ -64,34 +53,9 @@ func _refresh_ui() -> void:
 
 	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % stats.get("blinks", 0)
 
-	store_currency_label.text = "Credits: %d" % gm.coins
-	reroll_button.text = "Reroll (%d)" % pd.current_rerolls
-	reroll_button.disabled = pd.current_rerolls <= 0
-
 	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
 
-	_show_store()
-	_populate_store()
-
-func _populate_store() -> void:
-	var owned_ids = pd.passive_item_ids
-	var all_items = PassiveItem.get_all_items().filter(func(item):
-		return not item.is_unique or not owned_ids.has(item.id)
-)
-	all_items.shuffle()
-
-
-	for i in range(store_items.size()):
-		if i < all_items.size():
-			var item = all_items[i]
-			var store_slot = store_items[i]
-
-			if store_slot.has_method("set_item"):
-				store_slot.set_item(item)
-				store_slot.visible = true
-		else:
-			store_items[i].visible = false
-
+# ====== Toggle Panels ======
 func _show_store() -> void:
 	store_panel.visible = true
 	slot_machine_panel.visible = false
@@ -102,25 +66,13 @@ func _show_slot_machine() -> void:
 	slot_machine_panel.visible = true
 	switch_button.text = "Store"
 
-# ====== Buttons Actions ======
+# ====== Button Handlers ======
 func _on_switch_pressed() -> void:
 	if store_panel.visible:
 		_show_slot_machine()
 	else:
 		_show_store()
 
-func _on_reroll_pressed() -> void:
-	if pd.current_rerolls > 0:
-		pd.current_rerolls -= 1
-		_refresh_ui()
-
 func _on_next_level_pressed() -> void:
 	gm.next_level()
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
-
-func _on_store_item_pressed(button: Button) -> void:
-	if not button is StoreItem:
-		return
-
-	if button.purchase_item(pd, gm, pem):
-		_refresh_ui()
