@@ -5,39 +5,33 @@ class_name Level
 @export var enemy_scene: PackedScene
 
 # ====== Nodes ======
-var player: Node = null
+var player: Player = null
 @onready var level_ui = $LevelUI
 @onready var wave_manager = $WaveManager
 
-@onready var game_manager = get_tree().root.get_node("GameManager")
-@onready var player_data = get_tree().root.get_node("PlayerData")
-@onready var pem = get_tree().root.get_node("PassiveEffectManager")
+@onready var game_manager: GameManager = get_tree().root.get_node("GameManager")
+@onready var player_data: PlayerData = get_tree().root.get_node("PlayerData")
+@onready var pem: PassiveEffectManager = get_tree().root.get_node("PassiveEffectManager")
 
 # ====== Constants ======
 const SCREEN_SIDES := 4
 
 # ====== Built-in Methods ======
 func _ready() -> void:
-	# Inject PlayerData into Player
 	player = $Player
 	player.player_data = player_data
-	player.initialize(player_data)  # optional if you use it
+	player.initialize(player_data)
 
-	# Setup PEM with PlayerData and player
 	pem.initialize_from_player_data(player_data)
 	pem.register_signals(player)
 
-	# Assign enemy scene BEFORE starting level
 	_set_wave_enemy_scene()
 
-	# Setup rest
 	level_ui.set_player(player)
 	_connect_wave_signals()
 	_equip_player_weapons()
 
-	# START LEVEL only after everything is ready
 	_start_level()
-
 
 # ====== Wave Setup ======
 func _set_wave_enemy_scene() -> void:

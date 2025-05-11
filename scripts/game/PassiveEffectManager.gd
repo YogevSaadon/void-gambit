@@ -2,12 +2,12 @@ extends Node
 class_name PassiveEffectManager
 
 var active_effects: Dictionary = {}
-var player_data: Node = null
+var player_data: PlayerData = null
 
 func reset() -> void:
 	active_effects.clear()
 
-func initialize_from_player_data(data: Node) -> void:
+func initialize_from_player_data(data: PlayerData) -> void:
 	reset()
 	player_data = data
 	for flag in player_data.active_behavior_flags.keys():
@@ -16,7 +16,7 @@ func initialize_from_player_data(data: Node) -> void:
 func has_effect(effect_name: String) -> bool:
 	return active_effects.has(effect_name)
 
-func register_signals(player: Node) -> void:
+func register_signals(player: Player) -> void:
 	player.player_blinked.connect(_on_player_blinked)
 
 func _on_player_blinked(position: Vector2) -> void:

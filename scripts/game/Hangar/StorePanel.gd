@@ -10,14 +10,16 @@ class_name StorePanel
 	$StoreItem3
 ]
 
-var gm: Node = null
-var pd: Node = null
-var pem: Node = null
+var gm: GameManager = null
+var pd: PlayerData = null
+var pem: PassiveEffectManager = null
+var stat_panel: Node = null
 
-func initialize(game_manager: Node, player_data: Node, passive_manager: Node) -> void:
+func initialize(game_manager: GameManager, player_data: PlayerData, passive_manager: PassiveEffectManager, stats_panel: Node) -> void:
 	gm = game_manager
 	pd = player_data
 	pem = passive_manager
+	stat_panel = stats_panel
 	_connect_signals()
 	_update_ui()
 	_populate_items()
@@ -60,7 +62,8 @@ func _on_store_item_pressed(button: Button) -> void:
 
 	if button.purchase_item(pd, gm, pem):
 		_update_ui()
-		# Optionally hide all other items after purchase
+		if stat_panel:
+			stat_panel.update_stats()
 		for slot in store_items:
 			if slot != button:
 				slot.visible = false

@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://c3asvvqqrvvu3"]
+[gd_scene load_steps=5 format=3 uid="uid://c3asvvqqrvvu3"]
 
-[ext_resource type="Script" path="res://scripts/game/Hangar.gd" id="1_pr6oe"]
-[ext_resource type="Script" path="res://scripts/game/StorePanel.gd" id="2_jdma5"]
-[ext_resource type="Script" path="res://scripts/game/HangarStoreItem.gd" id="2_pxfni"]
+[ext_resource type="Script" path="res://scripts/game/Hangar/Hangar.gd" id="1_pr6oe"]
+[ext_resource type="Script" path="res://scripts/game/Hangar/StorePanel.gd" id="2_jdma5"]
+[ext_resource type="Script" path="res://scripts/game/Hangar/StatPanel.gd" id="2_nkioq"]
+[ext_resource type="Script" path="res://scripts/game/Hangar/StoreItem.gd" id="2_pxfni"]
 
 [node name="Hangar" type="Control"]
 layout_mode = 3
@@ -39,6 +40,7 @@ offset_bottom = 274.0
 
 [node name="PlayerStatsPanel" type="VBoxContainer" parent="LeftPanel"]
 layout_mode = 2
+script = ExtResource("2_nkioq")
 
 [node name="HealthLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
 layout_mode = 2

@@ -2,7 +2,7 @@ extends "res://scripts/actors/Actor.gd"
 class_name Player
 
 # ====== Dependencies (Injected) ======
-var player_data: Node = null  # must be set from Level.gd
+var player_data: PlayerData = null  # must be set from Level.gd
 
 # ====== Constants ======
 const MOVE_STOP_THRESHOLD_SQUARED := 4.0
@@ -24,32 +24,29 @@ signal player_blinked(position: Vector2)
 
 # ====== Built-in ======
 
-func initialize(p_data: Node) -> void:
+func initialize(p_data: PlayerData) -> void:
 	player_data = p_data
 	add_to_group("Player")
 	collision_layer = 1 << 1
 	collision_mask = 0
 
-	var stats = player_data.player_stats
-	max_health = stats.get("max_hp", 100)
-	health     = stats.get("hp", max_health)
-	max_shield = stats.get("max_shield", 0)
-	shield     = stats.get("shield", max_shield)
-	shield_recharge_rate = stats.get("shield_recharge_rate", 5.0)
-	speed      = stats.get("speed", 200.0)
+	max_health = player_data.get_stat("max_hp")
+	health = player_data.hp
+	max_shield = player_data.get_stat("max_shield")
+	shield = player_data.shield
+	shield_recharge_rate = player_data.get_stat("shield_recharge_rate")
+	speed = player_data.get_stat("speed")
 
-	blink_timer = player_data.player_stats.get("blink_cooldown", 5.0)
+	blink_timer = player_data.get_stat("blink_cooldown")
 
 	target_position = global_position
 	_update_attack_timing()
 
 func _update_attack_timing() -> void:
-	var stats = player_data.player_stats
-	fire_interval = 1.0 / (stats.get("base_fire_rate", 2.0) * stats.get("attack_speed", 1.0))
-	stop_to_shoot_delay = clamp(0.4 / stats.get("attack_speed", 1.0), 0.1, 0.4)
+	fire_interval = 1.0 / (player_data.get_stat("base_fire_rate") * player_data.get_stat("attack_speed"))
+	stop_to_shoot_delay = clamp(0.4 / player_data.get_stat("attack_speed"), 0.1, 0.4)
 
 func _physics_process(delta: float) -> void:
-	# Order: cooldown, movement, UI, firing
 	_handle_blink_cooldown(delta)
 	_handle_movement(delta)
 	_update_shoot_bar()
@@ -59,15 +56,14 @@ func _input(event) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
 		match event.keycode:
 			KEY_S:
-				is_stopped = true
-				target_position = global_position
-				shoot_ready_timer = 0.0
+				if not is_stopped:
+					is_stopped = true
+					target_position = global_position
 			KEY_F:
 				_try_blink()
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		is_stopped = false
 		target_position = get_global_mouse_position()
-
 
 func _handle_movement(delta: float) -> void:
 	if is_stopped:
@@ -86,7 +82,7 @@ func _handle_movement(delta: float) -> void:
 # ====== Blink System ======
 
 func _try_blink() -> void:
-	var cooldown = player_data.player_stats.get("blink_cooldown", 5.0)
+	var cooldown = player_data.get_stat("blink_cooldown")
 	if blink_timer >= cooldown:
 		blink_to_position(get_global_mouse_position())
 		blink_timer = 0.0
@@ -95,11 +91,11 @@ func blink_to_position(pos: Vector2) -> void:
 	global_position = pos
 	target_position = pos
 	velocity = Vector2.ZERO
-	shoot_ready_timer = 0.0  # require fresh charge after blink
+	shoot_ready_timer = 0.0
 	emit_signal("player_blinked", global_position)
 
 func _handle_blink_cooldown(delta: float) -> void:
-	var cooldown = player_data.player_stats.get("blink_cooldown", 5.0)
+	var cooldown = player_data.get_stat("blink_cooldown")
 	if blink_timer < cooldown:
 		blink_timer = min(blink_timer + delta, cooldown)
 
@@ -122,7 +118,6 @@ func _auto_fire_weapons(delta: float) -> void:
 		var slot = get_weapon_slot(i)
 		if slot:
 			for child in slot.get_children():
-				# assume child is a weapon with auto_fire
 				child.auto_fire(delta)
 				shoot_cooldown_timer = fire_interval
 
@@ -150,7 +145,5 @@ func equip_weapon(scene: PackedScene, slot_index: int) -> void:
 
 	var weapon = scene.instantiate()
 	weapon.owner_player = self
-
-	weapon.apply_weapon_modifiers(player_data.player_stats)
-
+	weapon.apply_weapon_modifiers(player_data)  # Pass full PlayerData, not stats
 	slot.add_child(weapon)

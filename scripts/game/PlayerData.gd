@@ -1,70 +1,85 @@
 extends Node
 class_name PlayerData
 
-# Core player stats (modifiers from items apply here)
-var player_stats: Dictionary = {
+# Base player stats (unchanging after run starts)
+var base_stats: Dictionary = {
 	"max_hp": 100,
-	"hp": 100,
 	"max_shield": 25,
-	"shield": 25,
 	"speed": 200.0,
 	"shield_recharge_rate": 5.0,
 	"base_fire_rate": 2.0,
 	"attack_speed": 1.0,
 	"weapon_range": 500.0,
-	"crit_chance": 5.0,
-	"piercing": 0,
+	"crit_chance": 0.05,
+	"crit_damage": 1.5,
+	"damage_percent": 0.0,
+	"bullet_damage_percent": 0.0,
+	"laser_damage_percent": 0.0,
+	"explosive_damage_percent": 0.0,
+	"bio_damage_percent": 0.0,
+	"ship_damage_percent": 0.0,
 	"blink_cooldown": 5.0,
 	"blinks": 3,
 	"rerolls_per_wave": 1,
+	"luck": 0.0,
+	"gold_drop_rate": 1.0,
+	"ship_count": 1,
+	"ship_fire_rate": 1.0,
+	"ship_range": 300.0,
+	"bullet_pierce": 0,
+	"laser_reflects": 0,
+	"bio_spread_chance": 0.0,
+	"explosion_radius_bonus": 0.0,
 }
 
 # Runtime state
+var hp: float = 100.0
+var shield: float = 25.0
 var current_rerolls: int = 0
+
+# Passive item memory
 var passive_item_ids: Array[String] = []
 var active_behavior_flags: Dictionary = {}
 
-# Reset stats and all inventory/effects
+# Dynamic modifier layers
+var additive_mods: Dictionary = {}
+var percent_mods: Dictionary = {}
+
+# ====== PUBLIC API ======
+
 func reset() -> void:
-	player_stats = {
-		"max_hp": 100,
-		"hp": 100,
-		"max_shield": 25,
-		"shield": 25,
-		"speed": 200.0,
-		"shield_recharge_rate": 5.0,
-		"base_fire_rate": 2.0,
-		"attack_speed": 1.0,
-		"weapon_range": 500.0,
-		"crit_chance": 5.0,
-		"piercing": 0,
-		"blink_cooldown": 5.0,
-		"blinks": 3,
-		"rerolls_per_wave": 1,
-	}
+	hp = base_stats["max_hp"]
+	shield = base_stats["max_shield"]
 	current_rerolls = 0
 	passive_item_ids.clear()
 	active_behavior_flags.clear()
+	additive_mods.clear()
+	percent_mods.clear()
 
-# Add passive item (handles unique logic)
 func add_item(item: PassiveItem) -> void:
-	var already_owned = passive_item_ids.has(item.id)
-	if item.is_unique and already_owned:
+	if item.is_unique and passive_item_ids.has(item.id):
 		return
 
 	passive_item_ids.append(item.id)
 
 	for stat in item.stat_modifiers:
-		if player_stats.has(stat):
-			player_stats[stat] += item.stat_modifiers[stat]
+		var mod = item.stat_modifiers[stat]
+		if typeof(mod) == TYPE_DICTIONARY:
+			additive_mods[stat] = additive_mods.get(stat, 0.0) + mod.get("add", 0.0)
+			percent_mods[stat] = percent_mods.get(stat, 0.0) + mod.get("percent", 0.0)
 		else:
-			player_stats[stat] = item.stat_modifiers[stat]
+			additive_mods[stat] = additive_mods.get(stat, 0.0) + mod
 
 	for flag in item.behavior_flags:
 		if item.behavior_flags[flag]:
 			active_behavior_flags[flag] = true
 
-# Return actual item references
+func get_stat(stat: String) -> float:
+	var base = base_stats.get(stat, 0.0)
+	var add = additive_mods.get(stat, 0.0)
+	var pct = percent_mods.get(stat, 0.0)
+	return (base + add) * (1.0 + pct)
+
 func get_passive_items() -> Array:
 	var items: Array = []
 	for id in passive_item_ids:
@@ -73,11 +88,9 @@ func get_passive_items() -> Array:
 			items.append(item)
 	return items
 
-# Check active behaviors
 func has_behavior(flag: String) -> bool:
 	return active_behavior_flags.has(flag)
 
-# Sync HP/Shield back to data (after wave ends)
 func sync_from_player(p: Node) -> void:
-	player_stats["hp"] = p.health
-	player_stats["shield"] = p.shield
+	hp = p.health
+	shield = p.shield

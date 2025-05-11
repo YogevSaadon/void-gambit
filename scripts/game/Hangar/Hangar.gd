@@ -25,8 +25,9 @@ class_name Hangar
 
 # ====== Built-in ======
 func _ready() -> void:
-	pd.current_rerolls = pd.player_stats.get("rerolls_per_wave", 1)
-	store_panel.initialize(gm, pd, pem)
+	pd.current_rerolls = int(pd.get_stat("rerolls_per_wave"))
+	player_stats_panel.initialize(pd)
+	store_panel.initialize(gm, pd, pem, player_stats_panel)
 	_connect_signals()
 	_refresh_ui()
 	_show_store()
@@ -37,23 +38,9 @@ func _connect_signals() -> void:
 	switch_button.pressed.connect(_on_switch_pressed)
 
 func _refresh_ui() -> void:
-	var stats = pd.player_stats
-
 	wave_label.text = "Level %d" % gm.level_number
-
-	player_stats_panel.get_node("HealthLabel").text = "HP: %d/%d" % [
-		stats.get("hp", 0),
-		stats.get("max_hp", 0)
-	]
-
-	player_stats_panel.get_node("ShieldLabel").text = "Shield: %d/%d" % [
-		stats.get("shield", 0),
-		stats.get("max_shield", 0)
-	]
-
-	player_stats_panel.get_node("BlinksLabel").text = "Blinks: %d" % stats.get("blinks", 0)
-
 	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
+	player_stats_panel.update_stats()
 
 # ====== Toggle Panels ======
 func _show_store() -> void:
