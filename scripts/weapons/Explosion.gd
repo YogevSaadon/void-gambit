@@ -13,7 +13,6 @@ var elapsed_time: float = 0.0
 var current_color: Color
 
 func _ready() -> void:
-	$CollisionShape2D.shape.radius = radius
 	set_collision_properties()
 	# 1) Configure the collision area
 	$CollisionShape2D.shape.radius = radius
