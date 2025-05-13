@@ -3,6 +3,8 @@ class_name PassiveEffectManager
 
 var active_effects: Dictionary = {}
 var player_data: PlayerData = null
+@onready var ExplosionScene: PackedScene = preload("res://scenes/weapons/Explosion.tscn")
+
 
 func reset() -> void:
 	active_effects.clear()
@@ -24,7 +26,7 @@ func _on_player_blinked(position: Vector2) -> void:
 		_trigger_blink_explosion(position)
 
 func _trigger_blink_explosion(pos: Vector2) -> void:
-	var explosion = preload("res://scenes/weapons/Explosion.tscn").instantiate()
+	var explosion = ExplosionScene.instantiate()
 	explosion.global_position = pos
 	explosion.damage = 30.0
 	explosion.radius = 96.0
