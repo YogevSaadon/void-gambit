@@ -9,9 +9,10 @@ var player: Player = null
 @onready var level_ui = $LevelUI
 @onready var wave_manager = $WaveManager
 
-@onready var game_manager: GameManager = get_tree().root.get_node("GameManager")
-@onready var player_data: PlayerData = get_tree().root.get_node("PlayerData")
-@onready var pem: PassiveEffectManager = get_tree().root.get_node("PassiveEffectManager")
+@onready var game_manager: GameManager = get_tree().root.get_node("GameManager") 
+@onready var player_data: PlayerData = get_tree().root.get_node("PlayerData") 
+@onready var pem: PassiveEffectManager = get_tree().root.get_node("PassiveEffectManager") 
+
 
 # ====== Constants ======
 const SCREEN_SIDES := 4

@@ -7,33 +7,40 @@ func _ready():
 
 func _bootstrap_managers():
 	var root = get_tree().root
-	
-	if not root.has_node("GameManager"):
-		var gm = preload("res://scripts/game/GameManager.gd").new()
-		gm.name = "GameManager"
-		root.call_deferred("add_child", gm)
-	
-	if not root.has_node("PassiveEffectManager"):
-		var pem = preload("res://scripts/game/PassiveEffectManager.gd").new()
-		pem.name = "PassiveEffectManager"
-		root.call_deferred("add_child", pem)
 
-	if not root.has_node("PlayerData"):
-		var pd = preload("res://scripts/game/PlayerData.gd").new()
-		pd.name = "PlayerData"
-		root.call_deferred("add_child", pd)
+	# Remove any old manager nodes
+	for name in ["GameManager", "PassiveEffectManager", "PlayerData"]:
+		if root.has_node(name):
+			root.get_node(name).queue_free()
 
-func get_game_manager() -> Node:
-	return get_tree().root.get_node("GameManager")
+	await get_tree().process_frame  # Wait once for all to be cleared
 
-func get_player_data() -> Node:
-	return get_tree().root.get_node("PlayerData")
+	# Add fresh instances
+	var gm = preload("res://scripts/game/GameManager.gd").new()
+	gm.name = "GameManager"
+	root.call_deferred("add_child", gm)
+
+	var pem = preload("res://scripts/game/PassiveEffectManager.gd").new()
+	pem.name = "PassiveEffectManager"
+	root.call_deferred("add_child", pem)
+
+	var pd = preload("res://scripts/game/PlayerData.gd").new()
+	pd.name = "PlayerData"
+	root.call_deferred("add_child", pd)
+
+
+
+func get_game_manager() -> GameManager:
+	return get_tree().root.get_node("GameManager") as GameManager
+
+func get_player_data() -> PlayerData:
+	return get_tree().root.get_node("PlayerData") as PlayerData
 
 func _on_start_pressed():
 	get_game_manager().reset_run()
 	get_player_data().reset()
 
-	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
+	var pem := get_tree().root.get_node_or_null("PassiveEffectManager") as PassiveEffectManager
 	if pem:
 		pem.reset()
 

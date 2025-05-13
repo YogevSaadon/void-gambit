@@ -24,4 +24,10 @@ func _on_player_blinked(position: Vector2) -> void:
 		_trigger_blink_explosion(position)
 
 func _trigger_blink_explosion(pos: Vector2) -> void:
-	print("Explosion triggered at ", pos)
+	var explosion = preload("res://scenes/weapons/Explosion.tscn").instantiate()
+	explosion.global_position = pos
+	explosion.damage = 30.0
+	explosion.radius = 96.0
+	explosion.crit_chance = player_data.get_stat("crit_chance")
+	explosion.damage_group = "Enemies"
+	get_tree().current_scene.add_child(explosion)
