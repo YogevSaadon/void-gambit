@@ -16,9 +16,13 @@ func _physics_process(delta: float) -> void:
 		cooldown_timer -= delta
 
 func auto_fire(_delta: float) -> void:
-	if current_target and cooldown_timer <= 0.0:
+	if cooldown_timer > 0.0:
+		return
+
+	# Make sure the target is still a live Node before firing
+	if is_instance_valid(current_target):
 		_fire_once(current_target)
-		cooldown_timer = 1.0 / final_fire_rate   # final_fire_rate comes from BaseWeapon
+		cooldown_timer = 1.0 / final_fire_rate
 
 # ─── Hooks for concrete subclasses ────────────────────
 func _fire_once(_target: Node) -> void:

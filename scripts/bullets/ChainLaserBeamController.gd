@@ -79,7 +79,7 @@ func _extend_chain() -> void:
 		_add_segment(from_pos, nxt.global_position)
 
 # ── helpers ─────────────────────────────────────────
-func _is_valid_enemy(e: Node) -> bool:
+func _is_valid_enemy(e) -> bool:
 	return is_instance_valid(e) and \
 		muzzle.global_position.distance_to(e.global_position) < range
 
