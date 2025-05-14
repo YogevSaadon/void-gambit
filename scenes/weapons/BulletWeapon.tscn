@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://35ig83ncwovb"]
 
-[ext_resource type="Script" path="res://scripts/weapons/FiringWeapon.gd" id="1_7f6yl"]
+[ext_resource type="Script" path="res://scripts/weapons/BulletWeapon.gd" id="1_4h0pk"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_7vg45"]
 
-[node name="Weapon" type="Node2D"]
-script = ExtResource("1_7f6yl")
+[node name="BulletWeapon" type="Node2D"]
+script = ExtResource("1_4h0pk")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 0.0745098, 1)

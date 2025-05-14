@@ -3,7 +3,7 @@ class_name PassiveEffectManager
 
 var active_effects: Dictionary = {}
 var player_data: PlayerData = null
-@onready var ExplosionScene: PackedScene = preload("res://scenes/weapons/Explosion.tscn")
+@onready var ExplosionScene: PackedScene = preload("res://scenes/bullets/Explosion.tscn")
 
 
 func reset() -> void:
