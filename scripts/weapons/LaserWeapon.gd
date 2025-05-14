@@ -2,25 +2,25 @@ extends ShooterWeapon
 class_name LaserWeapon
 
 var beam_scene: PackedScene = preload("res://scenes/bullets/PersistentLaserBeam.tscn")
-var beam_instance      : Node = null      # keeps one live beam
+var beam_instance: Node = null          # single live beam
 
-# tell BaseWeapon to include laser_damage_percent in damage calculation
+# tell BaseWeapon to include laser-specific bonus
 func _damage_type_key() -> String:
 	return "laser_damage_percent"
 
 func _fire_once(target: Node) -> void:
-	if beam_scene == null:
-		push_error("LaserWeapon: beam_scene missing")
+	# validate target
+	if not is_instance_valid(target):
 		return
 
-	# Beam already active → just refresh its stats/target
+	# spawn or refresh beam
 	if beam_instance and beam_instance.is_inside_tree():
 		beam_instance.set_beam_stats($Muzzle, target,
 									 final_damage, final_crit, final_range)
 		return
 
-	# Spawn a new persistent beam
 	beam_instance = beam_scene.instantiate()
-	add_child(beam_instance)   # keep under weapon so it dies with weapon
+	# add to main scene so weapon rotation doesn’t skew the beam
+	get_tree().current_scene.add_child(beam_instance)
 	beam_instance.set_beam_stats($Muzzle, target,
 								 final_damage, final_crit, final_range)

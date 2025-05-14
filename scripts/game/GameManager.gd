@@ -1,7 +1,7 @@
 extends Node
 class_name GameManager
 
-@export var starting_weapon: PackedScene = preload("res://scenes/weapons/BulletWeapon.tscn")
+@export var starting_weapon: PackedScene = preload("res://scenes/weapons/LaserWeapon.tscn")
 
 # ====== Game State ======
 var coins: int = 0
