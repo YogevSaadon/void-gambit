@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://cqys07fn4fne5"]
+[gd_scene load_steps=7 format=3 uid="uid://cqys07fn4fne5"]
 
 [ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_hut24"]
 [ext_resource type="Script" path="res://scripts/actors/Enemy.gd" id="2_1th0i"]
 [ext_resource type="Script" path="res://scripts/other/EnemyCollisionNode.gd" id="3_bnbrh"]
+[ext_resource type="Script" path="res://scripts/actors/StatusComponent.gd" id="4_nuvv4"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_08v5x"]
 
@@ -26,3 +27,6 @@ script = ExtResource("3_bnbrh")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyCollisionNode" index="0"]
 shape = SubResource("CircleShape2D_jejao")
 debug_color = Color(0.641239, 0.521339, 0.152979, 0.42)
+
+[node name="StatusComponent" type="Node2D" parent="." index="3"]
+script = ExtResource("4_nuvv4")

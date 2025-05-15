@@ -44,8 +44,12 @@ func take_damage(amount: int) -> void:
 		destroy()
 
 func destroy() -> void:
+	on_death()
 	queue_free()
 
+
+func on_death() -> void:
+	pass
 # ========================
 # GETTERS
 # ========================
