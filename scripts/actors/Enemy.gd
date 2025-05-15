@@ -14,8 +14,8 @@ func _ready() -> void:
 	collision_layer = 1 << 2        # Layer 2 = Enemy
 	collision_mask  = 1 << 4        # Detect Bullets only (Layer 4)
 
-	max_health = 50
-	health     = 50
+	max_health = 200
+	health     = 200
 	speed      = 50
 
 func _physics_process(delta: float) -> void:

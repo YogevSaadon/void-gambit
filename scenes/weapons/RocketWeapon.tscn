@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bgkmup814la4f"]
+
+[ext_resource type="Script" path="res://scripts/weapons/RocketWeapon.gd" id="1_5qpke"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_eyxgu"]
+
+[node name="RocketWeapon" type="Node2D"]
+script = ExtResource("1_5qpke")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 0.0745098, 1)
+position = Vector2(2.5, -1.49012e-08)
+scale = Vector2(9, 2)
+texture = SubResource("CanvasTexture_eyxgu")
+
+[node name="Muzzle" type="Node2D" parent="."]
+position = Vector2(7, 0)
