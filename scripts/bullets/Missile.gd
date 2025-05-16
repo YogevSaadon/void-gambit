@@ -9,29 +9,33 @@ class_name Missile
 @export var explosion_scene: PackedScene = preload("res://scenes/bullets/Explosion.tscn")
 
 var target_position: Vector2
+var exploded: bool = false                   # ← new guard
 
 @onready var ttl_timer := $Timer
 
 func _ready() -> void:
-	# Ensure proper collision layers (Layer 4) and mask (hit Layer 2 enemies)
 	collision_layer = 1 << 4
 	collision_mask  = 1 << 2
-	# Connect both body and area just in case
 	connect("body_entered",  Callable(self, "_on_Collision"))
 	connect("area_entered",  Callable(self, "_on_Collision"))
 	ttl_timer.connect("timeout", Callable(self, "_explode"))
 
 func _physics_process(delta: float) -> void:
+	if exploded:
+		return
 	var dir: Vector2 = (target_position - global_position).normalized()
 	position += dir * speed * delta
 	if global_position.distance_to(target_position) <= speed * delta:
 		_explode()
 
-# Handles either body_entered or area_entered
 func _on_Collision(_node: Node) -> void:
 	_explode()
 
 func _explode() -> void:
+	if exploded:
+		return                        # already did it
+	exploded = true
+
 	if explosion_scene:
 		var expl := explosion_scene.instantiate()
 		expl.position     = global_position
@@ -39,4 +43,5 @@ func _explode() -> void:
 		expl.radius       = radius
 		expl.crit_chance  = crit_chance
 		get_tree().current_scene.add_child(expl)
+
 	queue_free()
