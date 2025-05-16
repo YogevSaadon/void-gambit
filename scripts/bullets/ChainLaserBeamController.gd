@@ -102,14 +102,14 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 
 # ── damage ──────────────────────────────────────────
 func _apply_damage(enemy: Node) -> void:
-	if enemy in hit_this_tick: return
+	if enemy in hit_this_tick: 
+		return
 	hit_this_tick[enemy] = true
-	if not enemy.has_method("take_damage"): return
+	if not enemy.has_method("apply_damage"):
+		return
 
-	var dmg = damage
-	if randf() < crit:
-		dmg *= pd.get_stat("crit_damage")
-	enemy.take_damage(dmg)
+	var is_crit: bool = randf() < crit
+	enemy.apply_damage(damage, is_crit)
 
 # ── segment visual handling ─────────────────────────
 func _add_segment(start: Vector2, end: Vector2) -> void:

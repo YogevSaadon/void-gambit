@@ -6,6 +6,7 @@ class_name Bullet
 var direction: Vector2 = Vector2.ZERO
 var damage: float = 10.0
 var piercing: int = 0
+@onready var pd  := get_tree().root.get_node("PlayerData")
 
 # ====== Built-in Methods ======
 
@@ -22,7 +23,8 @@ func _on_body_entered(body: Node) -> void:
 
 	if body.is_in_group("Enemies"):
 		if body.has_method("take_damage"):
-			body.take_damage(damage)
+			var is_crit = randf() < pd.get_stat("crit_chance")
+			body.take_damage(damage,is_crit)
 
 		piercing -= 1
 		if piercing < 0:

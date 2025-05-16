@@ -2,16 +2,15 @@
 extends Node
 class_name StatusComponent
 
-@onready var pd = get_tree().root.get_node("PlayerData")   # consistent singleton access
+@onready var pd = get_tree().root.get_node("PlayerData")   # cached singleton
 
-# ────── DOT struct ──────
 class DOT:
 	var dps: float
 	var tick: float
 	var remaining: float
 	var stacks: int
 
-var infection: DOT = null                                   # active infection
+var infection: DOT = null
 
 # ────── Public API ──────
 func apply_infection(base_dps: float, duration: float) -> void:
@@ -43,8 +42,8 @@ func _process(delta: float) -> void:
 
 # ────── Helpers ──────
 func _tick_damage() -> void:
-	var dmg     = infection.dps * 0.5
-	var is_crit = randf() < pd.get_stat("crit_chance")
-	if is_crit:
-		dmg *= pd.get_stat("crit_damage")
-	get_parent().take_damage(dmg)
+	var dmg     : float = infection.dps * 0.5
+	var is_crit : bool  = randf() < pd.get_stat("crit_chance")
+
+	# Enemy handles crit multiplier in apply_damage()
+	get_parent().apply_damage(dmg, is_crit)

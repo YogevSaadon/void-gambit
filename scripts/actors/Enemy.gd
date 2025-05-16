@@ -69,3 +69,7 @@ func _spread_infection() -> void:
 			status.infection.dps,
 			status.infection.remaining
 		)
+
+func apply_damage(amount: float, is_crit: bool) -> void:
+	var dmg: float = amount * (pd.get_stat("crit_damage") if is_crit else 1.0)
+	take_damage(dmg)
