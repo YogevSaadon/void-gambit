@@ -38,10 +38,8 @@ func set_collision_properties() -> void:
 func _on_body_entered(body: Node) -> void:
 	if not body.is_in_group(damage_group):
 		return
-	if not body.has_method("take_damage"):
+	if not body.has_method("apply_damage"):
 		return
 
-	var final_damage = damage
-	if crit_chance > 0.0 and randf() < crit_chance:
-		final_damage *= 2.0
-	body.take_damage(final_damage)
+	var is_crit = crit_chance > 0.0 and randf() < crit_chance
+	body.apply_damage(damage, is_crit)

@@ -24,7 +24,7 @@ func _on_body_entered(body: Node) -> void:
 	if body.is_in_group("Enemies"):
 		if body.has_method("take_damage"):
 			var is_crit = randf() < pd.get_stat("crit_chance")
-			body.take_damage(damage,is_crit)
+			body.apply_damage(damage,is_crit)
 
 		piercing -= 1
 		if piercing < 0:

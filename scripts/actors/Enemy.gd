@@ -72,4 +72,11 @@ func _spread_infection() -> void:
 
 func apply_damage(amount: float, is_crit: bool) -> void:
 	var dmg: float = amount * (pd.get_stat("crit_damage") if is_crit else 1.0)
+	_show_damage_number(dmg, is_crit)
 	take_damage(dmg)
+
+func _show_damage_number(amount: float, is_crit: bool) -> void:
+	var dn := DamageNumber.new()
+	get_tree().current_scene.add_child(dn)          # add to world canvas
+	dn.position = global_position + Vector2(-40, -32)
+	dn.add_damage(amount, is_crit)
