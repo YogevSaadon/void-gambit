@@ -9,6 +9,8 @@ class_name Enemy
 @export var damage_interval: float = 1.0
 var _damage_timer: float         = 0.0
 
+var active_damage_label: DamageNumber = null
+
 func _ready() -> void:
 	add_to_group("Enemies")
 	collision_layer = 1 << 2        # Layer 2 = Enemy
@@ -76,7 +78,16 @@ func apply_damage(amount: float, is_crit: bool) -> void:
 	take_damage(dmg)
 
 func _show_damage_number(amount: float, is_crit: bool) -> void:
-	var dn := DamageNumber.new()
-	get_tree().current_scene.add_child(dn)          # add to world canvas
-	dn.position = global_position + Vector2(-40, -32)
-	dn.add_damage(amount, is_crit)
+	if active_damage_label and is_instance_valid(active_damage_label):
+		active_damage_label.add_damage(amount, is_crit)
+	else:
+		var dn := DamageNumber.new()
+		active_damage_label = dn
+		add_child(dn)  
+		dn.position = Vector2(-40, -32)  # Relative to the enemy
+		dn.add_damage(amount, is_crit)
+		dn.connect("label_finished", Callable(self, "_on_label_finished"))
+
+
+func _on_label_finished():
+	active_damage_label = null
