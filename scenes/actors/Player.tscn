@@ -27,22 +27,22 @@ texture = SubResource("CanvasTexture_bq0gt")
 [node name="WeaponSlots" type="Node2D" parent="." index="3"]
 
 [node name="Weapon0" type="Node2D" parent="WeaponSlots" index="0"]
-position = Vector2(4, 4)
+position = Vector2(10, 6)
 
 [node name="Weapon1" type="Node2D" parent="WeaponSlots" index="1"]
-position = Vector2(-4, 4)
+position = Vector2(-12, 6)
 
 [node name="Weapon2" type="Node2D" parent="WeaponSlots" index="2"]
-position = Vector2(4, 0)
+position = Vector2(10, -1)
 
 [node name="Weapon3" type="Node2D" parent="WeaponSlots" index="3"]
-position = Vector2(-4, 0)
+position = Vector2(-12, 0)
 
 [node name="Weapon4" type="Node2D" parent="WeaponSlots" index="4"]
-position = Vector2(-4, -4)
+position = Vector2(-12, -7)
 
 [node name="Weapon5" type="Node2D" parent="WeaponSlots" index="5"]
-position = Vector2(4, -4)
+position = Vector2(11, -7)
 
 [node name="Hitbox" type="Area2D" parent="." index="4"]
 script = ExtResource("3_r1wfv")
@@ -54,8 +54,9 @@ debug_color = Color(0.975917, 0, 0.415806, 0.42)
 [node name="ShootBarUI" type="Control" parent="." index="5"]
 layout_mode = 3
 anchors_preset = 0
+offset_top = -2.0
 offset_right = 40.0
-offset_bottom = 40.0
+offset_bottom = 38.0
 
 [node name="Bar" type="ProgressBar" parent="ShootBarUI" index="0"]
 layout_mode = 0
