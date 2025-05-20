@@ -23,8 +23,9 @@ func _ready() -> void:
 	player.player_data = player_data
 	player.initialize(player_data)
 
+	pem.register_player(player)
 	pem.initialize_from_player_data(player_data)
-	pem.register_signals(player)
+
 
 	_set_wave_enemy_scene()
 

@@ -1,4 +1,4 @@
 extends Control
 
 func _ready():
-    print("Main menu loaded")
+	print("Main menu loaded")

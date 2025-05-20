@@ -27,7 +27,13 @@ func _bootstrap_managers():
 	var pd = preload("res://scripts/game/PlayerData.gd").new()
 	pd.name = "PlayerData"
 	root.call_deferred("add_child", pd)
+	
 
+	var db  = preload("res://scripts/game/ItemDatabase.gd").new()
+	db.name = "ItemDatabase"
+	root.add_child(db)
+	await get_tree().process_frame          
+	db.load_from_json()                     
 
 
 func get_game_manager() -> GameManager:

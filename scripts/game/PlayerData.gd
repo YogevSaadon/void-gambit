@@ -1,6 +1,8 @@
 extends Node
 class_name PlayerData
 
+signal item_added(item: PassiveItem)
+
 # Base player stats (unchanging after run starts)
 var base_stats: Dictionary = {
 	"max_hp": 100,
@@ -39,7 +41,6 @@ var current_rerolls: int = 0
 
 # Passive item memory
 var passive_item_ids: Array[String] = []
-var active_behavior_flags: Dictionary = {}
 
 # Dynamic modifier layers
 var additive_mods: Dictionary = {}
@@ -52,12 +53,11 @@ func reset() -> void:
 	shield = base_stats["max_shield"]
 	current_rerolls = 0
 	passive_item_ids.clear()
-	active_behavior_flags.clear()
 	additive_mods.clear()
 	percent_mods.clear()
 
 func add_item(item: PassiveItem) -> void:
-	if item.is_unique and passive_item_ids.has(item.id):
+	if (not item.stackable) and passive_item_ids.has(item.id):
 		return
 
 	passive_item_ids.append(item.id)
@@ -69,10 +69,8 @@ func add_item(item: PassiveItem) -> void:
 			percent_mods[stat] = percent_mods.get(stat, 0.0) + mod.get("percent", 0.0)
 		else:
 			additive_mods[stat] = additive_mods.get(stat, 0.0) + mod
+	emit_signal("item_added", item)
 
-	for flag in item.behavior_flags:
-		if item.behavior_flags[flag]:
-			active_behavior_flags[flag] = true
 
 func get_stat(stat: String) -> float:
 	var base = base_stats.get(stat, 0.0)
@@ -81,15 +79,13 @@ func get_stat(stat: String) -> float:
 	return (base + add) * (1.0 + pct)
 
 func get_passive_items() -> Array:
-	var items: Array = []
+	var db = get_tree().root.get_node("ItemDatabase")
+	var items : Array = []
 	for id in passive_item_ids:
-		var item = PassiveItem.get_item_by_id(id)
+		var item = db.get_item(id)
 		if item:
 			items.append(item)
 	return items
-
-func has_behavior(flag: String) -> bool:
-	return active_behavior_flags.has(flag)
 
 func sync_from_player(p: Node) -> void:
 	hp = p.health

@@ -1,35 +1,87 @@
 extends Node
 class_name PassiveEffectManager
 
-var active_effects: Dictionary = {}
-var player_data: PlayerData = null
-@onready var ExplosionScene: PackedScene = preload("res://scenes/bullets/Explosion.tscn")
+## References set once per run
+var player      : Player        = null
+var player_data : PlayerData    = null
+
+## Live BehaviourEffect nodes
+var effects      : Array[Node]          = []
+## Items picked up in Hangar before a player exists
+var delayed_items: Array[PassiveItem]   = []
+
+
+# ─────────────────────────────────────────────────────────
+# PUBLIC API
+# ─────────────────────────────────────────────────────────
+func register_player(p: Player) -> void:
+	player = p
+	# Convert any delayed items into live effects now that we have a player
+	for itm in delayed_items:
+		_spawn_effect(itm)
+	delayed_items.clear()
+
+
+func initialize_from_player_data(pd: PlayerData) -> void:
+	# disconnect old signal if any
+	if player_data and player_data.is_connected("item_added", _on_item_added):
+		player_data.item_added.disconnect(_on_item_added)
+
+	player_data = pd
+	player_data.item_added.connect(_on_item_added)
+
+	# rebuild effects (fresh hangar reload)
+	_clear_effects()
+	for itm in player_data.get_passive_items():
+		_apply_item(itm)
 
 
 func reset() -> void:
-	active_effects.clear()
+	_clear_effects()
+	delayed_items.clear()
 
-func initialize_from_player_data(data: PlayerData) -> void:
-	reset()
-	player_data = data
-	for flag in player_data.active_behavior_flags.keys():
-		active_effects[flag] = true
+	if player_data and player_data.is_connected("item_added", _on_item_added):
+		player_data.item_added.disconnect(_on_item_added)
 
-func has_effect(effect_name: String) -> bool:
-	return active_effects.has(effect_name)
+	player_data = null
+	player      = null
 
-func register_signals(player: Player) -> void:
-	player.player_blinked.connect(_on_player_blinked)
 
-func _on_player_blinked(position: Vector2) -> void:
-	if has_effect("blink_explosion"):
-		_trigger_blink_explosion(position)
+# ─────────────────────────────────────────────────────────
+# INTERNAL HELPERS
+# ─────────────────────────────────────────────────────────
+func _on_item_added(itm: PassiveItem) -> void:
+	_apply_item(itm)
 
-func _trigger_blink_explosion(pos: Vector2) -> void:
-	var explosion = ExplosionScene.instantiate()
-	explosion.global_position = pos
-	explosion.damage = 30.0
-	explosion.radius = 96.0
-	explosion.crit_chance = player_data.get_stat("crit_chance")
-	explosion.damage_group = "Enemies"
-	get_tree().current_scene.add_child(explosion)
+
+func _apply_item(itm: PassiveItem) -> void:
+	if itm.category != "behavior" or itm.behavior_scene == null:
+		return
+
+	if player == null:
+		delayed_items.append(itm)   # hangar: wait for player
+	else:
+		_spawn_effect(itm)
+
+
+func _spawn_effect(itm: PassiveItem) -> void:
+	var eff: Node
+
+	if itm.behavior_scene is Script:
+		eff = (itm.behavior_scene as Script).new()
+	elif itm.behavior_scene is PackedScene:
+		eff = (itm.behavior_scene as PackedScene).instantiate()
+	else:
+		push_warning("Invalid behavior_scene for item %s" % itm.id)
+		return
+
+	add_child(eff)
+	eff.activate(player, player_data, self)
+	effects.append(eff)
+
+
+func _clear_effects() -> void:
+	for eff in effects:
+		if eff != null and eff.has_method("deactivate"):
+			eff.deactivate()
+	effects.clear()
