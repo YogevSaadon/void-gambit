@@ -24,7 +24,7 @@ func _bootstrap_managers():
 	pem.name = "PassiveEffectManager"
 	root.call_deferred("add_child", pem)
 
-	var pd = preload("res://scripts/game/PlayerData.gd").new()
+	var pd = preload("res://scripts/actors/player/PlayerData.gd").new()
 	pd.name = "PlayerData"
 	root.call_deferred("add_child", pd)
 	
