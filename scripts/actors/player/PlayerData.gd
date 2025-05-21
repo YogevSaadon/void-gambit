@@ -28,8 +28,8 @@ var base_stats: Dictionary = {
 	"ship_count": 1,
 	"ship_fire_rate": 1.0,
 	"ship_range": 300.0,
-	"bullet_pierce": 0,
-	"laser_reflects": 3,
+	"bullet_pierce": 1,
+	"laser_reflects": 2,
 	"bio_spread_chance": 0.0,
 	"explosion_radius_bonus": 0.0,
 }
