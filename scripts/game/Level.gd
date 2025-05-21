@@ -6,13 +6,12 @@ class_name Level
 
 # ====== Nodes ======
 var player: Player = null
-@onready var level_ui = $LevelUI
-@onready var wave_manager = $WaveManager
+@onready var level_ui        = $LevelUI
+@onready var wave_manager    = $WaveManager
 
-@onready var game_manager: GameManager = get_tree().root.get_node("GameManager") 
-@onready var player_data: PlayerData = get_tree().root.get_node("PlayerData") 
-@onready var pem: PassiveEffectManager = get_tree().root.get_node("PassiveEffectManager") 
-
+@onready var game_manager    = get_tree().root.get_node("GameManager") 
+@onready var player_data     = get_tree().root.get_node("PlayerData") 
+@onready var pem             = get_tree().root.get_node("PassiveEffectManager") 
 
 # ====== Constants ======
 const SCREEN_SIDES := 4
@@ -25,7 +24,6 @@ func _ready() -> void:
 
 	pem.register_player(player)
 	pem.initialize_from_player_data(player_data)
-
 
 	_set_wave_enemy_scene()
 
@@ -62,6 +60,11 @@ func _start_level() -> void:
 func _on_wave_started(wave_number: int) -> void:
 	print("Wave %d started!" % wave_number)
 
+	# reset per-wave resources:
+	player.reset_per_level()
+	# reinitialize blink stacks from updated stats
+	player.blink_system.initialize(player, player_data)
+
 func _on_enemy_spawned(enemy: Node) -> void:
 	add_child(enemy)
 	enemy.global_position = _get_random_spawn_position()
@@ -72,6 +75,7 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
+	# sync leftover stats if needed (e.g., score or HP carryover)
 	player_data.sync_from_player(player)
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 

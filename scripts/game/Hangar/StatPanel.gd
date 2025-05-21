@@ -15,14 +15,6 @@ func update_stats() -> void:
 	if pd == null:
 		return
 
-	health_label.text = "HP: %d/%d" % [
-		pd.hp,
-		pd.get_stat("max_hp")
-	]
-
-	shield_label.text = "Shield: %d/%d" % [
-		pd.shield,
-		pd.get_stat("max_shield")
-	]
-
+	health_label.text = "HP: %d" % pd.get_stat("max_hp")
+	shield_label.text = "Shield: %d" % pd.get_stat("max_shield")
 	blinks_label.text = "Blinks: %d" % int(pd.get_stat("blinks"))

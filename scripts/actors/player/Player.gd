@@ -122,3 +122,10 @@ func equip_weapon(scene: PackedScene, slot_index: int) -> void:
 	weapon.owner_player = self
 	weapon.apply_weapon_modifiers(player_data)
 	slot.add_child(weapon)
+
+# ====== Other ======
+func reset_per_level() -> void:
+	health = player_data.get_stat("max_hp")
+	shield = player_data.get_stat("max_shield")
+	blink_system.initialize(self, player_data)
+	player_data.current_rerolls = int(player_data.get_stat("rerolls_per_wave"))
