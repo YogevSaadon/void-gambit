@@ -32,8 +32,6 @@ func try_blink(target_position: Vector2) -> void:
 
 	player.global_position = target_position
 	player.velocity = Vector2.ZERO
-	player.target_position = target_position
-	player.shoot_ready_timer = 0.0
 
 	emit_signal("player_blinked", target_position)
 
