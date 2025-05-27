@@ -2,7 +2,7 @@ extends Area2D
 class_name Bullet
 
 # ====== Exports ======
-@export var speed: float = 600.0
+@export var speed: float = 1000.0
 @export var max_lifetime: float = 2.0   # seconds before auto‐free
 var direction: Vector2 = Vector2.ZERO
 var damage: float = 10.0

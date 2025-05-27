@@ -25,6 +25,7 @@ class_name Hangar
 
 # ====== Built-in ======
 func _ready() -> void:
+	pd.current_rerolls = int(pd.get_stat("rerolls_per_wave")) 
 	player_stats_panel.initialize(pd)
 	store_panel.initialize(gm, pd, pem, player_stats_panel)
 	_connect_signals()
