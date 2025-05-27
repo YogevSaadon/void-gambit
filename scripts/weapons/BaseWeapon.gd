@@ -3,13 +3,11 @@ class_name BaseWeapon
 
 # universal bases
 @export var base_damage     : float = 10.0
-@export var base_fire_rate  : float = 1.0
 @export var base_crit       : float = 0.0
 @export var base_range      : float = 300.0
 
 # runtime
 var final_damage    : float = 0.0
-var final_fire_rate : float = 0.0
 var final_crit      : float = 0.0
 var final_range     : float = 0.0
 
@@ -24,7 +22,6 @@ func _damage_type_key() -> String:
 
 func apply_weapon_modifiers(pd: PlayerData) -> void:
 	final_damage    = base_damage
-	final_fire_rate = base_fire_rate * pd.get_stat("attack_speed")
 	final_crit      = base_crit      + pd.get_stat("crit_chance")
 	final_range     = base_range     + pd.get_stat("weapon_range")
 

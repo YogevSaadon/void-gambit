@@ -14,8 +14,6 @@ func apply_weapon_modifiers(pd: PlayerData) -> void:
 	final_reflects = base_reflects + pd.get_stat("laser_reflects")
 
 func _physics_process(delta: float) -> void:
-	if owner_player and owner_player.velocity.length() > 0.0:
-		_stop_beam()
 	super._physics_process(delta)
 
 func _stop_beam():

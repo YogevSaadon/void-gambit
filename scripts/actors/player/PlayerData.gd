@@ -10,7 +10,6 @@ var base_stats: Dictionary = {
 	"speed": 200.0,
 	"shield_recharge_rate": 5.0,
 	"base_fire_rate": 2.0,
-	"attack_speed": 1.0,
 	"weapon_range": 500.0,
 	"crit_chance": 0.05,
 	"crit_damage": 1.5,
@@ -28,8 +27,8 @@ var base_stats: Dictionary = {
 	"ship_count": 1,
 	"ship_fire_rate": 1.0,
 	"ship_range": 300.0,
-	"bullet_pierce": 0,
-	"laser_reflects": 0,
+	"bullet_attack_speed": 5.0,
+	"laser_reflects": 1,
 	"bio_spread_chance": 0.0,
 	"explosion_radius_bonus": 0.0,
 }

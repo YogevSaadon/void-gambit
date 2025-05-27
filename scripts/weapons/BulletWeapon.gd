@@ -2,8 +2,7 @@ extends ShooterWeapon
 class_name BulletWeapon
 
 @export var bullet_scene: PackedScene = preload("res://scenes/bullets/Bullet.tscn")
-@export var base_piercing : int = 0
-var final_piercing        : int = 0
+
 
 # ----- override to tell BaseWeapon which bonus to use -----
 func _damage_type_key() -> String:
@@ -21,7 +20,6 @@ func _fire_once(target: Node) -> void:
 	b.direction = (target.global_position - muzzle.global_position).normalized()
 	b.rotation  = b.direction.angle()
 	b.damage    = final_damage
-	b.piercing  = final_piercing
 	if b.has_method("set_collision_properties"):
 		b.set_collision_properties()
 	else:
@@ -31,4 +29,5 @@ func _fire_once(target: Node) -> void:
 
 func apply_weapon_modifiers(pd: PlayerData) -> void:
 	super.apply_weapon_modifiers(pd)  # handles damage, fire‑rate, etc.
-	final_piercing = base_piercing + pd.get_stat("bullet_pierce")
+	final_fire_rate = base_fire_rate * pd.get_stat("bullet_attack_speed")
+	print("DEBUG BW:", base_fire_rate, pd.get_stat("bullet_attack_speed"), final_fire_rate)
