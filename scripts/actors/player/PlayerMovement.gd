@@ -35,42 +35,38 @@ func physics_step(delta: float) -> void:
 
 	# Set/Update target on RMB click/hold or single press
 	if rmb and not rmb_prev:
-		# Just pressed: set a new target (for click-to-move)
 		target_pos = owner_player.get_global_mouse_position()
 		moving = true
 	elif rmb:
-		# Holding: update target to current mouse for "chase" feel
 		target_pos = owner_player.get_global_mouse_position()
 		moving = true
 
 	var desired_vel: Vector2 = Vector2.ZERO
 	if moving:
 		var diff = target_pos - owner_player.global_position
-		var arrived = diff.length_squared() <= move_threshold_sq
-
-		if arrived:
+		if diff.length_squared() <= move_threshold_sq:
 			moving = false
 			desired_vel = Vector2.ZERO
 		else:
 			desired_vel = diff.normalized() * max_speed
 
-
-	# Acceleration/Deceleration
-	var accel_rate = max_speed / max(accel_time, 0.001)
-	var decel_rate = max_speed / max(decel_time, 0.001)
-	var rate = accel_rate if desired_vel.length_squared() > 0.0 else decel_rate
-
-	var to_target = desired_vel - current_vel
-	var max_change = rate * delta
-	current_vel += to_target.limit_length(max_change)
-
-	# Zero-out small drifts if not moving
-	if not moving and current_vel.length_squared() < move_threshold_sq:
-		current_vel = Vector2.ZERO
+	# --- Instant turn, smooth speed ---
+	if desired_vel.length_squared() > 0.0:
+		# Face new direction instantly, blend only speed
+		var speed = current_vel.length()
+		speed = lerp(speed, max_speed, clamp(delta / accel_time, 0.0, 1.0))
+		current_vel = desired_vel.normalized() * speed
+	else:
+		# Decelerate smoothly to a stop
+		var speed = current_vel.length()
+		speed = lerp(speed, 0.0, clamp(delta / decel_time, 0.0, 1.0))
+		if speed < 0.1:
+			current_vel = Vector2.ZERO
+		else:
+			current_vel = current_vel.normalized() * speed
 
 	owner_player.velocity = current_vel
 	owner_player.move_and_slide()
 
-	# Store button state for next frame (edge detection)
 	lmb_prev = lmb
 	rmb_prev = rmb
