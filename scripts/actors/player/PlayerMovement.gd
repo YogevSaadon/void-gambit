@@ -1,70 +1,82 @@
 extends Node
 class_name PlayerMovement
 
-@export var accel_time: float = 0.25
-@export var decel_time: float = 0.30
-@export var move_threshold_sq: float = 1.0
+@export var accel_time : float = 0.25      # time from 0 → max speed
+@export var decel_time : float = 0.30      # time to bleed blink slide
+@export var move_threshold_sq : float = 1.0  # squared pixels to consider “arrived”
 
-var owner_player: Player = null
-var blink_system: BlinkSystem = null
-var current_vel: Vector2 = Vector2.ZERO
-var max_speed: float = 0.0
+var owner_player : Player = null
+var blink_system : BlinkSystem = null
+var current_vel  : Vector2 = Vector2.ZERO
+var max_speed    : float = 0.0
 
-var target_pos: Vector2 = Vector2.ZERO
-var moving: bool = false
+var target_pos   : Vector2 = Vector2.ZERO
+var moving       : bool = false
+var blink_slide  : bool = false            # decel only used for blink
 
-var lmb_prev: bool = false
-var rmb_prev: bool = false
+var lmb_prev := false
+var rmb_prev := false
 
+# ------------------------------------------------------------
 func initialize(p: Player) -> void:
-	owner_player = p
-	blink_system = p.get_node("BlinkSystem")
-	max_speed = p.speed
-	target_pos = p.global_position
+	owner_player  = p
+	blink_system  = p.get_node("BlinkSystem")
+	max_speed     = p.speed
+	target_pos    = p.global_position
 
+# ------------------------------------------------------------
 func physics_step(delta: float) -> void:
-	var rmb = Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
-	var lmb = Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	var rmb := Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
+	var lmb := Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
 
-	# Blink on LMB edge (pressed this frame)
+	# --- Blink (LMB edge) ------------------------------------
 	if lmb and not lmb_prev:
-		blink_system.try_blink(owner_player.get_global_mouse_position())
-		current_vel = Vector2.ZERO
-		moving = false
-		target_pos = owner_player.global_position
+		var blink_target = owner_player.get_global_mouse_position()
+		var dir          = (blink_target - owner_player.global_position).normalized()
+		blink_system.try_blink(blink_target)
 
-	# Set/Update target on RMB click/hold or single press
+		# give momentum in blink direction
+		current_vel = dir * max_speed
+		blink_slide = true          # enable decel
+		moving      = false
+		target_pos  = owner_player.global_position
+
+	# --- Click / hold to move (RMB) --------------------------
 	if rmb and not rmb_prev:
 		target_pos = owner_player.get_global_mouse_position()
-		moving = true
+		moving     = true
 	elif rmb:
 		target_pos = owner_player.get_global_mouse_position()
-		moving = true
+		moving     = true
 
-	var desired_vel: Vector2 = Vector2.ZERO
+	# --- Desired velocity ------------------------------------
+	var desired_vel := Vector2.ZERO
 	if moving:
-		var diff = target_pos - owner_player.global_position
+		var diff := target_pos - owner_player.global_position
 		if diff.length_squared() <= move_threshold_sq:
 			moving = false
-			desired_vel = Vector2.ZERO
+			current_vel = Vector2.ZERO      # stop instantly
 		else:
 			desired_vel = diff.normalized() * max_speed
 
-	# --- Instant turn, smooth speed ---
+	# --- Acceleration (only magnitude blends) ---------------
 	if desired_vel.length_squared() > 0.0:
-		# Face new direction instantly, blend only speed
 		var speed = current_vel.length()
 		speed = lerp(speed, max_speed, clamp(delta / accel_time, 0.0, 1.0))
 		current_vel = desired_vel.normalized() * speed
-	else:
-		# Decelerate smoothly to a stop
+	elif blink_slide:
+		# Decelerate blink momentum
 		var speed = current_vel.length()
 		speed = lerp(speed, 0.0, clamp(delta / decel_time, 0.0, 1.0))
 		if speed < 0.1:
 			current_vel = Vector2.ZERO
+			blink_slide = false
 		else:
 			current_vel = current_vel.normalized() * speed
+	else:
+		current_vel = Vector2.ZERO
 
+	# --- Apply to CharacterBody2D ---------------------------
 	owner_player.velocity = current_vel
 	owner_player.move_and_slide()
 
