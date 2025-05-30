@@ -34,7 +34,7 @@ func _process(delta: float) -> void:
 	infection.remaining -= delta
 
 	if infection.tick <= 0.0:
-		infection.tick += 0.5
+		infection.tick += 1.0
 		_tick_damage()
 
 	if infection.remaining <= 0.0:
