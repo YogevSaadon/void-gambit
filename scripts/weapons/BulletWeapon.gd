@@ -30,4 +30,3 @@ func _fire_once(target: Node) -> void:
 func apply_weapon_modifiers(pd: PlayerData) -> void:
 	super.apply_weapon_modifiers(pd)  # handles damage, fire‑rate, etc.
 	final_fire_rate = base_fire_rate * pd.get_stat("bullet_attack_speed")
-	print("DEBUG BW:", base_fire_rate, pd.get_stat("bullet_attack_speed"), final_fire_rate)

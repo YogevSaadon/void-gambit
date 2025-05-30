@@ -6,7 +6,6 @@ class_name FiringWeapon
 @export var base_damage: float = 10.0
 @export var base_fire_rate: float = 1.0
 @export var base_crit: float = 0.0
-@export var base_piercing: int = 0
 @export var bullet_scene: PackedScene = preload("res://scenes/bullets/Bullet.tscn")
 
 # ====== Runtime Variables ======
@@ -14,7 +13,6 @@ var final_range: float = 0.0
 var final_damage: float = 0.0
 var final_fire_rate: float = 0.0
 var final_crit: float = 0.0
-var final_piercing: int = 0
 
 var owner_player: Player = null
 var cooldown_timer: float = 0.0
@@ -44,7 +42,6 @@ func fire_bullet(target: Node) -> void:
 	var bullet = bullet_scene.instantiate()
 	bullet.position = muzzle.global_position
 	bullet.damage = final_damage
-	bullet.piercing = final_piercing
 	bullet.direction = (target.global_position - muzzle.global_position).normalized()
 	bullet.rotation = bullet.direction.angle()
 
@@ -60,24 +57,22 @@ func fire_bullet(target: Node) -> void:
 func find_target_in_range() -> Node:
 	var best_target = null
 	var best_dist = final_range
-	var enemies = get_tree().get_nodes_in_group("Enemies")
-
-	for enemy in enemies:
-		var dist = global_position.distance_to(enemy.global_position)
-		if dist < best_dist:
-			best_dist = dist
+	for enemy in get_tree().get_nodes_in_group("Enemies"):
+		var d = global_position.distance_to(enemy.global_position)
+		if d < best_dist:
+			best_dist = d
 			best_target = enemy
-
 	return best_target
 
 # ====== Weapon Modifiers ======
 func apply_weapon_modifiers(player_stats: PlayerData) -> void:
+	# Range and crit still factor in player stats
 	final_range = base_range + player_stats.get_stat("weapon_range")
 	final_crit = base_crit + player_stats.get_stat("crit_chance")
-	final_piercing = base_piercing + player_stats.get_stat("bullet_pierce")
 
-	var attack_speed = player_stats.get_stat("attack_speed")
-	final_fire_rate = base_fire_rate * attack_speed
+	# Fire rate is fixed per weapon
+	final_fire_rate = base_fire_rate
 
+	# Damage bonus from general stats and bullet-specific stats
 	var damage_bonus = player_stats.get_stat("damage_percent") + player_stats.get_stat("bullet_damage_percent")
 	final_damage = base_damage * (1.0 + damage_bonus)

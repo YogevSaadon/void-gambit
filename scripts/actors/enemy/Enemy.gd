@@ -18,7 +18,7 @@ func _ready() -> void:
 
 	max_health = 200
 	health     = 200
-	speed      = 50
+	speed      = 150
 
 func _physics_process(delta: float) -> void:
 	_damage_timer -= delta

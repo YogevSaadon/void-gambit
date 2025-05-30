@@ -1,4 +1,3 @@
-
 extends BaseWeapon
 class_name ShooterWeapon
 
@@ -12,8 +11,7 @@ var current_target  : Node  = null
 
 # ─── Engine callbacks ────────────────────────────────
 func _ready() -> void:
-	return
-
+	pass
 
 func _physics_process(delta: float) -> void:
 	current_target = _find_target_in_range()
@@ -32,8 +30,9 @@ func auto_fire(_delta: float) -> void:
 
 # ─── Stat application (called by concrete weapon) ────
 func apply_weapon_modifiers(pd: PlayerData) -> void:
-	super.apply_weapon_modifiers(pd)      # sets damage / range / crit
-
+	super.apply_weapon_modifiers(pd)      # sets damage, range, crit
+	# Fire rate is fixed per weapon now
+	final_fire_rate = base_fire_rate
 
 # ─── Hooks for concrete subclasses ───────────────────
 func _fire_once(_target: Node) -> void:
