@@ -39,7 +39,7 @@ func _connect_signals() -> void:
 
 func _refresh_ui() -> void:
 	wave_label.text = "Level %d" % gm.level_number
-	slot_machine_currency_label.text = "Gold Coins: %d" % gm.gold_coins
+	slot_machine_currency_label.text = "Coins: %d" % gm.coins
 	player_stats_panel.update_stats()
 
 # ====== Toggle Panels ======

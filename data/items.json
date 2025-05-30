@@ -4,7 +4,7 @@
 	"name": "Warp Detonator",
 	"description": "Blink causes an explosion.",
 	"rarity": "epic",
-	"price": 20,
+	"price": 2,
 	"stackable": false,
 	"category": "behavior",
 	"behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
@@ -14,7 +14,7 @@
 	"name": "Reinforced Plating",
 	"description": "+25 Max HP",
 	"rarity": "common",
-	"price": 10,
+	"price": 1,
 	"stackable": true,
 	"category": "stat",
 	"stat_modifiers": { "max_hp": 25 }

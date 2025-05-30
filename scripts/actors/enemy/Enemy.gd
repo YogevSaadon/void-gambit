@@ -3,6 +3,7 @@ class_name Enemy
 
 @onready var status := $StatusComponent
 @onready var pd     := get_tree().root.get_node("PlayerData")
+@onready var credit_scene := preload("res://scenes/drops/CreditDrop.tscn")
 
 @export var damage: int = 10
 @export var damage_interval: float = 1.0
@@ -14,8 +15,8 @@ func _ready() -> void:
 	add_to_group("Enemies")
 	collision_layer = 1 << 2
 	collision_mask  = 1 << 4
-	max_health = 200
-	health     = 200
+	max_health = 20
+	health     = 20
 	speed      = 150
 
 func _physics_process(delta: float) -> void:
@@ -47,14 +48,18 @@ func apply_damage(amount: float, is_crit: bool) -> void:
 
 func _show_damage_number(amount: float, is_crit: bool) -> void:
 	if active_damage_label and is_instance_valid(active_damage_label):
-		active_damage_label.add_damage(amount, is_crit)
-	else:
-		var dn := DamageNumber.new()
-		active_damage_label = dn
-		add_child(dn)
-		dn.position = Vector2(-40, -32)
-		dn.add_damage(amount, is_crit)
-		dn.connect("label_finished", Callable(self, "_on_label_finished"))
+		if active_damage_label.is_detached:
+			active_damage_label = null
+		else:
+			active_damage_label.add_damage(amount, is_crit)
+			return
+
+	var dn := DamageNumber.new()
+	active_damage_label = dn
+	add_child(dn)
+	dn.position = Vector2(-40, -32)
+	dn.add_damage(amount, is_crit)
+	dn.connect("label_finished", Callable(self, "_on_label_finished"))
 
 func _on_label_finished() -> void:
 	active_damage_label = null
@@ -64,6 +69,7 @@ func on_death() -> void:
 		active_damage_label.detach()
 
 	_spread_infection()
+	drop_credit()
 	queue_free()
 
 func _spread_infection() -> void:
@@ -87,3 +93,9 @@ func _spread_infection() -> void:
 			status.infection.dps,
 			status.infection.remaining
 		)
+
+func drop_credit() -> void:
+	var credit := credit_scene.instantiate()
+	credit.global_position = global_position
+	credit.value = 1  # TODO: Replace with power-level based value
+	get_tree().current_scene.add_child(credit)

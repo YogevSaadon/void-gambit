@@ -17,12 +17,15 @@ func set_item(new_item: PassiveItem) -> void:
 	disabled = gm == null or gm.coins < item.price
 
 
-func purchase_item(pd: Node, gm: Node, pem: Node) -> bool:
-	if gm.coins < item.price:
+func purchase_item(pd: PlayerData, gm: GameManager, pem: PassiveEffectManager) -> bool:
+	# Spend regular credits; returns false if insufficient
+	if not gm.spend_credits(item.price):
 		return false
-	gm.coins -= item.price
+
+	# Add the item and reinitialize effects
 	pd.add_item(item)
 	pem.initialize_from_player_data(pd)
+
 	visible = false
 	return true
 

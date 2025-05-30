@@ -83,7 +83,6 @@ func _handle_enemy_spawning() -> void:
 		emit_signal("enemy_spawned", enemy)
 		_spawned_enemies += 1
 
-
 func _finish_wave() -> void:
 	_wave_running = false
 	emit_signal("wave_completed", _current_wave_index + 1)
