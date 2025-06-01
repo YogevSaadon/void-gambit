@@ -97,5 +97,5 @@ func physics_step(delta: float) -> void:
 	# --- Store previous states ------------------------------
 	lmb_prev   = lmb
 	rmb_prev   = rmb
-	space_prev = space     # ← NEW
-	f_prev     = fkey      # ← NEW
+	space_prev = space     
+	f_prev     = fkey      
