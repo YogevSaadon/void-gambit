@@ -34,7 +34,7 @@ func _ready() -> void:
 # ====== Wave Setup ======
 func _set_wave_enemy_scene() -> void:
 	if enemy_scene == null:
-		enemy_scene = preload("res://scenes/actors/Enemy.tscn")
+		enemy_scene = preload("res://scenes/actors/enemys/biter/Biter.tscn")
 	wave_manager.enemy_scene = enemy_scene
 
 func _connect_wave_signals() -> void:

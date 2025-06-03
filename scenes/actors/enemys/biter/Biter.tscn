@@ -1,0 +1,48 @@
+[gd_scene load_steps=7 format=3 uid="uid://1bjia2pnh7mc"]
+
+[ext_resource type="Script" path="res://scripts/actors/enemys/biter/Biter.gd" id="1_u4mba"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_aw7lw"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="3_v5wft"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
+radius = 5.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
+size = Vector2(12, 12)
+
+[node name="EnemyBiter" type="CharacterBody2D"]
+script = ExtResource("1_u4mba")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 0, 1, 1)
+position = Vector2(7.7486e-07, 1.19209e-07)
+scale = Vector2(12, 12)
+texture = SubResource("CanvasTexture_h5rir")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_05gwj")
+
+[node name="PowerIndicator" type="Node2D" parent="."]
+position = Vector2(-4.76837e-07, -9.53674e-07)
+scale = Vector2(0.05, 0.05)
+script = ExtResource("2_aw7lw")
+
+[node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+
+[node name="DamageAnchor" type="Marker2D" parent="."]
+position = Vector2(0, -7)
+
+[node name="DamageZone" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
+shape = SubResource("RectangleShape2D_n7gft")
+debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
+
+[node name="StatusComponent" type="Node" parent="."]
+script = ExtResource("3_v5wft")

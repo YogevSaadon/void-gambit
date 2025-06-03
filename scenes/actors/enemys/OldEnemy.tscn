@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=3 uid="uid://cqys07fn4fne5"]
 
 [ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_4t215"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/Enemy.gd" id="2_otiiy"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/EnemyCollisionNode.gd" id="3_ws3t4"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_v4t0o"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/EnemyOld.gd" id="2_otiiy"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/EnemyCollisionNodeOld.gd" id="3_ws3t4"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/StatusComponentOld.gd" id="4_v4t0o"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_08v5x"]
 
@@ -23,6 +23,7 @@ texture = SubResource("CanvasTexture_08v5x")
 
 [node name="EnemyCollisionNode" type="Area2D" parent="." index="2"]
 script = ExtResource("3_ws3t4")
+repulsion_force = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyCollisionNode" index="0"]
 shape = SubResource("CircleShape2D_jejao")

@@ -1,5 +1,5 @@
 extends "res://scripts/actors/Actor.gd"
-class_name Enemy
+class_name Enemyold
 
 @onready var status := $StatusComponent
 @onready var pd     := get_tree().root.get_node("PlayerData")

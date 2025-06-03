@@ -1,5 +1,5 @@
 extends Area2D
-class_name EnemyCollisionNode
+class_name EnemyCollisionNodeold
 
 @export var repulsion_force: float = 50.0  # Adjust as needed
 
