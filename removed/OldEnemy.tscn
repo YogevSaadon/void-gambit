@@ -1,17 +1,17 @@
 [gd_scene load_steps=7 format=3 uid="uid://cqys07fn4fne5"]
 
-[ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_4t215"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/EnemyOld.gd" id="2_otiiy"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/EnemyCollisionNodeOld.gd" id="3_ws3t4"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/old_enemy/StatusComponentOld.gd" id="4_v4t0o"]
+[ext_resource type="PackedScene" uid="uid://k5lrmfm12237" path="res://scenes/actors/Actor.tscn" id="1_p0uuq"]
+[ext_resource type="Script" path="res://removed/old_enemy/EnemyOld.gd" id="2_t1gkb"]
+[ext_resource type="Script" path="res://removed/old_enemy/EnemyCollisionNodeOld.gd" id="3_ksqfo"]
+[ext_resource type="Script" path="res://removed/old_enemy/StatusComponentOld.gd" id="4_um7fx"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_08v5x"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_jejao"]
 radius = 1.41421
 
-[node name="Enemy" instance=ExtResource("1_4t215")]
-script = ExtResource("2_otiiy")
+[node name="Enemy" instance=ExtResource("1_p0uuq")]
+script = ExtResource("2_t1gkb")
 damage = 10
 damage_interval = 1.0
 
@@ -22,7 +22,7 @@ scale = Vector2(8, 18)
 texture = SubResource("CanvasTexture_08v5x")
 
 [node name="EnemyCollisionNode" type="Area2D" parent="." index="2"]
-script = ExtResource("3_ws3t4")
+script = ExtResource("3_ksqfo")
 repulsion_force = null
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyCollisionNode" index="0"]
@@ -30,4 +30,4 @@ shape = SubResource("CircleShape2D_jejao")
 debug_color = Color(0.641239, 0.521339, 0.152979, 0.42)
 
 [node name="StatusComponent" type="Node2D" parent="." index="3"]
-script = ExtResource("4_v4t0o")
+script = ExtResource("4_um7fx")
