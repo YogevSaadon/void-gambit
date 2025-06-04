@@ -40,12 +40,14 @@ func _physics_process(delta: float) -> void:
 # ───── Damage intake ─────
 func receive_damage(amount: int) -> void:
 	if invuln_timer > 0.0:
-		return            # still invincible
-	health = max(health - amount, 0)
+		return          
+
+	take_damage(amount)   
 	invuln_timer = INVULN_TIME
 	_flash_invuln()
+
 	if health <= 0:
-		queue_free()      # TODO: hook GameManager death flow
+		queue_free()       # TODO: hook GameManager death flow
 
 func _flash_invuln() -> void:
 	var tw := create_tween()

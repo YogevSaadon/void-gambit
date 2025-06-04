@@ -38,7 +38,7 @@ offset_right = 60.0
 offset_bottom = 60.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(-14, 0)
 
 [node name="DamageZone" type="Area2D" parent="."]
 script = ExtResource("3_q6x57")

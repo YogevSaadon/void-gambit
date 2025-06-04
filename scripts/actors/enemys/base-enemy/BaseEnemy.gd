@@ -1,7 +1,7 @@
 extends "res://scripts/actors/Actor.gd"
 class_name BaseEnemy
 
-# Emits when this enemy dies (WaveManager can listen)
+# Lets WaveManager / score listen for kills
 signal died
 
 # ───── 1 · Designer-editable metadata ───────────────────────────────────
@@ -11,19 +11,22 @@ signal died
 @export_range(1,100) var max_level : int = 5
 
 # Contact-damage defaults (used by ContactDamage.gd)
-@export var damage           : int    = 10     # per tick @ power-1
-@export var damage_interval  : float  = 1.0    # seconds between ticks
+@export var damage           : int    = 10      # per tick @ power-1
+@export var damage_interval  : float  = 1.0     # seconds between ticks
 
 # ───── 2 · Cached base stats (filled once in _enter_tree) ───────────────
 var _base_hp   : int
 var _base_sh   : int
 var _base_spd  : float
 var _base_reg  : float
-var _base_dmg  : int                           # cached unscaled damage
+var _base_dmg  : int                            # unscaled melee dmg
 
 # References discovered in _ready()
 var _move_logic   : Node = null
 var _attack_logic : Node = null
+
+# Floating-number merge handle
+var _active_dn : DamageNumber = null
 
 # ───── 3 · Helper nodes / singletons ────────────────────────────────────
 @onready var _anchor     : Node2D      = $DamageAnchor
@@ -47,7 +50,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	# Discover first child implementing tick_movement / tick_attack
 	for c in get_children():
-		if _move_logic == null   and c.has_method("tick_movement"):
+		if _move_logic   == null and c.has_method("tick_movement"):
 			_move_logic = c
 		elif _attack_logic == null and c.has_method("tick_attack"):
 			_attack_logic = c
@@ -81,22 +84,55 @@ func _physics_process(delta: float) -> void:
 
 # ───── 7 · Damage intake & floating numbers ─────────────────────────────
 func apply_damage(amount: float, is_crit: bool) -> void:
-	# Protect against running this scene stand-alone
-	if _pd == null:
-		return
+	if _pd == null: return                          # scene opened stand-alone
 	var dmg := amount * (_pd.get_stat("crit_damage") if is_crit else 1.0)
 	_show_damage_number(dmg, is_crit)
 	take_damage(dmg)
 
 func _show_damage_number(value: float, crit: bool) -> void:
-	var dn := preload("res://scripts/ui/DamageNumber.gd").new()
-	_anchor.add_child(dn)
-	dn.add_damage(value, crit)
+	# Merge hits into one label while it’s attached
+	if _active_dn and is_instance_valid(_active_dn) and not _active_dn.is_detached:
+		_active_dn.add_damage(value, crit)
+		return
 
-# ───── 8 · Death flow & credit drop ─────────────────────────────────────
+	_active_dn = preload("res://scripts/ui/DamageNumber.gd").new()
+	_anchor.add_child(_active_dn)
+	_active_dn.add_damage(value, crit)
+	_active_dn.connect("label_finished", Callable(self, "_on_dn_finished"))
+
+func _on_dn_finished() -> void:
+	_active_dn = null
+
+# ───── 8 · Infection spread helper (used on death) ──────────────────────
+func _spread_infection() -> void:
+	if _status == null or _status.infection == null or _pd == null:
+		return
+	var radius : float = _pd.get_stat("weapon_range") * 0.4
+	var best   : Node  = null
+	var best_d : float = radius
+
+	for e in get_tree().get_nodes_in_group("Enemies"):
+		if e == self: continue
+		var d := global_position.distance_to(e.global_position)
+		if d < best_d:
+			best_d = d
+			best   = e
+
+	if best:
+		best.get_node("StatusComponent").apply_infection(
+			_status.infection.dps,
+			_status.infection.remaining
+		)
+
+# ───── 9 · Death flow & credit drop ─────────────────────────────────────
 func on_death() -> void:
+	if _active_dn and is_instance_valid(_active_dn):
+		_active_dn.detach()
+
 	if _status and _status.has_method("clear_all"):
 		_status.clear_all()
+
+	_spread_infection()                             # jump Bio DOT
 
 	var credit := _drop_scene.instantiate()
 	credit.global_position = global_position
