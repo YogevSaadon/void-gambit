@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://1bjia2pnh7mc"]
+[gd_scene load_steps=8 format=3 uid="uid://1bjia2pnh7mc"]
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/biter/Biter.gd" id="1_u4mba"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_aw7lw"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_q6x57"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/TouchDamage.gd" id="3_q6x57"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="3_v5wft"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChaseMovement.gd" id="5_gkk8c"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
 
@@ -49,9 +48,3 @@ debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 
 [node name="StatusComponent" type="Node" parent="."]
 script = ExtResource("3_v5wft")
-
-[node name="ChaseMovement" type="Node2D" parent="."]
-script = ExtResource("5_gkk8c")
-
-[node name="ContactDamage" type="Node2D" parent="."]
-script = ExtResource("3_q6x57")
