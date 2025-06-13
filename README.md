@@ -1,45 +1,51 @@
 # Space Haven - Bullet Heaven Game
 
-**Advanced component-based architecture and performance-optimized systems built in Godot 4**
+**A component-based bullet heaven game built in Godot 4 with modular architecture and data-driven design**
 
-## Executive Summary
+## What's Built So Far
 
-Space Haven demonstrates enterprise-level software architecture patterns applied to game development. Features manual dependency injection, signal-driven loose coupling, and modular component systems designed for scalability and maintainability.
+Space Haven demonstrates solid game architecture patterns applied to the bullet heaven genre. The project focuses on clean code organization, modular systems, and data-driven configuration.
 
-**Key Technical Achievements:**
-- Component-based player architecture with zero autoload dependencies
-- Multi-weapon auto-firing system supporting 100+ concurrent entities
-- Real-time stat modification system with JSON-driven configuration
-- Performance-optimized chain targeting with dynamic enemy management
-- Modular enemy AI framework with power-level scaling
+**Current Features:**
+- Four-weapon system with auto-targeting and distinct mechanics
+- Component-based player architecture with movement, blinking, and weapon systems
+- Dynamic stat modification system with JSON-driven item configuration
+- Enemy AI with power-level scaling and modular behavior components
+- Chain laser targeting system with multi-enemy reflection
+- Real-time damage numbers with visual feedback
+- Hangar system for weapon/item management between levels
 
 ## Architecture Overview
 
 ### Core Design Patterns
-- **Manual Dependency Injection** - Zero autoload singletons, explicit system initialization
-- **Component Composition** - Player system built from specialized subsystems (BlinkSystem, WeaponSystem, PlayerMovement)
-- **Signal-Driven Architecture** - Loose coupling between game systems via event-based communication
-- **Data-Driven Configuration** - JSON-based item and stat systems for runtime flexibility
+- **Component Composition** - Player built from specialized subsystems (BlinkSystem, WeaponSystem, PlayerMovement)
+- **Signal-Driven Communication** - Loose coupling between game systems via events
+- **Service Locator Pattern** - Global managers accessible via scene tree lookup
+- **Data-Driven Configuration** - JSON-based items and stats for runtime flexibility
 
-### Performance Engineering
-- **Object Lifecycle Management** - Custom damage number pooling and cleanup systems
-- **Spatial Query Optimization** - Efficient enemy targeting for chain weapons
-- **Memory-Conscious Design** - Component cleanup and signal disconnection patterns
-- **Scalable Entity Systems** - Architecture supports 100+ concurrent game entities
+### System Organization
+- **No Autoload Singletons** - All managers created and accessed manually through scene tree
+- **Modular Components** - Each system handles specific responsibilities with clear interfaces
+- **Event-Based Updates** - Systems communicate through signals rather than direct coupling
 
 ## Technical Systems
 
-### Advanced Weapon Framework
-Four-family weapon system with shared inheritance and type-specific optimizations:
-- **Chain Laser System** - Multi-target reflection with performance-optimized enemy queries
-- **Area Damage System** - Configurable explosion radius with collision detection
-- **Projectile Management** - Bullet physics with piercing and collision optimization
-- **Status Effect Engine** - Damage-over-time with infection spread mechanics
+### Weapon Framework
+Four distinct weapon families with shared inheritance:
+- **Bullet Weapons** - Fast projectiles with piercing potential
+- **Laser Weapons** - Chain targeting with enemy reflection mechanics
+- **Rocket Weapons** - Area damage with explosion radius scaling
+- **Bio Weapons** - Damage-over-time with infection spread mechanics
 
-### Dynamic Stat System
-Runtime stat modification supporting additive and percentage-based changes:
 ```gdscript
-// Real-time stat recalculation
+# Type-specific damage scaling
+func _damage_type_key() -> String:
+    return "bullet_damage_percent"  # Each weapon scales differently
+```
+
+### Player Data System
+Runtime stat calculation supporting both additive and percentage modifiers:
+```gdscript
 func get_stat(stat: String) -> float:
     var base = base_stats.get(stat, 0.0)
     var add = additive_mods.get(stat, 0.0)
@@ -47,57 +53,92 @@ func get_stat(stat: String) -> float:
     return (base + add) * (1.0 + pct)
 ```
 
-### Component Communication System
-- **Event-driven architecture** with typed signal parameters
-- **Behavior effect spawning** via PassiveEffectManager
-- **Modular AI components** for enemy behavior composition
+### Enemy System
+- **Power Level Scaling** - Stats multiply by power level for progression
+- **Modular AI Components** - Movement and attack behaviors as separate nodes
+- **Status Effects** - Infection system with stacking and duration
+- **Dynamic Spawning** - Wave manager with level-based enemy count scaling
 
-## Engineering Challenges Solved
+### Chain Laser Implementation
+Multi-target beam system that:
+- Maintains enemy chain arrays with validation
+- Updates visual beam segments in real-time
+- Handles target loss and chain extension
+- Applies damage with crit chance calculation
 
-### Performance Optimization
-- **Chain targeting efficiency** - Reduced O(n) enemy queries from per-frame to cached intervals
-- **Collision system debugging** - Resolved complex layer/mask interaction issues
-- **Memory leak prevention** - Fixed floating UI element lifecycle management
+## Current Game Flow
 
-### Architecture Evolution
-- **System connectivity** - Built robust GameManager without global state dependencies
-- **Input buffering** - Implemented smooth movement with hold-to-move mechanics
-- **Data persistence** - Designed flexible item save system with type safety
+1. **Main Menu** - Initialize core managers and start new run
+2. **Level Play** - Wave-based enemy spawning with auto-targeting weapons
+3. **Hangar** - Purchase items and manage loadout between levels
+4. **Progression** - Level advancement with increasing difficulty
 
-### Combat System Engineering
-- **Attack speed scaling** - Separated weapon-specific timing from global modifiers
-- **Explosion detection** - Resolved area damage collision detection edge cases
-- **Movement physics** - Balanced responsive controls with smooth acceleration
+## JSON Data Configuration
 
-## Performance Metrics
+### Item System
+```json
+{
+  "id": "reinforced_plating",
+  "name": "Reinforced Plating", 
+  "description": "+25 Max HP",
+  "rarity": "common",
+  "price": 1,
+  "category": "stat",
+  "stat_modifiers": { "max_hp": 25 }
+}
+```
 
-- **Target Scale:** 100+ concurrent enemies with 6 simultaneous weapon systems
-- **Architecture:** Zero singleton dependencies, 3-layer component hierarchy
-- **Memory Management:** Custom pooling for high-frequency objects
-- **Optimization:** Frame-rate conscious design with spatial query caching
+### Behavior Effects
+Items can spawn custom behavior nodes:
+```json
+{
+  "id": "warp_detonator",
+  "category": "behavior", 
+  "behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
+}
+```
 
-## Technical Stack
+## Technical Metrics
 
-- **Engine:** Godot 4.3 with GDScript
-- **Architecture:** Component-based design, manual dependency injection
-- **Data:** JSON configuration with runtime validation
-- **Performance:** Signal-based communication, object pooling
-- **Testing:** Component isolation for modular debugging
+- **Target Performance:** 60fps with 50+ concurrent enemies
+- **Architecture:** Component-based with manual dependency management  
+- **Weapon Capacity:** 6 simultaneous auto-targeting weapon slots
+- **Data Format:** JSON configuration with runtime validation
+
+## Known Technical Debt
+
+### Performance Considerations
+- Enemy targeting uses linear O(n) searches (needs spatial partitioning for 100+ enemies)
+- No object pooling for bullets/explosions (creates garbage collection pressure)
+- Chain laser validation runs every frame (could benefit from interval caching)
+
+### Code Quality Items
+- Inconsistent initialization patterns across systems
+- Signal connection/disconnection could be more robust
+- Some global node lookups lack null safety checks
+- Memory management relies on Godot's automatic cleanup
 
 ## How to Run
 
 1. Install Godot Engine 4.3+
 2. Clone repository and open `project.godot`
-3. Run main scene for immediate gameplay
+3. Run `MainMenu.tscn` scene for full game experience
 
-**Controls:** Right-click (move), Left-click (blink), weapons auto-target
+**Controls:** 
+- Right-click: Move to cursor
+- Left-click / F: Blink to cursor  
+- Space: Hold to follow cursor
+- Weapons auto-target nearest enemies
 
-## System Requirements
+## Next Steps
 
-- **Development:** Godot 4.3+, cross-platform compatibility
-- **Runtime:** Optimized for 60fps with 100+ active entities
-- **Architecture:** Modular design supports easy feature extension
+**Planned Improvements:**
+- Object pooling system for better performance
+- Spatial partitioning for enemy targeting optimization  
+- Meta-progression system for permanent upgrades
+- Visual effects and screen shake for game juice
+- Save/load system for run persistence
 
 ---
 
-*Demonstrates production-ready architecture patterns and performance-conscious engineering in game development context.*
+*A solid foundation demonstrating good architecture patterns in game development, with clear areas for performance optimization and feature expansion.*
