@@ -1,10 +1,10 @@
-# CosmoSpin- Bullet Heaven Game
+# Void Gambit- Bullet Heaven Game
 
 **A component-based bullet heaven game built in Godot 4 with modular architecture and data-driven design**
 
 ## What's Built So Far
 
-CosmoSpin demonstrates solid game architecture patterns applied to the bullet heaven genre. The project focuses on clean code organization, modular systems, and data-driven configuration.
+Void Gamit demonstrates solid game architecture patterns applied to the bullet heaven genre. The project focuses on clean code organization, modular systems, and data-driven configuration.
 
 **Current Features:**
 - Four-weapon system with auto-targeting and distinct mechanics
