@@ -1,5 +1,5 @@
 # scripts/actors/enemys/base-enemy/BaseEnemy.gd
-extends Node2D
+extends Area2D
 class_name BaseEnemy
 
 signal died
@@ -51,7 +51,7 @@ func _enter_tree() -> void:
 	_apply_power_scale()
 
 func _ready() -> void:
-	_setup_hitbox()
+	_setup_collision()
 	_setup_components()
 	_discover_behaviors()
 	_setup_groups()
@@ -76,21 +76,12 @@ func _apply_power_scale() -> void:
 	shield_recharge_rate = _base_reg * power_level
 	damage = _base_dmg * power_level
 
-func _setup_hitbox() -> void:
-	if not has_node("Hitbox"):
-		var hitbox = Area2D.new()
-		hitbox.name = "Hitbox"
-		add_child(hitbox)
-		
-		var shape = CollisionShape2D.new()
-		shape.shape = CircleShape2D.new()
-		shape.shape.radius = 10.0
-		hitbox.add_child(shape)
-		
-		hitbox.collision_layer = 1 << 2  # Enemy layer
-		hitbox.collision_mask = 0
-		hitbox.monitoring = false
-		hitbox.monitorable = true
+func _setup_collision() -> void:
+	# The enemy itself is the hitbox
+	collision_layer = 1 << 2  # Enemy layer
+	collision_mask = 0        # Don't detect anything
+	monitoring = false        # We don't monitor
+	monitorable = true        # But we can be detected by bullets
 
 func _setup_components() -> void:
 	# Spacing helper
