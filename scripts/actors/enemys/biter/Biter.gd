@@ -1,22 +1,26 @@
+# scripts/actors/enemys/biter/Biter.gd
 extends BaseEnemy
 class_name Biter
 
 func _enter_tree() -> void:
-	# ── Base stats at power-level 1 ───────────────────────────────
-	max_health           = 20
-	max_shield           = 0
-	speed                = 150
+	# ── Base stats at power-level 1 ─────
+	max_health = 20
+	max_shield = 0
+	speed = 150
 	shield_recharge_rate = 0
 
-	# Contact-damage numbers that ContactDamage.gd will read
-	damage          = 12          # per tick
-	damage_interval = 0.8         # seconds
+	# Contact-damage numbers
+	damage = 12
+	damage_interval = 0.8
 
-	# ── Metadata ─────────────────────────────────────────────────
+	# ── Metadata ─────
 	power_level = 1
-	rarity      = "common"
-	min_level   = 1
-	max_level   = 5
+	rarity = "common"
+	min_level = 1
+	max_level = 5
+	
+	# ── Set enemy type for spacing ─────
+	enemy_type = "biter"
 
-	# Child nodes (ChaseMovement, ContactDamage, etc.) deliver behaviour.
+	# Call parent's _enter_tree
 	super._enter_tree()

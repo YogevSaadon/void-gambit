@@ -1,34 +1,43 @@
-extends "res://scripts/actors/Actor.gd"
+# scripts/actors/player/Player.gd
+extends CharacterBody2D
 class_name Player
 
+# ───── We need Actor's properties but Player extends CharacterBody2D ─────
+@export var max_health: int = 100
+@export var health: int = 100
+@export var max_shield: int = 0
+@export var shield: int = 0
+@export var speed: float = 200.0
+@export var shield_recharge_rate: float = 5.0
+
 # ───── Dependencies (injected) ─────
-var player_data : PlayerData = null
+var player_data: PlayerData = null
 
 # ───── Sub-systems ─────
-@onready var blink_system    : BlinkSystem     = $BlinkSystem
-@onready var weapon_system   : WeaponSystem    = $WeaponSystem
-@onready var movement_system : PlayerMovement  = $PlayerMovement
+@onready var blink_system: BlinkSystem = $BlinkSystem
+@onready var weapon_system: WeaponSystem = $WeaponSystem
+@onready var movement_system: PlayerMovement = $PlayerMovement
 
 # ─────  i-frame state ─────
-var invuln_timer : float = 0.0        # counts down each frame
-const INVULN_TIME := 0.3              # 300 ms of invulnerability
+var invuln_timer: float = 0.0
+const INVULN_TIME := 0.3
 
 # ───── Init ─────
 func initialize(p_data: PlayerData) -> void:
 	player_data = p_data
 	add_to_group("Player")
 	collision_layer = 1 << 1
-	collision_mask  = 0
+	collision_mask = 0
 
-	max_health           = player_data.get_stat("max_hp")
-	health               = player_data.hp
-	max_shield           = player_data.get_stat("max_shield")
-	shield               = player_data.shield
+	max_health = int(player_data.get_stat("max_hp"))
+	health = int(player_data.hp)
+	max_shield = int(player_data.get_stat("max_shield"))
+	shield = int(player_data.shield)
 	shield_recharge_rate = player_data.get_stat("shield_recharge_rate")
-	speed                = player_data.get_stat("speed")
+	speed = player_data.get_stat("speed")
 
 	blink_system.initialize(self, player_data)
-	weapon_system.owner_player  = self
+	weapon_system.owner_player = self
 	movement_system.initialize(self)
 
 # ───── Physics loop ─────
@@ -36,6 +45,27 @@ func _physics_process(delta: float) -> void:
 	invuln_timer = max(invuln_timer - delta, 0.0)
 	movement_system.physics_step(delta)
 	weapon_system.auto_fire(delta)
+	recharge_shield(delta)
+
+# ───── Actor-like methods ─────
+func recharge_shield(delta: float) -> void:
+	if shield < max_shield:
+		shield = min(shield + shield_recharge_rate * delta, max_shield)
+
+func take_damage(amount: int) -> void:
+	if shield > 0:
+		shield -= amount
+		if shield < 0:
+			health += shield  # shield is negative, subtracts from health
+			shield = 0
+	else:
+		health -= amount
+
+	if health <= 0:
+		destroy()
+
+func destroy() -> void:
+	queue_free()  # TODO: hook GameManager death flow
 
 # ───── Damage intake ─────
 func receive_damage(amount: int) -> void:
@@ -46,21 +76,23 @@ func receive_damage(amount: int) -> void:
 	invuln_timer = INVULN_TIME
 	_flash_invuln()
 
-	if health <= 0:
-		queue_free()       # TODO: hook GameManager death flow
-
 func _flash_invuln() -> void:
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.2, 0.05)
 	tw.tween_property(self, "modulate:a", 1.0, 0.05)
 
 # ───── Weapon helpers ─────
-func get_weapon_slot(i:int)            -> Node: return weapon_system.get_slot(i)
-func clear_all_weapons()               -> void: weapon_system.clear_all()
-func equip_weapon(s:PackedScene, i:int)-> void: weapon_system.equip(s, i)
+func get_weapon_slot(i: int) -> Node: 
+	return weapon_system.get_slot(i)
+	
+func clear_all_weapons() -> void: 
+	weapon_system.clear_all()
+	
+func equip_weapon(s: PackedScene, i: int) -> void: 
+	weapon_system.equip(s, i)
 
 # ───── Per-level reset ─────
 func reset_per_level() -> void:
-	health  = player_data.get_stat("max_hp")
-	shield  = player_data.get_stat("max_shield")
+	health = int(player_data.get_stat("max_hp"))
+	shield = int(player_data.get_stat("max_shield"))
 	blink_system.initialize(self, player_data)

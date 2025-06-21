@@ -1,4 +1,5 @@
-extends CharacterBody2D
+# scripts/actors/Actor.gd
+extends Node2D
 class_name Actor
 
 # ========================
@@ -14,15 +15,14 @@ class_name Actor
 # ========================
 # INTERNAL STATE
 # ========================
-var velocity_direction: Vector2 = Vector2.ZERO
-
+var velocity: Vector2 = Vector2.ZERO
 
 # ========================
 # MOVEMENT + SHIELD
 # ========================
-func move(direction: Vector2, _delta: float) -> void:
-	velocity = direction * speed
-	move_and_slide()
+func move(delta: float) -> void:
+	# Default movement for Node2D actors
+	position += velocity * delta
 
 func recharge_shield(delta: float) -> void:
 	if shield < max_shield:
@@ -47,9 +47,9 @@ func destroy() -> void:
 	on_death()
 	queue_free()
 
-
 func on_death() -> void:
 	pass
+
 # ========================
 # GETTERS
 # ========================
