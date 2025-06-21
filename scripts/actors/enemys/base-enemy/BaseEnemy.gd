@@ -182,7 +182,15 @@ func on_death() -> void:
 
 # ───── Special mechanics ─────
 func _spread_infection() -> void:
-	if _status == null or not _status.has_property("infection") or _pd == null:
+	if _status == null or _pd == null:
+		return
+	
+	# Check if status component has infection properly
+	if not _status.has_method("apply_infection") or not _status.get("infection"):
+		return
+	
+	var infection = _status.infection
+	if infection == null:
 		return
 	
 	var radius: float = _pd.get_stat("weapon_range") * 0.4
@@ -196,11 +204,3 @@ func _spread_infection() -> void:
 		if d < best_d:
 			best_d = d
 			best = e
-
-	if best and best.has_node("StatusComponent"):
-		var status_comp = best.get_node("StatusComponent")
-		if status_comp.has_method("apply_infection") and _status.infection != null:
-			status_comp.apply_infection(
-				_status.infection.dps,
-				_status.infection.remaining
-			)

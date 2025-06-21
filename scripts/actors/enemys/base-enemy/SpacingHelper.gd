@@ -25,9 +25,6 @@ func calculate_spacing_force() -> Vector2:
 	var group_name = "Enemy_" + enemy.enemy_type
 	var same_type_enemies = enemy.get_tree().get_nodes_in_group(group_name)
 	
-	if debug and same_type_enemies.size() > 1:
-		print("Found %d enemies in group %s" % [same_type_enemies.size(), group_name])
-	
 	for other in same_type_enemies:
 		if other == enemy:
 			continue
@@ -38,14 +35,17 @@ func calculate_spacing_force() -> Vector2:
 		if distance > 0 and distance < spacing_radius:
 			# Calculate push direction
 			var diff = enemy.global_position - other.global_position
-			# Stronger push when closer
-			var push_strength = 1.0 - (distance / spacing_radius)
+			# STRONGER push when closer - exponential falloff
+			var push_strength = pow(1.0 - (distance / spacing_radius), 2.0)  # Squared for stronger effect
 			separation += diff.normalized() * push_strength
+			neighbor_count += 1
+		elif distance == 0:  # Enemies exactly on top of each other
+			# Add small random offset to break ties
+			separation += Vector2(randf() - 0.5, randf() - 0.5) * 2.0
 			neighbor_count += 1
 	
 	if neighbor_count > 0:
-		if debug:
-			print("Spacing: %d neighbors, force: %v" % [neighbor_count, separation.normalized() * spacing_force])
-		return separation.normalized() * spacing_force
+		# Apply force directly without normalization to maintain strength
+		return separation * spacing_force
 	
 	return Vector2.ZERO
