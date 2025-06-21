@@ -5,11 +5,14 @@ class_name SpacingHelper
 @export var spacing_radius: float = 25.0
 @export var spacing_force: float = 80.0
 @export var enabled: bool = true
+@export var debug: bool = false  # Enable debug prints
 
 var enemy: BaseEnemy
 
 func _ready() -> void:
 	enemy = get_parent() as BaseEnemy
+	if debug and enemy:
+		print("SpacingHelper ready for enemy type: ", enemy.enemy_type)
 
 func calculate_spacing_force() -> Vector2:
 	if not enabled or not enemy:
@@ -21,6 +24,9 @@ func calculate_spacing_force() -> Vector2:
 	# Get all enemies of the same type using groups
 	var group_name = "Enemy_" + enemy.enemy_type
 	var same_type_enemies = enemy.get_tree().get_nodes_in_group(group_name)
+	
+	if debug and same_type_enemies.size() > 1:
+		print("Found %d enemies in group %s" % [same_type_enemies.size(), group_name])
 	
 	for other in same_type_enemies:
 		if other == enemy:
@@ -38,6 +44,8 @@ func calculate_spacing_force() -> Vector2:
 			neighbor_count += 1
 	
 	if neighbor_count > 0:
+		if debug:
+			print("Spacing: %d neighbors, force: %v" % [neighbor_count, separation.normalized() * spacing_force])
 		return separation.normalized() * spacing_force
 	
 	return Vector2.ZERO

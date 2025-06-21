@@ -48,7 +48,6 @@ script = ExtResource("3_v5wft")
 
 [node name="ChaseMovement" type="Node2D" parent="."]
 script = ExtResource("5_gkk8c")
-speed_scale = null
 
 [node name="ContactDamage" type="Node2D" parent="."]
 script = ExtResource("3_q6x57")

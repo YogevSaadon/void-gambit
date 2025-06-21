@@ -1,3 +1,4 @@
+# scripts/bullets/Bullet.gd
 extends Area2D
 class_name Bullet
 
@@ -15,6 +16,8 @@ var has_hit: bool = false
 # ====== Built-in Methods ======
 func _ready() -> void:
 	set_collision_properties()
+	# Connect signals for Area2D detection
+	area_entered.connect(_on_area_entered)
 
 func _physics_process(delta: float) -> void:
 	# Movement
@@ -24,16 +27,16 @@ func _physics_process(delta: float) -> void:
 	_time_alive += delta
 	if _time_alive >= max_lifetime:
 		queue_free()
-		return
-
-	# Hit detection
-	if not has_hit:
-		for body in get_overlapping_bodies():
-			if body.is_in_group("Enemies"):
-				apply_hit(body)
-				break
 
 # ====== Hit Logic ======
+func _on_area_entered(area: Area2D) -> void:
+	if has_hit:
+		return
+		
+	# Check if the area itself is an enemy (since enemy is now Area2D)
+	if area.is_in_group("Enemies"):
+		apply_hit(area)
+
 func apply_hit(enemy: Node) -> void:
 	has_hit = true
 	if enemy.has_method("apply_damage"):

@@ -2,7 +2,7 @@
 extends Node2D
 class_name ChaseMovement
 
-@export var speed_scale: float = 1.0
+@export var speed_scale: float = 1.0  # Default value to prevent null
 
 var enemy: BaseEnemy
 
@@ -19,4 +19,4 @@ func tick_movement(_delta: float) -> void:
 	# Simple direction to player
 	var dir: Vector2 = (player.global_position - enemy.global_position).normalized()
 	enemy.velocity = dir * enemy.speed * speed_scale
-	# Spacing is handled in BaseEnemy._apply_spacing()
+	# Spacing is handled in BaseEnemy._physics_process()

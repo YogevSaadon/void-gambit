@@ -3,6 +3,8 @@ extends BaseEnemy
 class_name Biter
 
 func _enter_tree() -> void:
+	enemy_type = "biter"  
+	
 	# ── Base stats at power-level 1 ─────
 	max_health = 20
 	max_shield = 0
@@ -18,9 +20,6 @@ func _enter_tree() -> void:
 	rarity = "common"
 	min_level = 1
 	max_level = 5
-	
-	# ── Set enemy type for spacing ─────
-	enemy_type = "biter"
 
 	# Call parent's _enter_tree
 	super._enter_tree()
