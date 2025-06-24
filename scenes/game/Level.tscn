@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/game/Level.gd" id="1_obx4w"]
 [ext_resource type="PackedScene" uid="uid://cjja0oj0j46qx" path="res://scenes/actors/Player.tscn" id="2_3rjn1"]
-[ext_resource type="Script" path="res://scripts/game/WaveManager.gd" id="2_8hdw5"]
+[ext_resource type="Script" path="res://scripts/game/managers/WaveManager.gd" id="2_8hdw5"]
 [ext_resource type="PackedScene" uid="uid://bydtgr2motkkk" path="res://scenes/game/LevelUI.tscn" id="2_nbm43"]
 
 [node name="Level" type="Node2D"]

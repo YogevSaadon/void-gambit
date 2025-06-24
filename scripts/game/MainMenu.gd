@@ -16,11 +16,11 @@ func _bootstrap_managers():
 	await get_tree().process_frame  # Wait once for all to be cleared
 
 	# Add fresh instances
-	var gm = preload("res://scripts/game/GameManager.gd").new()
+	var gm = preload("res://scripts/game/managers/GameManager.gd").new()
 	gm.name = "GameManager"
 	root.call_deferred("add_child", gm)
 
-	var pem = preload("res://scripts/game/PassiveEffectManager.gd").new()
+	var pem = preload("res://scripts/game/managers/PassiveEffectManager.gd").new()
 	pem.name = "PassiveEffectManager"
 	root.call_deferred("add_child", pem)
 

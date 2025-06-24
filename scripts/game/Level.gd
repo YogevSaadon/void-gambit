@@ -13,6 +13,9 @@ var player: Player = null
 @onready var player_data  = get_tree().root.get_node("PlayerData") 
 @onready var pem          = get_tree().root.get_node("PassiveEffectManager") 
 
+# ====== Targeting optimization ======
+var targeting_manager: TargetingManager = null
+
 # ====== Constants ======
 const SCREEN_SIDES := 4
 
@@ -22,6 +25,9 @@ func _ready() -> void:
 	player.player_data = player_data
 	player.initialize(player_data)
 
+	# Initialize targeting manager for optimized enemy targeting
+	_setup_targeting_manager()
+
 	pem.register_player(player)
 	pem.initialize_from_player_data(player_data)
 
@@ -30,6 +36,16 @@ func _ready() -> void:
 	_connect_wave_signals()
 	_equip_player_weapons()
 	_start_level()
+
+# ====== Targeting Manager Setup ======
+func _setup_targeting_manager() -> void:
+	targeting_manager = preload("res://scripts//game/managers/TargetingManager.gd").new()
+	targeting_manager.name = "TargetingManager"
+	targeting_manager.add_to_group("TargetingManager")  # So weapons can find it
+	add_child(targeting_manager)
+	targeting_manager.initialize(player_data)
+	
+	print("TargetingManager created and initialized")
 
 # ====== Wave Setup ======
 func _set_wave_enemy_scene() -> void:
@@ -64,13 +80,21 @@ func _on_wave_started(wave_number: int) -> void:
 func _on_enemy_spawned(enemy: Node) -> void:
 	add_child(enemy)
 	enemy.global_position = _get_random_spawn_position()
+	
+	# Enemy will auto-register with targeting manager in its _ready()
 
 func _on_wave_completed(wave_number: int) -> void:
 	print("Wave %d complete!" % wave_number)
-	# Removed automatic coin/credit reward here
+	# Print targeting manager performance stats
+	if targeting_manager:
+		targeting_manager.print_stats()
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
+	if targeting_manager:
+		print("Final targeting stats:")
+		targeting_manager.print_stats()
+	
 	player_data.sync_from_player(player)
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
