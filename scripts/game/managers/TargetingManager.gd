@@ -1,16 +1,17 @@
-# scripts/game/managers/TargetingManager.gd
+# Simplified TargetingManager.gd with unified range
 extends Node
 class_name TargetingManager
 
 # ===== SPATIAL HASH CONFIGURATION =====
-var cell_size: float = 256.0  # Will adapt based on weapon range
-var hash_table: Dictionary = {}  # cell_id -> Array[BaseEnemy]
-var always_check_enemies: Array[BaseEnemy] = []  # Teleporting enemies bypass spatial hash
+var cell_size: float = 256.0
+var hash_table: Dictionary = {}
+var always_check_enemies: Array[BaseEnemy] = []
 
-# ===== RANGE TRACKING =====
+# ===== SIMPLIFIED RANGE TRACKING =====
 var player_data: PlayerData = null
+var current_weapon_range: float = 0.0
 var last_weapon_range: float = 0.0
-var range_change_threshold: float = 0.5  # Rebuild hash if range changes >50%
+var range_change_threshold: float = 0.3  # Rebuild if range changes >30%
 
 # ===== PERFORMANCE STATS =====
 var total_enemies: int = 0
@@ -19,21 +20,57 @@ var bypass_enemies: int = 0
 
 func initialize(pd: PlayerData) -> void:
 	player_data = pd
-	last_weapon_range = pd.get_stat("weapon_range")
+	current_weapon_range = pd.get_stat("weapon_range")
+	last_weapon_range = current_weapon_range
 	_update_cell_size()
 	
-	print("TargetingManager initialized - Cell size: %d, Range: %.1f" % [cell_size, last_weapon_range])
+	print("TargetingManager initialized - Cell size: %d, Range: %.1f" % [cell_size, current_weapon_range])
 
 func _update_cell_size() -> void:
-	var current_range = player_data.get_stat("weapon_range")
-	# Use range * 0.8 so weapons check ~3x3 = 9 cells maximum
-	cell_size = max(current_range * 0.8, 256.0)
+	if not player_data:
+		return
+		
+	current_weapon_range = player_data.get_stat("weapon_range")
+	
+	# Use range * 0.6 so weapons check ~3x3 = 9 cells maximum
+	cell_size = max(current_weapon_range * 0.6, 256.0)
 	
 	# Rebuild hash if range changed significantly
-	if abs(current_range - last_weapon_range) > (last_weapon_range * range_change_threshold):
-		print("Range changed significantly: %.1f -> %.1f, rebuilding hash" % [last_weapon_range, current_range])
+	if abs(current_weapon_range - last_weapon_range) > (last_weapon_range * range_change_threshold):
+		print("Weapon range changed: %.1f -> %.1f, rebuilding hash" % [last_weapon_range, current_weapon_range])
 		_rebuild_hash()
-		last_weapon_range = current_range
+		last_weapon_range = current_weapon_range
+
+# ===== OPTIMIZED TARGETING =====
+func find_nearest_enemy_in_range(weapon_pos: Vector2, range: float) -> BaseEnemy:
+	# Check if we need to update cell size (items might have changed ranges)
+	_update_cell_size()
+	
+	var best_enemy: BaseEnemy = null
+	var best_dist_sq = range * range
+	
+	# Check spatial hash (nearby enemies)
+	var nearby_enemies = _get_enemies_in_radius(weapon_pos, range)
+	for enemy in nearby_enemies:
+		if not is_instance_valid(enemy):
+			continue
+			
+		var dist_sq = weapon_pos.distance_squared_to(enemy.global_position)
+		if dist_sq < best_dist_sq:
+			best_dist_sq = dist_sq
+			best_enemy = enemy
+	
+	# Always check teleporting enemies (they bypass spatial hash)
+	for enemy in always_check_enemies:
+		if not is_instance_valid(enemy):
+			continue
+			
+		var dist_sq = weapon_pos.distance_squared_to(enemy.global_position)
+		if dist_sq < best_dist_sq:
+			best_dist_sq = dist_sq
+			best_enemy = enemy
+	
+	return best_enemy
 
 # ===== ENEMY REGISTRATION =====
 func register_enemy(enemy: BaseEnemy) -> void:
@@ -62,7 +99,7 @@ func unregister_enemy(enemy: BaseEnemy) -> void:
 
 func update_enemy_position(enemy: BaseEnemy, old_pos: Vector2, new_pos: Vector2) -> void:
 	if enemy.bypass_spatial_hash:
-		return  # Teleporting enemies don't use spatial hash
+		return
 	
 	var old_cell = _position_to_cell_id(old_pos)
 	var new_cell = _position_to_cell_id(new_pos)
@@ -94,7 +131,7 @@ func _remove_from_cell(enemy: BaseEnemy, cell_id: int) -> void:
 func _position_to_cell_id(pos: Vector2) -> int:
 	var cell_x = int(pos.x / cell_size)
 	var cell_y = int(pos.y / cell_size)
-	return (cell_x << 16) | (cell_y & 0xFFFF)  # Bit-pack for unique ID
+	return (cell_x << 16) | (cell_y & 0xFFFF)
 
 func _rebuild_hash() -> void:
 	var all_spatial_enemies = []
@@ -108,45 +145,16 @@ func _rebuild_hash() -> void:
 	for enemy in all_spatial_enemies:
 		_add_to_spatial_hash(enemy)
 
-# ===== PUBLIC TARGETING API =====
-func find_nearest_enemy_in_range(weapon_pos: Vector2, range: float) -> BaseEnemy:
-	_update_cell_size()  # Check if range changed
-	
-	var best_enemy: BaseEnemy = null
-	var best_dist_sq = range * range
-	
-	# Check spatial hash (nearby enemies)
-	var nearby_enemies = _get_enemies_in_radius(weapon_pos, range)
-	for enemy in nearby_enemies:
-		if not is_instance_valid(enemy):
-			continue
-			
-		var dist_sq = weapon_pos.distance_squared_to(enemy.global_position)
-		if dist_sq < best_dist_sq:
-			best_dist_sq = dist_sq
-			best_enemy = enemy
-	
-	# Always check teleporting enemies (they bypass spatial hash)
-	for enemy in always_check_enemies:
-		if not is_instance_valid(enemy):
-			continue
-			
-		var dist_sq = weapon_pos.distance_squared_to(enemy.global_position)
-		if dist_sq < best_dist_sq:
-			best_dist_sq = dist_sq
-			best_enemy = enemy
-	
-	return best_enemy
-
 func _get_enemies_in_radius(center: Vector2, radius: float) -> Array[BaseEnemy]:
 	var result: Array[BaseEnemy] = []
 	
-	# Calculate cells to check (3x3 grid around center)
+	# Calculate cells to check based on actual query radius
+	var cells_to_check = int(ceil(radius / cell_size)) + 1  # +1 for safety margin
 	var center_cell_x = int(center.x / cell_size)
 	var center_cell_y = int(center.y / cell_size)
 	
-	for dx in range(-1, 2):  # -1, 0, 1
-		for dy in range(-1, 2):
+	for dx in range(-cells_to_check, cells_to_check + 1):
+		for dy in range(-cells_to_check, cells_to_check + 1):
 			var cell_id = ((center_cell_x + dx) << 16) | ((center_cell_y + dy) & 0xFFFF)
 			if hash_table.has(cell_id):
 				result.append_array(hash_table[cell_id])
@@ -161,7 +169,7 @@ func get_performance_stats() -> Dictionary:
 		"bypass_enemies": bypass_enemies,
 		"hash_cells_used": hash_table.size(),
 		"cell_size": cell_size,
-		"weapon_range": player_data.get_stat("weapon_range") if player_data else 0
+		"weapon_range": current_weapon_range
 	}
 
 func print_stats() -> void:

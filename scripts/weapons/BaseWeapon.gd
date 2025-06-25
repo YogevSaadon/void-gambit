@@ -4,7 +4,7 @@ class_name BaseWeapon
 # universal bases
 @export var base_damage     : float = 10.0
 @export var base_crit       : float = 0.0
-@export var base_range      : float = 300.0
+# ← REMOVED: base_range (now only use player range)
 
 # runtime
 var final_damage    : float = 0.0
@@ -23,7 +23,7 @@ func _damage_type_key() -> String:
 func apply_weapon_modifiers(pd: PlayerData) -> void:
 	final_damage    = base_damage
 	final_crit      = base_crit      + pd.get_stat("crit_chance")
-	final_range     = base_range     + pd.get_stat("weapon_range")
+	final_range     = pd.get_stat("weapon_range")  # ← SIMPLIFIED: Only player range
 
 	# apply global damage%
 	var dmg_bonus = pd.get_stat("damage_percent")
