@@ -9,7 +9,6 @@ func _enter_tree() -> void:
 	max_health = 20
 	max_shield = 0
 	speed = 120
-
 	shield_recharge_rate = 0
 
 	# Contact-damage numbers

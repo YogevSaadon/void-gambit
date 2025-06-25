@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_aw7lw"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_q6x57"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="3_v5wft"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChaseMovement.gd" id="5_gkk8c"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/movment/SawbladeMovement.gd" id="5_c73xy"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
 
@@ -46,8 +46,8 @@ shape = SubResource("CircleShape2D_05gwj")
 [node name="StatusComponent" type="Node" parent="."]
 script = ExtResource("3_v5wft")
 
-[node name="ChaseMovement" type="Node2D" parent="."]
-script = ExtResource("5_gkk8c")
+[node name="Movement" type="Node2D" parent="."]
+script = ExtResource("5_c73xy")
 
 [node name="ContactDamage" type="Node2D" parent="."]
 script = ExtResource("3_q6x57")

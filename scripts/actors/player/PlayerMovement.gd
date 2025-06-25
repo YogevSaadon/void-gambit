@@ -3,7 +3,8 @@ class_name PlayerMovement
 
 @export var accel_time : float = 0.25      # time from 0 → max speed
 @export var decel_time : float = 0.30      # time to bleed blink slide
-@export var move_threshold_sq : float = 1.0  # squared pixels to consider “arrived”
+@export var move_threshold_sq : float = 1.0  # squared pixels to consider "arrived"
+@export var movement_smoothing: float = 8.0  # FIX: How fast to smooth right-click movement
 
 var owner_player : Player = null
 var blink_system : BlinkSystem = null
@@ -11,13 +12,14 @@ var current_vel  : Vector2 = Vector2.ZERO
 var max_speed    : float = 0.0
 
 var target_pos   : Vector2 = Vector2.ZERO
+var target_pos_smooth: Vector2 = Vector2.ZERO  # FIX: Smooth target for right-click
 var moving       : bool = false
 var blink_slide  : bool = false            # decel only used for blink
 
 var lmb_prev   := false
 var rmb_prev   := false
-var space_prev := false            # ← NEW
-var f_prev     := false            # ← NEW
+var space_prev := false
+var f_prev     := false
 
 # ------------------------------------------------------------
 func initialize(p: Player) -> void:
@@ -25,16 +27,17 @@ func initialize(p: Player) -> void:
 	blink_system  = p.get_node("BlinkSystem")
 	max_speed     = p.speed
 	target_pos    = p.global_position
+	target_pos_smooth = p.global_position  # FIX: Initialize smooth target
 
 # ------------------------------------------------------------
 func physics_step(delta: float) -> void:
 	var rmb   := Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT)
 	var lmb   := Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
-	var space := Input.is_key_pressed(KEY_SPACE)   # ← NEW
-	var fkey  := Input.is_key_pressed(KEY_F)       # ← NEW
+	var space := Input.is_key_pressed(KEY_SPACE)
+	var fkey  := Input.is_key_pressed(KEY_F)
 
 	# --- Blink (edge-trigger: LMB OR F) ----------------------
-	if (lmb and not lmb_prev) or (fkey and not f_prev):       # ← CHANGED
+	if (lmb and not lmb_prev) or (fkey and not f_prev):
 		var blink_target = owner_player.get_global_mouse_position()
 		var dir          = (blink_target - owner_player.global_position).normalized()
 		blink_system.try_blink(blink_target)
@@ -44,11 +47,13 @@ func physics_step(delta: float) -> void:
 		blink_slide = true
 		moving      = false
 		target_pos  = owner_player.global_position
+		target_pos_smooth = owner_player.global_position  # FIX: Reset smooth target
 
 	# --- Keyboard SPACE: hold to chase cursor, stop on release
 	if space:
-		target_pos = owner_player.get_global_mouse_position()
-		moving     = true
+		var new_target = owner_player.get_global_mouse_position()
+		target_pos_smooth = new_target  # FIX: Smooth target following
+		moving = true
 	elif space_prev and not space:
 		moving      = false
 		current_vel = Vector2.ZERO        # instant stop
@@ -57,11 +62,21 @@ func physics_step(delta: float) -> void:
 	# --- Mouse RMB (ignored while SPACE held) ---------------
 	if not space:
 		if rmb and not rmb_prev:
-			target_pos = owner_player.get_global_mouse_position()
-			moving     = true
+			var new_target = owner_player.get_global_mouse_position()
+			target_pos_smooth = new_target  # FIX: Set smooth target instead of instant
+			moving = true
 		elif rmb:
-			target_pos = owner_player.get_global_mouse_position()
-			moving     = true
+			var new_target = owner_player.get_global_mouse_position()
+			target_pos_smooth = new_target  # FIX: Update smooth target continuously
+
+	# FIX: SMOOTH THE ACTUAL TARGET TOWARD THE GOAL
+	if moving:
+		target_pos = target_pos.lerp(target_pos_smooth, movement_smoothing * delta)
+		
+		# Check if we've reached the smoothed target
+		var diff_to_smooth_target = target_pos.distance_to(target_pos_smooth)
+		if diff_to_smooth_target < 2.0:  # Close enough to smooth target
+			target_pos = target_pos_smooth  # Snap to final position
 
 	# --- Desired velocity -----------------------------------
 	var desired_vel := Vector2.ZERO
@@ -98,4 +113,4 @@ func physics_step(delta: float) -> void:
 	lmb_prev   = lmb
 	rmb_prev   = rmb
 	space_prev = space     
-	f_prev     = fkey      
+	f_prev     = fkey
