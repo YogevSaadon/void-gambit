@@ -41,7 +41,6 @@ var _base_dmg: int
 # ───── Components ─────
 var _move_logic: Node = null
 var _attack_logic: Node = null
-var _spacing_helper: SpacingHelper = null
 var _drop_handler: DropHandler = null
 var _damage_display: DamageDisplay = null
 
@@ -94,14 +93,6 @@ func _setup_collision() -> void:
 	monitorable = true        # But we can be detected by bullets
 
 func _setup_components() -> void:
-	# Spacing helper
-	if not has_node("SpacingHelper"):
-		_spacing_helper = preload("res://scripts/actors/enemys/base-enemy/SpacingHelper.gd").new()
-		_spacing_helper.name = "SpacingHelper"
-		add_child(_spacing_helper)
-	else:
-		_spacing_helper = $SpacingHelper
-	
 	# Drop handler
 	if not has_node("DropHandler"):
 		_drop_handler = preload("res://scripts/actors/enemys/base-enemy/DropHandler.gd").new()
@@ -144,9 +135,6 @@ func _physics_process(delta: float) -> void:
 	if _attack_logic and _attack_logic.has_method("tick_attack"):
 		_attack_logic.tick_attack(delta)
 
-	if _spacing_helper:
-		velocity += _spacing_helper.calculate_spacing_force() * delta
-	
 	move(delta)
 	recharge_shield(delta)
 	

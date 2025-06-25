@@ -4,7 +4,7 @@ class_name WaveManager
 # ====== Exports ======
 @export var enemy_scene: PackedScene
 @export var waves: Array[Dictionary] = [
-	{ "duration": 20.0, "enemy_count": 20, "spawn_interval": 1.0 },
+	{ "duration": 60.0, "enemy_count": 100, "spawn_interval": 0.6 },
 ]
 
 # ====== Signals ======
