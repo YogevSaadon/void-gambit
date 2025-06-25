@@ -219,3 +219,14 @@ func _spread_infection() -> void:
 		if d < best_d:
 			best_d = d
 			best = e
+
+# ───── MEMORY LEAK FIX ─────
+func _exit_tree() -> void:
+	# Cleanup targeting manager connection
+	if _targeting_manager and is_instance_valid(_targeting_manager):
+		if is_connected("tree_exiting", _targeting_manager._on_enemy_destroyed):
+			disconnect("tree_exiting", _targeting_manager._on_enemy_destroyed)
+	
+	# Cleanup damage display
+	if _damage_display:
+		_damage_display.detach_active()

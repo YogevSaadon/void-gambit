@@ -1,4 +1,4 @@
-# Simplified TargetingManager.gd with unified range
+# scripts/game/managers/TargetingManager.gd - Complete with Memory Leak Fixes
 extends Node
 class_name TargetingManager
 
@@ -160,6 +160,30 @@ func _get_enemies_in_radius(center: Vector2, radius: float) -> Array[BaseEnemy]:
 				result.append_array(hash_table[cell_id])
 	
 	return result
+
+# ===== MEMORY LEAK FIXES =====
+func _exit_tree() -> void:
+	# Clear all references before destruction
+	clear_all_enemies()
+	print("TargetingManager cleaned up")
+
+func clear_all_enemies() -> void:
+	# Emergency cleanup method
+	for enemy in always_check_enemies:
+		if is_instance_valid(enemy) and enemy.is_connected("tree_exiting", _on_enemy_destroyed):
+			enemy.disconnect("tree_exiting", _on_enemy_destroyed)
+	
+	# Clear spatial hash
+	for cell in hash_table.values():
+		for enemy in cell:
+			if is_instance_valid(enemy) and enemy.is_connected("tree_exiting", _on_enemy_destroyed):
+				enemy.disconnect("tree_exiting", _on_enemy_destroyed)
+	
+	always_check_enemies.clear()
+	hash_table.clear()
+	total_enemies = 0
+	spatial_hash_enemies = 0
+	bypass_enemies = 0
 
 # ===== DEBUG INFO =====
 func get_performance_stats() -> Dictionary:

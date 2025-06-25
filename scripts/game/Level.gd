@@ -107,3 +107,15 @@ func _get_random_spawn_position() -> Vector2:
 		2: return Vector2(0.0, randf_range(0.0, screen_size.y))
 		3: return Vector2(screen_size.x, randf_range(0.0, screen_size.y))
 	return Vector2.ZERO
+
+# ====== MEMORY LEAK FIX ======
+func _exit_tree() -> void:
+	# Cleanup targeting manager
+	if targeting_manager:
+		targeting_manager.clear_all_enemies()
+	
+	# Cleanup any remaining damage numbers
+	var damage_numbers = get_tree().get_nodes_in_group("DamageNumbers")
+	for dn in damage_numbers:
+		if is_instance_valid(dn):
+			dn.queue_free()

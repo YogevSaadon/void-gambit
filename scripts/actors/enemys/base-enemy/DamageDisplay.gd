@@ -1,4 +1,4 @@
-# scripts/actors/enemys/base-enemy/DamageDisplay.gd
+# scripts/actors/enemys/base-enemy/DamageDisplay.gd - PROPERLY FIXED
 extends Node
 class_name DamageDisplay
 
@@ -9,9 +9,14 @@ func _ready() -> void:
 	enemy = get_parent() as BaseEnemy
 
 func show_damage(value: float, is_crit: bool) -> void:
-	if _active_dn and is_instance_valid(_active_dn) and not _active_dn.is_detached:
+	# ← IMPROVED: Check if damage number is still accepting damage
+	if _active_dn and is_instance_valid(_active_dn) and not _active_dn.is_detached and _active_dn._accepting_damage:
 		_active_dn.add_damage(value, is_crit)
 		return
+
+	# ← NEW: Clear reference if damage number stopped accepting damage
+	if _active_dn and (not is_instance_valid(_active_dn) or not _active_dn._accepting_damage):
+		_active_dn = null
 
 	_active_dn = preload("res://scripts/ui/DamageNumber.gd").new()
 	
@@ -30,4 +35,11 @@ func _on_dn_finished() -> void:
 
 func detach_active() -> void:
 	if _active_dn and is_instance_valid(_active_dn):
+		# ← NEW: Stop accepting new damage but let it finish animating
+		_active_dn._accepting_damage = false
 		_active_dn.detach()
+	_active_dn = null
+
+# ← NEW: Cleanup when enemy dies
+func _exit_tree() -> void:
+	detach_active()

@@ -1,4 +1,4 @@
-# Complete Optimized ChainLaserBeamController.gd
+# Complete Optimized ChainLaserBeamController.gd - With Memory Leak Fixes
 extends Node2D
 class_name ChainLaserBeamController
 
@@ -158,7 +158,19 @@ func _shrink_segments_to(count: int) -> void:
 		segments.back().queue_free()
 		segments.pop_back()
 
+# ── MEMORY LEAK FIXES ─────────────────────────
 func _clear_segments() -> void:
+	# Immediate cleanup - don't wait for queue_free()
 	for s in segments:
-		s.queue_free()
+		if is_instance_valid(s):
+			var parent = s.get_parent()
+			if parent:
+				parent.remove_child(s)
+			s.queue_free()
 	segments.clear()
+
+func _exit_tree() -> void:
+	# Ensure cleanup on destruction
+	_clear_segments()
+	chain.clear()
+	hit_this_tick.clear()

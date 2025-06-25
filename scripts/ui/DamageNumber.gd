@@ -1,4 +1,4 @@
-# /scripts/ui/DamageNumber.gd  (Godot 4.3-safe)
+# /scripts/ui/DamageNumber.gd  (Godot 4.3-safe) - PROPERLY FIXED
 extends Node2D
 class_name DamageNumber
 
@@ -19,7 +19,10 @@ var is_detached       : bool  = false
 var crit_color : Color = Color(1, 0.3, 0.3)
 var norm_color : Color = Color(1, 1, 1)
 
-var label : Label                       # declared here, built in _ready()
+var label : Label
+
+# ← NEW: Only prevents NEW damage, doesn't stop animation
+var _accepting_damage : bool = true
 
 # ─────────────────────────────
 func _ready() -> void:
@@ -31,6 +34,10 @@ func _ready() -> void:
 	_center_label()
 
 func add_damage(amount: float, is_crit: bool) -> void:
+	# ← ONLY block new damage, don't stop existing animation
+	if not _accepting_damage:
+		return
+		
 	total_damage += amount
 	label.modulate = crit_color if is_crit else norm_color
 
@@ -50,8 +57,9 @@ func add_damage(amount: float, is_crit: bool) -> void:
 			tween.kill()
 		modulate.a = 1.0
 
-
 func _process(delta: float) -> void:
+	# ← KEEP ALL ORIGINAL LOGIC - Let animation continue!
+	
 	# smooth count-up
 	if displayed_damage < total_damage:
 		var step : float = min(COUNT_SPEED * delta,
@@ -73,7 +81,10 @@ func _process(delta: float) -> void:
 
 # ─────────────────────────────
 func _center_label() -> void:
-	# place label so its center aligns with wrapper’s origin
+	# ← NEW: Safety check but don't stop centering
+	if not is_instance_valid(label):
+		return
+	# place label so its center aligns with wrapper's origin
 	var size : Vector2 = label.get_minimum_size()
 	label.position = Vector2(-size.x * 0.5, -size.y * 0.5)
 
@@ -113,5 +124,16 @@ func detach() -> void:
 		# Extremely rare: no SceneTree (tool-run or shutdown) → use ownerless root
 		target_parent = get_viewport()
 
-	target_parent.add_child(self)
-	global_position = gpos
+	# ← NEW: Safety check before re-parenting
+	if target_parent and is_instance_valid(target_parent):
+		target_parent.add_child(self)
+		global_position = gpos
+	else:
+		# Can't find safe parent, just let it free naturally
+		queue_free()
+
+# ← NEW: Prevent new damage but let existing animation finish
+func _exit_tree() -> void:
+	_accepting_damage = false
+	if tween and tween.is_valid():
+		tween.kill()
