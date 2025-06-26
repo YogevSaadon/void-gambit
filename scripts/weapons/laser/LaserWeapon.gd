@@ -2,7 +2,7 @@ extends ShooterWeapon
 class_name LaserWeapon
 
 @export var base_reflects : int = 0
-var beam_scene : PackedScene = preload("res://scenes/bullets/ChainLaserBeamController.tscn")
+var beam_scene : PackedScene = preload("res://scenes/weapons/laser/ChainLaserBeamController.tscn")
 var beam_instance : Node = null
 var final_reflects : int = 0
 

@@ -5,7 +5,7 @@ class_name Missile
 @export var damage:        float = 60.0
 @export var radius:        float = 64.0
 @export var crit_chance:   float = 0.05
-@export var explosion_scene: PackedScene = preload("res://scenes/bullets/Explosion.tscn")
+@export var explosion_scene: PackedScene = preload("res://scenes/bullets/player_projectiles/PlayerExplosion.tscn")
 
 var target_position: Vector2
 var exploded: bool = false

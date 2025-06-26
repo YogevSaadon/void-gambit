@@ -18,7 +18,7 @@ var tick_accum : float = 0.0
 var validation_timer : float = 0.0
 var hit_this_tick : = {}
 
-const SEGMENT_SCENE : PackedScene = preload("res://scenes/bullets/BeamSegment.tscn")
+const SEGMENT_SCENE : PackedScene = preload("res://scenes/weapons/laser/BeamSegment.tscn")
 @onready var pd := get_tree().root.get_node("PlayerData")
 
 func set_beam_stats(m: Node2D, first_target: Node,

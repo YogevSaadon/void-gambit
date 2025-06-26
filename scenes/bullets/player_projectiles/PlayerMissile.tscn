@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://tysq4xxetrgx"]
 
-[ext_resource type="Script" path="res://scripts/bullets/Missile.gd" id="1_cpojd"]
+[ext_resource type="Script" path="res://scripts/projectiles/player/PlayerMissile.gd" id="1_cpojd"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yywsb"]
 radius = 2.0

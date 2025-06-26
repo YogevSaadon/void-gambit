@@ -1,6 +1,6 @@
 extends BehaviorEffect
 
-@export var explosion_scene: PackedScene = preload("res://scenes/bullets/Explosion.tscn")
+@export var explosion_scene: PackedScene = preload("res://scenes/bullets/player_projectiles/PlayerExplosion.tscn")
 
 func activate(p, pd, pem) -> void:
 	super.activate(p, pd, pem)

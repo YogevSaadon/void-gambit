@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://befdtgmrmm6i4"]
 
-[ext_resource type="Script" path="res://scripts/weapons/LaserWeapon.gd" id="1_er7im"]
+[ext_resource type="Script" path="res://scripts/weapons/laser/LaserWeapon.gd" id="1_er7im"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_vydrt"]
 
