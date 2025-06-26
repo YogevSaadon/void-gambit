@@ -19,7 +19,9 @@ var has_hit: bool = false
 # ====== Built-in Methods ======
 func _ready() -> void:
 	set_collision_properties()
-	area_entered.connect(_on_area_entered)
+	# Connect to both signals to handle Area2D and CharacterBody2D
+	area_entered.connect(_on_collision)
+	body_entered.connect(_on_collision)
 
 func _physics_process(delta: float) -> void:
 	# Movement
@@ -30,14 +32,14 @@ func _physics_process(delta: float) -> void:
 	if _time_alive >= max_lifetime:
 		queue_free()
 
-# ====== Hit Logic (shared by all bullets) ======
-func _on_area_entered(area: Area2D) -> void:
+# ====== Hit Logic (handles both Area2D and CharacterBody2D) ======
+func _on_collision(node: Node) -> void:
 	if has_hit:
 		return
 		
-	# Check if the area is in our target group
-	if area.is_in_group(target_group):
-		apply_hit(area)
+	# Check if the node is in our target group
+	if node.is_in_group(target_group):
+		apply_hit(node)
 
 func apply_hit(target: Node) -> void:
 	has_hit = true

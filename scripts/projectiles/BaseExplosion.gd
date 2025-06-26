@@ -21,7 +21,9 @@ func _ready() -> void:
 	set_collision_properties()
 	$CollisionShape2D.shape.radius = radius
 	current_color = initial_color
-	connect("body_entered", _on_body_entered)
+	# Connect to both signals to handle Area2D and CharacterBody2D
+	area_entered.connect(_on_collision)
+	body_entered.connect(_on_collision)
 	set_process(true)
 
 func _process(delta: float) -> void:
@@ -36,15 +38,15 @@ func _process(delta: float) -> void:
 func _draw() -> void:
 	draw_circle(Vector2.ZERO, radius, current_color)
 
-# ====== Hit Logic (shared by all explosions) ======
-func _on_body_entered(body: Node) -> void:
-	if not body.is_in_group(target_group):
+# ====== Hit Logic (handles both Area2D and CharacterBody2D) ======
+func _on_collision(node: Node) -> void:
+	if not node.is_in_group(target_group):
 		return
-	if not body.has_method("apply_damage"):
+	if not node.has_method("apply_damage"):
 		return
 
 	var is_crit = crit_chance > 0.0 and randf() < crit_chance
-	body.apply_damage(damage, is_crit)
+	node.apply_damage(damage, is_crit)
 
 # ====== Collision Setup (uses configurable properties) ======
 func set_collision_properties() -> void:
