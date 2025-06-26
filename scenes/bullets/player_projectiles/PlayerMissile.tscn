@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://tysq4xxetrgx"]
 
-[ext_resource type="Script" path="res://scripts/projectiles/player/PlayerMissile.gd" id="1_cpojd"]
+[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerMissile.gd" id="1_t2h6a"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_yywsb"]
 radius = 2.0
@@ -9,7 +9,7 @@ height = 12.0
 [sub_resource type="CanvasTexture" id="CanvasTexture_erums"]
 
 [node name="Missile" type="Area2D"]
-script = ExtResource("1_cpojd")
+script = ExtResource("1_t2h6a")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = -1.5713
