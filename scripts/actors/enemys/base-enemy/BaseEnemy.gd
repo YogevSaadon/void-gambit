@@ -12,6 +12,9 @@ signal died
 @export var speed: float = 100.0
 @export var shield_recharge_rate: float = 0.0
 
+# ───── Universal Spaceship Movement ─────
+@export var rotation_speed: float = 3.0  # How fast enemies rotate to face movement direction
+
 # ───── Enemy metadata ─────
 @export var power_level: int = 1
 @export var rarity: String = "common"
@@ -125,6 +128,11 @@ func _physics_process(delta: float) -> void:
 
 	move(delta)
 	recharge_shield(delta)
+	
+	# ───── UNIVERSAL SPACESHIP MOVEMENT ─────
+	if velocity.length() > 10.0:  # Only rotate when actually moving
+		var target_angle = velocity.angle()
+		rotation = lerp_angle(rotation, target_angle, rotation_speed * delta)
 
 # ───── Core mechanics ─────
 func move(delta: float) -> void:
