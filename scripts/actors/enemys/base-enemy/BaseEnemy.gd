@@ -44,10 +44,6 @@ var _attack_logic: Node = null
 var _drop_handler: DropHandler = null
 var _damage_display: DamageDisplay = null
 
-# ───── Targeting optimization ─────
-var _targeting_manager: TargetingManager = null
-var _last_position: Vector2 = Vector2.ZERO
-
 # ───── References ─────
 @onready var _status: Node = $StatusComponent if has_node("StatusComponent") else null
 @onready var _pd: PlayerData = get_tree().root.get_node_or_null("PlayerData")
@@ -63,7 +59,6 @@ func _ready() -> void:
 	_setup_components()
 	_discover_behaviors()
 	_setup_groups()
-	_register_with_targeting_manager()
 	
 	if _power_ind and _power_ind.has_method("apply_power_level"):
 		_power_ind.apply_power_level(power_level)
@@ -121,13 +116,6 @@ func _setup_groups() -> void:
 	if enemy_type != "":
 		add_to_group("Enemy_" + enemy_type)
 
-func _register_with_targeting_manager() -> void:
-	# Find targeting manager in the scene
-	_targeting_manager = get_tree().get_first_node_in_group("TargetingManager")
-	if _targeting_manager:
-		_targeting_manager.register_enemy(self)
-		_last_position = global_position
-
 # ───── Per-frame ─────
 func _physics_process(delta: float) -> void:
 	if _move_logic and _move_logic.has_method("tick_movement"):
@@ -137,16 +125,6 @@ func _physics_process(delta: float) -> void:
 
 	move(delta)
 	recharge_shield(delta)
-	
-	# Update targeting manager if position changed significantly
-	_update_targeting_position()
-
-func _update_targeting_position() -> void:
-	if _targeting_manager and not bypass_spatial_hash:
-		var pos_change = global_position.distance_squared_to(_last_position)
-		if pos_change > 100.0:  # 10 pixel threshold (squared)
-			_targeting_manager.update_enemy_position(self, _last_position, global_position)
-			_last_position = global_position
 
 # ───── Core mechanics ─────
 func move(delta: float) -> void:
@@ -222,11 +200,6 @@ func _spread_infection() -> void:
 
 # ───── MEMORY LEAK FIX ─────
 func _exit_tree() -> void:
-	# Cleanup targeting manager connection
-	if _targeting_manager and is_instance_valid(_targeting_manager):
-		if is_connected("tree_exiting", _targeting_manager._on_enemy_destroyed):
-			disconnect("tree_exiting", _targeting_manager._on_enemy_destroyed)
-	
 	# Cleanup damage display
 	if _damage_display:
 		_damage_display.detach_active()

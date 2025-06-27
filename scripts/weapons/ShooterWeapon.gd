@@ -9,14 +9,7 @@ var final_fire_rate : float = 1.0            # set in apply_weapon_modifiers()
 var cooldown_timer  : float = 0.0
 var current_target  : Node  = null
 
-# ─── Targeting optimization ─────────────────────────
-var targeting_manager : TargetingManager = null
-
 # ─── Engine callbacks ────────────────────────────────
-func _ready() -> void:
-	# Find targeting manager (will be added to scene by Level.gd)
-	targeting_manager = get_tree().get_first_node_in_group("TargetingManager")
-
 func _physics_process(delta: float) -> void:
 	current_target = _find_target_in_range()
 	if current_target:
@@ -42,22 +35,36 @@ func apply_weapon_modifiers(pd: PlayerData) -> void:
 func _fire_once(_target: Node) -> void:
 	push_warning("%s: _fire_once() not implemented" % self)
 
-# ─── Optimized targeting with spatial hash ───────────
+# ─── Optimized targeting using Godot's built-in physics ───────────
 func _find_target_in_range() -> Node:
-	# Use spatial hash if available, fallback to old method
-	if targeting_manager:
-		return targeting_manager.find_nearest_enemy_in_range(global_position, final_range)
-	else:
-		# Fallback to old O(n) method if targeting manager not found
-		return _find_target_fallback()
-
-func _find_target_fallback() -> Node:
-	var best_target : Node  = null
-	var best_dist   : float = final_range
-
-	for enemy in get_tree().get_nodes_in_group("Enemies"):
-		var d = global_position.distance_to(enemy.global_position)
-		if d < best_dist:
-			best_dist   = d
-			best_target = enemy
-	return best_target
+	# Use Godot's built-in physics queries
+	var space_state = get_world_2d().direct_space_state
+	var params = PhysicsShapeQueryParameters2D.new()
+	
+	# Create a circle shape for our weapon range
+	var circle = CircleShape2D.new()
+	circle.radius = final_range
+	
+	# Set up the query parameters
+	params.shape = circle
+	params.transform = Transform2D(0, global_position)
+	params.collision_mask = 1 << 2  # Only check enemy layer (layer 2)
+	params.collide_with_areas = true
+	params.collide_with_bodies = false
+	
+	# Query physics engine for enemies in range
+	var results = space_state.intersect_shape(params, 32)  # Max 32 results
+	
+	# Find the closest enemy from results
+	var best_enemy = null
+	var best_dist_sq = final_range * final_range
+	
+	for result in results:
+		var enemy = result.collider
+		if is_instance_valid(enemy):
+			var dist_sq = global_position.distance_squared_to(enemy.global_position)
+			if dist_sq < best_dist_sq:
+				best_dist_sq = dist_sq
+				best_enemy = enemy
+	
+	return best_enemy
