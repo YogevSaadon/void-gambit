@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://b2pfvy4u6u5uu"]
 
-[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerExplosion.gd" id="1_hg52k"]
+[ext_resource type="Script" path="res://scripts/projectiles/enemy_projectiles/EnemyExplosion.gd" id="1_xbe24"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_i8jil"]
 
 [node name="Explosion" type="Area2D"]
-script = ExtResource("1_hg52k")
+script = ExtResource("1_xbe24")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_i8jil")
