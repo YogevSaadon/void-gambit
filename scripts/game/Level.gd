@@ -2,16 +2,17 @@ extends Node2D
 class_name Level
 
 # ====== Exports ======
-@export var enemy_scene: PackedScene
+@export var enemy_scene: PackedScene                          # Triangle (25 %)
+@export var secondary_enemy_scene: PackedScene                # Biter (75 %)
 
 # ====== Nodes ======
 var player: Player = null
 @onready var level_ui     = $LevelUI
 @onready var wave_manager = $WaveManager
 
-@onready var game_manager = get_tree().root.get_node("GameManager") 
-@onready var player_data  = get_tree().root.get_node("PlayerData") 
-@onready var pem          = get_tree().root.get_node("PassiveEffectManager") 
+@onready var game_manager = get_tree().root.get_node("GameManager")
+@onready var player_data  = get_tree().root.get_node("PlayerData")
+@onready var pem          = get_tree().root.get_node("PassiveEffectManager")
 
 # ====== Constants ======
 const SCREEN_SIDES := 4
@@ -33,9 +34,21 @@ func _ready() -> void:
 
 # ====== Wave Setup ======
 func _set_wave_enemy_scene() -> void:
+	# --- preload Triangle if not set ---
 	if enemy_scene == null:
-		enemy_scene = preload("res://scenes/actors/enemys/triangle/Triangle.tscn")
-	wave_manager.enemy_scene = enemy_scene
+		enemy_scene = preload(
+			"res://scenes/actors/enemys/triangle/Triangle.tscn"
+		)
+	# --- preload Biter if not set ---
+	if secondary_enemy_scene == null:
+		secondary_enemy_scene = preload(
+			"res://scenes/actors/enemys/biter/Biter.tscn"
+		)
+
+	# pass both scenes + chance to WaveManager
+	wave_manager.enemy_scene            = enemy_scene
+	wave_manager.secondary_enemy_scene  = secondary_enemy_scene
+	wave_manager.secondary_spawn_chance = 0.75    # 75 % Biter
 
 func _connect_wave_signals() -> void:
 	wave_manager.wave_started.connect(_on_wave_started)
@@ -45,7 +58,6 @@ func _connect_wave_signals() -> void:
 
 func _equip_player_weapons() -> void:
 	player.clear_all_weapons()
-	# Fixed iteration over the loadout array
 	for i in range(game_manager.equipped_weapons.size()):
 		var weapon_scene = game_manager.equipped_weapons[i]
 		if weapon_scene:
@@ -70,7 +82,7 @@ func _on_wave_completed(wave_number: int) -> void:
 
 func _on_level_completed(level_number: int) -> void:
 	print("Level %d finished!" % level_number)
-	
+
 	player_data.sync_from_player(player)
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
@@ -86,8 +98,6 @@ func _get_random_spawn_position() -> Vector2:
 
 # ====== MEMORY LEAK FIX ======
 func _exit_tree() -> void:
-	# Cleanup any remaining damage numbers
-	var damage_numbers = get_tree().get_nodes_in_group("DamageNumbers")
-	for dn in damage_numbers:
+	for dn in get_tree().get_nodes_in_group("DamageNumbers"):
 		if is_instance_valid(dn):
 			dn.queue_free()

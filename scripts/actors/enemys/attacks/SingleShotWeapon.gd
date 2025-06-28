@@ -1,133 +1,130 @@
-# scripts/actors/enemys/attacks/EnemyWeapon.gd
+# scripts/actors/enemys/attacks/SingleShotWeapon.gd
 extends Node2D
 class_name SingleShotWeapon
 
-# ====== Weapon Configuration ======
-@export var base_damage: float = 15.0
-@export var shooting_range: float = 400.0
-@export var fire_interval: float = 3.0
-@export var bullet_scene: PackedScene = preload("res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn")
+# ───── TUNABLES ──────────────────────────────────────────────
+@export var base_damage   : float       = 15.0
+@export var shooting_range: float       = 400.0     # pixels
+@export var fire_interval : float       = 3.0       # seconds between shots
+@export var bullet_scene  : PackedScene = preload(
+	"res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn"
+)
 
-# ====== Runtime Variables ======
-var owner_enemy: BaseEnemy = null
-var fire_timer: float = 0.0
-var final_damage: float = 0.0
-var final_range: float = 0.0
+# ───── RUNTIME STATE ─────────────────────────────────────────
+var _owner_enemy  : BaseEnemy
+var _fire_timer   : float = 0.0
+var _range_timer  : float = 0.0
+var _final_damage : float
+var _player_pos   : Vector2
+var _player_in_range : bool = false
 
-# ====== Performance Optimization ======
-var range_check_timer: float = 0.0
-var cached_player_in_range: bool = false
-var cached_player_position: Vector2 = Vector2.ZERO
+# ───── CHILD REFERENCES ─────────────────────────────────────
+@onready var muzzle        : Node2D   = $Muzzle
+@onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-# ====== Nodes ======
-@onready var muzzle: Node2D = $Muzzle
-@onready var weapon_sprite: Sprite2D = $WeaponSprite
+# How often we re-check distance to player (seconds)
+const RANGE_CHECK_INTERVAL := 0.2
 
-# ====== Performance Intervals ======
-const RANGE_CHECK_INTERVAL: float = 0.2
 
-func _enter_tree() -> void:
-	# Find the enemy parent (could be direct parent or grandparent)
-	var parent = get_parent()
-	while parent != null and not (parent is BaseEnemy):
-		parent = parent.get_parent()
-	
-	owner_enemy = parent as BaseEnemy
-	assert(owner_enemy != null, "EnemyWeapon must be child of BaseEnemy")
-
+# ─────────────────────────────────────────────────────────────
+#  LIFECYCLE
+# ─────────────────────────────────────────────────────────────
 func _ready() -> void:
-	# Apply enemy power scaling
-	_apply_enemy_modifiers()
-	
-	# Randomize initial fire timer
-	fire_timer = randf() * fire_interval
-	range_check_timer = randf() * RANGE_CHECK_INTERVAL
-	
-	# Verify nodes exist
-	if muzzle == null:
-		push_error("EnemyWeapon: Muzzle node not found")
-	if weapon_sprite == null:
-		push_warning("EnemyWeapon: WeaponSprite node not found")
+	# find owning enemy (any depth up the tree)
+	_owner_enemy = _find_parent_enemy()
+	assert(_owner_enemy, "SingleShotWeapon must be inside a BaseEnemy scene")
 
-# This gets called by BaseEnemy._physics_process() because it looks for tick_attack()
-func tick_attack(delta: float) -> void:
-	# Update timers
-	fire_timer -= delta
-	range_check_timer -= delta
-	
-	# Check range periodically
-	if range_check_timer <= 0.0:
-		range_check_timer = RANGE_CHECK_INTERVAL
-		_update_player_range_cache()
-	
-	# Fire when ready and player in range
-	if cached_player_in_range and fire_timer <= 0.0:
-		_fire_at_player()
-		fire_timer = fire_interval
+	# scale damage by enemy power level
+	_final_damage = base_damage * _owner_enemy.power_level
 
-func _apply_enemy_modifiers() -> void:
-	"""Scale weapon stats based on enemy power level"""
-	if owner_enemy == null:
-		final_damage = base_damage
-		final_range = shooting_range
-		return
-	
-	# Scale damage with power level
-	final_damage = base_damage * owner_enemy.power_level
-	final_range = shooting_range
-	
-	# Optional: Scale weapon sprite size with power level
+	# randomise timers so waves of enemies don’t fire in sync
+	_fire_timer  = randf_range(0.0, fire_interval)
+	_range_timer = randf_range(0.0, RANGE_CHECK_INTERVAL)
+
+	# (optional) make the gun graphic bigger for stronger enemies
 	if weapon_sprite:
-		var scale_factor = 1.0 + (owner_enemy.power_level - 1) * 0.2  # 20% bigger per power level
-		weapon_sprite.scale = weapon_sprite.scale * scale_factor
+		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.2
 
-func _update_player_range_cache() -> void:
-	var player = EnemyUtils.get_player()
-	if player == null:
-		cached_player_in_range = false
-		return
-	
-	var distance = owner_enemy.global_position.distance_to(player.global_position)
-	cached_player_in_range = distance <= final_range
-	
-	if cached_player_in_range:
-		cached_player_position = player.global_position
 
-func _fire_at_player() -> void:
-	if muzzle == null or bullet_scene == null:
+# If your enemy already calls weapon.tick_attack(delta) you can
+# delete this fallback.  It just makes sure the gun still works.
+func _physics_process(delta: float) -> void:
+	tick_attack(delta)
+
+
+# ─────────────────────────────────────────────────────────────
+#  MAIN UPDATE CALLED EACH FRAME
+# ─────────────────────────────────────────────────────────────
+func tick_attack(delta: float) -> void:
+	_fire_timer  -= delta
+	_range_timer -= delta
+
+	# periodically refresh distance cache
+	if _range_timer <= 0.0:
+		_range_timer = RANGE_CHECK_INTERVAL
+		_update_player_cache()
+
+	# shoot when ready
+	if _player_in_range and _fire_timer <= 0.0:
+		_fire_bullet()
+		_fire_timer = fire_interval
+
+
+# ─────────────────────────────────────────────────────────────
+#  HELPERS
+# ─────────────────────────────────────────────────────────────
+func _find_parent_enemy() -> BaseEnemy:
+	var p := get_parent()
+	while p and not (p is BaseEnemy):
+		p = p.get_parent()
+	return p as BaseEnemy
+
+
+func _update_player_cache() -> void:
+	var player := EnemyUtils.get_player()
+	if not player:
+		_player_in_range = false
 		return
-	
-	# Create bullet at muzzle position
-	var bullet = bullet_scene.instantiate()
+
+	_player_pos = player.global_position
+	_player_in_range = _owner_enemy.global_position.distance_to(_player_pos) <= shooting_range
+
+
+func _fire_bullet() -> void:
+	if not muzzle or not bullet_scene:
+		push_error("SingleShotWeapon: Missing muzzle or bullet scene")
+		return
+
+	# ─── Instantiate and place the projectile ───
+	var bullet := bullet_scene.instantiate()
 	bullet.global_position = muzzle.global_position
-	
-	# Aim at cached player position
-	var direction = (cached_player_position - muzzle.global_position).normalized()
-	bullet.direction = direction
-	bullet.rotation = direction.angle()
-	bullet.damage = final_damage
-	
-	# Add to scene
+
+	# ─── Aim toward the cached player position ───
+	var dir := (_player_pos - muzzle.global_position).normalized()
+
+	# If the bullet provides a helper method, use it…
+	if bullet.has_method("set_direction"):
+		bullet.call("set_direction", dir)
+	else:
+		# …otherwise treat it as BaseBullet and assign the vars directly.
+		if bullet is BaseBullet:
+			var b := bullet as BaseBullet
+			b.direction = dir
+			b.damage    = _final_damage
+		else:
+			push_warning("Bullet doesn’t expose direction; it will sit still!")
+
+	bullet.rotation = dir.angle()
+
+	# Add the projectile to the current scene (or to a dedicated ‘Projectiles’ node)
 	get_tree().current_scene.add_child(bullet)
-	
-	# Optional: Add muzzle flash effect
-	_show_muzzle_flash()
 
-func _show_muzzle_flash() -> void:
-	"""Optional visual effect when firing"""
-	if weapon_sprite == null:
+	_flash()
+
+
+func _flash() -> void:
+	if not weapon_sprite:
 		return
-	
-	# Quick flash effect
-	var original_modulate = weapon_sprite.modulate
-	weapon_sprite.modulate = Color.WHITE
-	
-	var tween = create_tween()
-	tween.tween_property(weapon_sprite, "modulate", original_modulate, 0.1)
-
-# ====== Debug Helpers ======
-func get_time_until_next_shot() -> float:
-	return max(0.0, fire_timer)
-
-func is_player_in_range() -> bool:
-	return cached_player_in_range
+	var tween := create_tween()
+	tween.tween_property(weapon_sprite, "modulate", Color.WHITE, 0.05)
+	tween.tween_property(weapon_sprite, "modulate", weapon_sprite.modulate, 0.10)

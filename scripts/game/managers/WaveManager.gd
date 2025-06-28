@@ -2,9 +2,12 @@ extends Node
 class_name WaveManager
 
 # ====== Exports ======
-@export var enemy_scene: PackedScene
+@export var enemy_scene: PackedScene                          # Primary enemy (25 %)
+@export var secondary_enemy_scene: PackedScene                # Secondary enemy (75 %)
+@export var secondary_spawn_chance: float = 0.75              # 0 – 1  →  0.75 = 75 %
+
 @export var waves: Array[Dictionary] = [
-	{ "duration": 60.0, "enemy_count": 100, "spawn_interval": 0.6 },
+	{ "duration": 20.0, "enemy_count": 1000, "spawn_interval": 0.6 },
 ]
 
 # ====== Signals ======
@@ -28,7 +31,6 @@ var _wave_timer: float = 0.0
 var _wave_running: bool = false
 
 # ====== Public Methods ======
-
 func set_level(level: int) -> void:
 	current_level = level
 
@@ -36,17 +38,14 @@ func start_level() -> void:
 	_start_next_wave()
 
 # ====== Internal Methods ======
-
 func _start_next_wave() -> void:
 	_current_wave_index += 1
-	
+
 	if _current_wave_index >= waves.size():
 		emit_signal("level_completed", gm.level_number)
 		return
-	
-	_current_wave_data = waves[_current_wave_index].duplicate()
 
-	# Scale enemy count by current level
+	_current_wave_data = waves[_current_wave_index].duplicate()
 	_current_wave_data["enemy_count"] += (current_level - 1) * SPAWN_SCALING_PER_LEVEL
 
 	_wave_timer = _current_wave_data["duration"]
@@ -59,12 +58,12 @@ func _start_next_wave() -> void:
 func _physics_process(delta: float) -> void:
 	if not _wave_running:
 		return
-	
+
 	_wave_timer -= delta
 	_spawn_timer -= delta
-	
+
 	_handle_enemy_spawning()
-	
+
 	if _wave_timer <= 0.0:
 		_finish_wave()
 
@@ -75,11 +74,16 @@ func _handle_enemy_spawning() -> void:
 	if _spawn_timer <= 0.0:
 		_spawn_timer = _current_wave_data["spawn_interval"]
 
-		if enemy_scene == null:
-			push_error("WaveManager: enemy_scene is null! Cannot instantiate.")
+		# ----- choose which enemy to spawn -----
+		var scene_to_spawn: PackedScene = enemy_scene           # default: primary
+		if secondary_enemy_scene and randf() < secondary_spawn_chance:
+			scene_to_spawn = secondary_enemy_scene              # 75 % chance
+
+		if scene_to_spawn == null:
+			push_error("WaveManager: enemy scene is null! Cannot instantiate.")
 			return
 
-		var enemy = enemy_scene.instantiate()
+		var enemy = scene_to_spawn.instantiate()
 		emit_signal("enemy_spawned", enemy)
 		_spawned_enemies += 1
 
