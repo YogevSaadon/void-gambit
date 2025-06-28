@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cooqf1c6bjrs2"]
 
-[ext_resource type="Script" path="res://scripts/projectiles/enemy_projectiles/EnemyBullet.gd" id="1_01l3s"]
+[ext_resource type="Script" path="res://scripts/projectiles/enemy_projectiles/EnemyBullet.gd" id="1_gkqrt"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ydtic"]
 
@@ -9,7 +9,7 @@ radius = 2.0
 height = 4.0
 
 [node name="Bullet" type="Area2D"]
-script = ExtResource("1_01l3s")
+script = ExtResource("1_gkqrt")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 0.0627451, 0, 1)

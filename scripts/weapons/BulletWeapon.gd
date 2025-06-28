@@ -1,7 +1,7 @@
 extends ShooterWeapon
 class_name BulletWeapon
 
-@export var bullet_scene: PackedScene = preload("res://scenes/bullets/player_projectiles/PlayerBullet.tscn")
+@export var bullet_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerBullet.tscn")
 
 
 # ----- override to tell BaseWeapon which bonus to use -----

@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://bt2csogmo13j6"]
 
-[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerBullet.gd" id="1_hkhul"]
+[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerBullet.gd" id="1_prtgm"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_j143g"]
 radius = 2.0
@@ -9,7 +9,7 @@ height = 12.0
 [sub_resource type="CanvasTexture" id="CanvasTexture_ydtic"]
 
 [node name="Bullet" type="Area2D"]
-script = ExtResource("1_hkhul")
+script = ExtResource("1_prtgm")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = -1.5713

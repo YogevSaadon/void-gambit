@@ -6,7 +6,7 @@ class_name FiringWeapon
 @export var base_damage: float = 10.0
 @export var base_fire_rate: float = 1.0
 @export var base_crit: float = 0.0
-@export var bullet_scene: PackedScene = preload("res://scenes/bullets/Bullet.tscn")
+@export var bullet_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerBullet.tscn")
 
 # ====== Runtime Variables ======
 var final_range: float = 0.0
