@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://dupmuwwt14ntv"]
+[gd_scene load_steps=11 format=3 uid="uid://dupmuwwt14ntv"]
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/triangle/Triangle.gd" id="1_k4jpn"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_m5ttn"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_m360w"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_l43p8"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/RangeKeepingMovement.gd" id="5_twxwi"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/SingleShotWeapon.gd" id="6_sttr4"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
 
@@ -13,6 +14,8 @@ radius = 5.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
 size = Vector2(12, 12)
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
 [node name="EnemyTriangle" type="Area2D"]
 script = ExtResource("1_k4jpn")
@@ -58,5 +61,12 @@ script = ExtResource("3_m360w")
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 
-[node name="Muzzle" type="Marker2D" parent="."]
+[node name="WeaponNode" type="Node2D" parent="."]
+script = ExtResource("6_sttr4")
+
+[node name="Muzzle" type="Marker2D" parent="WeaponNode"]
 position = Vector2(9, 0)
+
+[node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
+modulate = Color(0, 0, 0, 1)
+texture = SubResource("CanvasTexture_4dtwf")
