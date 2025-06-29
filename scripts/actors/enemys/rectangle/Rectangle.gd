@@ -1,14 +1,14 @@
 # scripts/actors/enemys/smart_ship/SmartShip.gd
 extends BaseEnemy
-class_name Triangle
+class_name Rectangle
 
 func _enter_tree() -> void:
 	enemy_type = "smart_ship"
 	
 	# ── Base stats at power-level 1 ─────
-	max_health = 40          # Tougher than Biter (20)
+	max_health = 80          # Tougher than Biter (20)
 	max_shield = 0
-	speed = 100              # Slightly slower than Biter (120) - more tactical
+	speed = 80              # Slightly slower than Biter (120) - more tactical
 	shield_recharge_rate = 0
 	
 	# ── Contact damage (all ships are dangerous to touch) ─────
