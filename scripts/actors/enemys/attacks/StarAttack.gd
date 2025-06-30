@@ -1,12 +1,12 @@
-# scripts/actors/enemys/attacks/ConeAttack.gd
+# scripts/actors/enemys/attacks/StarAttack.gd
 extends Node2D
-class_name ConeAttack
+class_name StarAttack
 
 # ───── TUNABLES ──────────────────────────────────────────────
-@export var base_damage   : float       = 15.0
-@export var shooting_range: float       = 500.0     # pixels
-@export var fire_interval : float       = 3.0       # seconds between shots
-@export var cone_angle    : float       = 45.0      # degrees - angle between the two shots
+@export var base_damage   : float       = 25.0
+@export var shooting_range: float       = 5000.0    # EXTREME range - shoots from anywhere on map
+@export var fire_interval : float       = 6.0       # Much slower than single shot (3.0)
+@export var bullet_count  : int         = 16        # Double the bullets (was 8)
 @export var bullet_scene  : PackedScene = preload(
 	"res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn"
 )
@@ -26,14 +26,13 @@ var _player_in_range : bool = false
 # How often we re-check distance to player (seconds)
 const RANGE_CHECK_INTERVAL := 0.2
 
-
 # ─────────────────────────────────────────────────────────────
 #  LIFECYCLE
 # ─────────────────────────────────────────────────────────────
 func _ready() -> void:
 	# find owning enemy (any depth up the tree)
 	_owner_enemy = _find_parent_enemy()
-	assert(_owner_enemy, "ConeAttack must be inside a BaseEnemy scene")
+	assert(_owner_enemy, "CircleAttack must be inside a BaseEnemy scene")
 
 	# scale damage by enemy power level
 	_final_damage = base_damage * _owner_enemy.power_level
@@ -46,12 +45,10 @@ func _ready() -> void:
 	if weapon_sprite:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.2
 
-
 # If your enemy already calls weapon.tick_attack(delta) you can
 # delete this fallback.  It just makes sure the gun still works.
 func _physics_process(delta: float) -> void:
 	tick_attack(delta)
-
 
 # ─────────────────────────────────────────────────────────────
 #  MAIN UPDATE CALLED EACH FRAME
@@ -67,9 +64,8 @@ func tick_attack(delta: float) -> void:
 
 	# shoot when ready
 	if _player_in_range and _fire_timer <= 0.0:
-		_fire_cone_attack()
+		_fire_circle_attack()
 		_fire_timer = fire_interval
-
 
 # ─────────────────────────────────────────────────────────────
 #  HELPERS
@@ -80,7 +76,6 @@ func _find_parent_enemy() -> BaseEnemy:
 		p = p.get_parent()
 	return p as BaseEnemy
 
-
 func _update_player_cache() -> void:
 	var player := EnemyUtils.get_player()
 	if not player:
@@ -88,35 +83,20 @@ func _update_player_cache() -> void:
 		return
 
 	_player_pos = player.global_position
-	_player_in_range = _owner_enemy.global_position.distance_to(_player_pos) <= shooting_range
+	_player_in_range = true  # Star ALWAYS shoots regardless of range
 
-
-func _fire_cone_attack() -> void:
+func _fire_circle_attack() -> void:
 	if not muzzle or not bullet_scene:
-		push_error("ConeAttack: Missing muzzle or bullet scene")
+		push_error("CircleAttack: Missing muzzle or bullet scene")
 		return
 
-	# ─── Calculate direction to player ───
-	var to_player := (_player_pos - muzzle.global_position).normalized()
-	
-	# ─── Convert cone angle from degrees to radians ───
-	var half_cone_rad := deg_to_rad(cone_angle * 0.5)
-	
-	# ─── Calculate the two shot directions (left and right of player) ───
-	var left_angle := to_player.angle() - half_cone_rad
-	var right_angle := to_player.angle() + half_cone_rad
-	
-	var left_dir := Vector2(cos(left_angle), sin(left_angle))
-	var right_dir := Vector2(cos(right_angle), sin(right_angle))
-	
-	# ─── Fire left bullet ───
-	_fire_bullet_in_direction(left_dir)
-	
-	# ─── Fire right bullet ───
-	_fire_bullet_in_direction(right_dir)
+	# ─── Fire bullets in all directions (360° circle) ───
+	for i in bullet_count:
+		var angle = (i / float(bullet_count)) * TAU  # Evenly spaced around circle
+		var direction = Vector2(cos(angle), sin(angle))
+		_fire_bullet_in_direction(direction)
 	
 	_flash()
-
 
 func _fire_bullet_in_direction(direction: Vector2) -> void:
 	# ─── Instantiate and place the projectile ───
@@ -137,9 +117,8 @@ func _fire_bullet_in_direction(direction: Vector2) -> void:
 
 	bullet.rotation = direction.angle()
 
-	# Add the projectile to the current scene (or to a dedicated 'Projectiles' node)
+	# Add the projectile to the current scene
 	get_tree().current_scene.add_child(bullet)
-
 
 func _flash() -> void:
 	if not weapon_sprite:

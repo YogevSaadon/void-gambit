@@ -3,7 +3,7 @@ class_name RocketWeapon
 
 @onready var pd: PlayerData = get_tree().root.get_node("PlayerData")
 
-@export var missile_scene: PackedScene = preload("res://scenes/bullets/player_projectiles/PlayerMissile.tscn")
+@export var missile_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerMissile.tscn")
 @export var base_expl_damage: float = 60.0
 @export var base_radius: float = 64.0
 # inherited base_fire_rate set in Inspector (e.g. 0.7)
