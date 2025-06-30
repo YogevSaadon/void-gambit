@@ -12,7 +12,7 @@ class_name BaseBullet
 # ====== Runtime ======
 var direction: Vector2 = Vector2.ZERO
 var damage: float = 10.0
-@onready var pd := get_tree().root.get_node("PlayerData")
+@onready var pd := get_tree().root.get_node_or_null("PlayerData")
 var _time_alive: float = 0.0
 var has_hit: bool = false
 
@@ -43,9 +43,18 @@ func _on_collision(node: Node) -> void:
 
 func apply_hit(target: Node) -> void:
 	has_hit = true
-	if target.has_method("apply_damage"):
-		var is_crit = randf() < pd.get_stat("crit_chance")
-		target.apply_damage(damage, is_crit)
+	
+	# Handle different damage methods for different targets
+	if target.is_in_group("Player"):
+		# Player uses receive_damage
+		if target.has_method("receive_damage"):
+			target.receive_damage(int(damage))
+	else:
+		# Enemies use apply_damage with crit system
+		if target.has_method("apply_damage"):
+			var is_crit = pd and randf() < pd.get_stat("crit_chance")
+			target.apply_damage(damage, is_crit)
+	
 	queue_free()
 
 # ====== Collision Setup (uses configurable properties) ======

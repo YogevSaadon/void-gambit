@@ -42,7 +42,7 @@ func _set_wave_enemy_scene() -> void:
 	# --- preload Biter if not set ---
 	if secondary_enemy_scene == null:
 		secondary_enemy_scene = preload(
-			"res://scenes/actors/enemys/Triangle.tscn"
+			"res://scenes/actors/enemys/EnemyMissle.tscn"
 		)
 
 	# pass both scenes + chance to WaveManager

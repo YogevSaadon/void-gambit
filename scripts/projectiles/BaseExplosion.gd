@@ -42,11 +42,17 @@ func _draw() -> void:
 func _on_collision(node: Node) -> void:
 	if not node.is_in_group(target_group):
 		return
-	if not node.has_method("apply_damage"):
-		return
-
-	var is_crit = crit_chance > 0.0 and randf() < crit_chance
-	node.apply_damage(damage, is_crit)
+	
+	# Handle different damage methods for different targets
+	if node.is_in_group("Player"):
+		# Player uses receive_damage
+		if node.has_method("receive_damage"):
+			node.receive_damage(int(damage))
+	else:
+		# Enemies use apply_damage with crit system
+		if node.has_method("apply_damage"):
+			var is_crit = crit_chance > 0.0 and randf() < crit_chance
+			node.apply_damage(damage, is_crit)
 
 # ====== Collision Setup (uses configurable properties) ======
 func set_collision_properties() -> void:
