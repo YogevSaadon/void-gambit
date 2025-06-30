@@ -1,11 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://biragxwph6ecj"]
+[gd_scene load_steps=11 format=3 uid="uid://dupmuwwt14ntv"]
 
-[ext_resource type="Script" path="res://scripts/actors/enemys/rectangle/Rectangle.gd" id="1_ms1tt"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_8ghpk"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_a7fc1"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_623bt"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/movment/RangeKeepingMovement.gd" id="5_wx61g"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/SingleShotWeapon.gd" id="6_3l3kd"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/Triangle.gd" id="1_a4oki"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_pihkp"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_03wne"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_el0hc"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/movment/TriangleMovement.gd" id="5_dto34"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/TriangleAttack.gd" id="6_6lrpy"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
 
@@ -17,19 +17,21 @@ size = Vector2(12, 12)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
-[node name="Rectangle" type="Area2D"]
-script = ExtResource("1_ms1tt")
+[node name="EnemyTriangle" type="Area2D"]
+script = ExtResource("1_a4oki")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.164706, 0.882353, 0.941176, 1)
-position = Vector2(2.38419e-07, 0)
-scale = Vector2(24, 6)
+position = Vector2(-0.204537, 5.96046e-07)
+rotation = -0.6353
+scale = Vector2(8.40907, 13.985)
+skew = -0.476475
 texture = SubResource("CanvasTexture_h5rir")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
 position = Vector2(-4.76837e-07, -9.53674e-07)
 scale = Vector2(0.05, 0.05)
-script = ExtResource("2_8ghpk")
+script = ExtResource("2_pihkp")
 
 [node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
 offset_left = -60.0
@@ -41,26 +43,26 @@ offset_bottom = 60.0
 position = Vector2(0, -14)
 
 [node name="DamageZone" type="Area2D" parent="."]
-script = ExtResource("3_a7fc1")
+script = ExtResource("3_03wne")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
 shape = SubResource("CircleShape2D_05gwj")
 
 [node name="StatusComponent" type="Node" parent="."]
-script = ExtResource("4_623bt")
+script = ExtResource("4_el0hc")
 
 [node name="Movement" type="Node2D" parent="."]
-script = ExtResource("5_wx61g")
+script = ExtResource("5_dto34")
 
 [node name="ContactDamage" type="Node2D" parent="."]
-script = ExtResource("3_a7fc1")
+script = ExtResource("3_03wne")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 
 [node name="WeaponNode" type="Node2D" parent="."]
-script = ExtResource("6_3l3kd")
+script = ExtResource("6_6lrpy")
 
 [node name="Muzzle" type="Marker2D" parent="WeaponNode"]
 position = Vector2(9, 0)

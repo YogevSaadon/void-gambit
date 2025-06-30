@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://1bjia2pnh7mc"]
 
-[ext_resource type="Script" path="res://scripts/actors/enemys/biter/Biter.gd" id="1_u4mba"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/Biter.gd" id="1_u4mba"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_aw7lw"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_q6x57"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="3_v5wft"]
