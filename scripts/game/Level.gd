@@ -37,7 +37,7 @@ func _set_wave_enemy_scene() -> void:
 	# --- preload Triangle if not set ---
 	if enemy_scene == null:
 		enemy_scene = preload(
-			"res://scenes/actors/enemys/Star.tscn"
+			"res://scenes/actors/enemys/EnemyMissle.tscn"
 		)
 	# --- preload Biter if not set ---
 	if secondary_enemy_scene == null:

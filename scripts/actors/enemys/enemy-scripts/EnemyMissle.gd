@@ -35,9 +35,11 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	super._ready()
 	
-	# Remove DropHandler immediately - missiles don't drop credits
-	if has_node("DropHandler"):
-		$DropHandler.queue_free()
+	# PROPER FIX: Set drop handler to null instead of freeing it
+	# This prevents BaseEnemy from trying to use a freed reference
+	if _drop_handler:
+		_drop_handler.queue_free()
+		_drop_handler = null  # ← This is the key fix!
 	
 	# Remove ContactDamage - we don't want damage over time
 	if has_node("ContactDamage"):
