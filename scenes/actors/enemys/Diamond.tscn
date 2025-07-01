@@ -1,0 +1,74 @@
+[gd_scene load_steps=11 format=3 uid="uid://d0lfvfccwo6wb"]
+
+[ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/Diamond.gd" id="1_h6ix6"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_u7aut"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_scx61"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_puore"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/movment/DiamondMovement.gd" id="5_jg8w1"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/MissileLauncherAttack.gd" id="6_rj8u0"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
+radius = 5.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
+size = Vector2(12, 12)
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
+
+[node name="EnemyDiamond" type="Area2D"]
+script = ExtResource("1_h6ix6")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.162066, 0.162066, 0.162066, 1)
+position = Vector2(-0.55681, -1.11759e-06)
+rotation = 0.598648
+scale = Vector2(32.6027, 30.8655)
+skew = 0.328122
+texture = SubResource("CanvasTexture_h5rir")
+
+[node name="PowerIndicator" type="Node2D" parent="."]
+position = Vector2(-4.76837e-07, -9.53674e-07)
+scale = Vector2(0.05, 0.05)
+script = ExtResource("2_u7aut")
+
+[node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
+offset_left = -60.0
+offset_top = -60.0
+offset_right = 60.0
+offset_bottom = 60.0
+
+[node name="DamageAnchor" type="Marker2D" parent="."]
+position = Vector2(0, -14)
+
+[node name="DamageZone" type="Area2D" parent="."]
+script = ExtResource("3_scx61")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
+shape = SubResource("CircleShape2D_05gwj")
+
+[node name="StatusComponent" type="Node" parent="."]
+script = ExtResource("4_puore")
+
+[node name="Movement" type="Node2D" parent="."]
+script = ExtResource("5_jg8w1")
+
+[node name="ContactDamage" type="Node2D" parent="."]
+script = ExtResource("3_scx61")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_n7gft")
+debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
+
+[node name="WeaponNode" type="Node2D" parent="."]
+script = ExtResource("6_rj8u0")
+shooting_range = 400.0
+fire_interval = 3.0
+
+[node name="Muzzle" type="Marker2D" parent="WeaponNode"]
+position = Vector2(9, 0)
+
+[node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
+modulate = Color(0, 0, 0, 1)
+texture = SubResource("CanvasTexture_4dtwf")

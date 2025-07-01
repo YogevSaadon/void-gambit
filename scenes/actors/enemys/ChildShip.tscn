@@ -1,0 +1,78 @@
+[gd_scene load_steps=11 format=3 uid="uid://nxextnsggmol"]
+
+[ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/ChildShip.gd" id="1_53pby"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_2dtgu"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_6631y"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_57lqr"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChildShipMovement.gd" id="5_lr0o2"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/TripleShotAttack.gd" id="6_c8v1f"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
+radius = 5.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
+size = Vector2(8, 8)
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
+
+[node name="EnemyChildShip" type="Area2D"]
+script = ExtResource("1_53pby")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.164706, 0, 0.454902, 1)
+position = Vector2(3, -1.19209e-07)
+rotation = -0.6353
+scale = Vector2(3.6854, 4.08086)
+skew = -0.476475
+texture = SubResource("CanvasTexture_h5rir")
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+modulate = Color(0.164706, 0, 0.454902, 1)
+position = Vector2(-1.05085, 0)
+scale = Vector2(7.8983, -4.08086)
+texture = SubResource("CanvasTexture_h5rir")
+
+[node name="PowerIndicator" type="Node2D" parent="."]
+position = Vector2(-4.76837e-07, -9.53674e-07)
+scale = Vector2(0.05, 0.05)
+script = ExtResource("2_2dtgu")
+
+[node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
+offset_left = 40.0
+offset_top = -40.0
+offset_right = 60.0
+offset_bottom = -20.0
+
+[node name="DamageAnchor" type="Marker2D" parent="."]
+position = Vector2(0, -14)
+
+[node name="DamageZone" type="Area2D" parent="."]
+script = ExtResource("3_6631y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
+shape = SubResource("CircleShape2D_05gwj")
+
+[node name="StatusComponent" type="Node" parent="."]
+script = ExtResource("4_57lqr")
+
+[node name="Movement" type="Node2D" parent="."]
+script = ExtResource("5_lr0o2")
+
+[node name="ContactDamage" type="Node2D" parent="."]
+script = ExtResource("3_6631y")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_n7gft")
+debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
+
+[node name="WeaponNode" type="Node2D" parent="."]
+script = ExtResource("6_c8v1f")
+
+[node name="Muzzle" type="Marker2D" parent="WeaponNode"]
+position = Vector2(9, 0)
+
+[node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
+modulate = Color(0, 0, 0, 1)
+texture = SubResource("CanvasTexture_4dtwf")

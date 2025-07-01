@@ -2,8 +2,7 @@
 extends DropPickup
 class_name CoinDrop
 
-func _on_picked_up() -> void:
-	var gm := get_tree().get_first_node_in_group("GameManager")
-	if gm and gm.has_method("add_coins"):
-		gm.add_coins(value)
-	queue_free()
+# Clean and simple - just set the currency type
+func _ready() -> void:
+	super._ready()
+	currency_type = Currency.COIN  # That's it!
