@@ -17,7 +17,7 @@ size = Vector2(12, 12)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
-[node name="EnemyTriangle" type="Area2D"]
+[node name="EnemyMotherShip" type="Area2D"]
 script = ExtResource("1_68eh3")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
@@ -71,9 +71,6 @@ debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 [node name="WeaponNode" type="Node2D" parent="."]
 script = ExtResource("6_7o7sf")
 shooting_range = 400.0
-spawn_interval = null
-child_ship_scene = null
-spawn_offset_distance = null
 
 [node name="Muzzle" type="Marker2D" parent="WeaponNode"]
 position = Vector2(9, 0)
