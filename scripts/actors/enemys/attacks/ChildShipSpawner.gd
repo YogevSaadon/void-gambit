@@ -3,8 +3,8 @@ extends Node2D
 class_name ChildShipSpawner
 
 # ───── TUNABLES ──────────────────────────────────────────────
-@export var shooting_range: float       = 50000
-@export var spawn_interval : float       = 6.0      # Spawns child ships instead of bullets
+@export var shooting_range: float       = 5000
+@export var spawn_interval : float       = 6.0     # Spawns child ships instead of bullets
 @export var child_ship_scene: PackedScene = preload(
 	"res://scenes/actors/enemys/ChildShip.tscn"
 )

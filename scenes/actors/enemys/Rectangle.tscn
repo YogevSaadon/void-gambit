@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_qwtmh"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_vltku"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/RectangleMovement.gd" id="5_4iico"]
-[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/RectangleAttack.gd" id="6_3mo3c"]
+[ext_resource type="Script" path="res://scripts/actors/enemys/attacks/ConeAttack.gd" id="6_3mo3c"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
 
