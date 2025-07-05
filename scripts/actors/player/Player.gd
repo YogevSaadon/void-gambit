@@ -53,16 +53,44 @@ func recharge_shield(delta: float) -> void:
 		shield = min(shield + shield_recharge_rate * delta, max_shield)
 
 func take_damage(amount: int) -> void:
+	# ===== Apply armor damage reduction =====
+	var effective_damage = amount
+	if player_data:
+		var armor_value = player_data.get_stat("armor")
+		var damage_multiplier = _calculate_damage_multiplier(armor_value)
+		effective_damage = int(amount * damage_multiplier)
+		
+		# Debug armor effectiveness
+		if armor_value > 0:
+			var reduction_percent = (1.0 - damage_multiplier) * 100.0
+			print("Armor: %.0f → %.0f%% damage reduction (%.0f → %.0f damage)" % [
+				armor_value, reduction_percent, amount, effective_damage
+			])
+	
+	# Apply damage to shield first, then health
 	if shield > 0:
-		shield -= amount
+		shield -= effective_damage
 		if shield < 0:
 			health += shield  # shield is negative, subtracts from health
 			shield = 0
 	else:
-		health -= amount
+		health -= effective_damage
 
 	if health <= 0:
 		destroy()
+
+# ===== Armor calculation belongs in Player, not PlayerData =====
+func _calculate_damage_multiplier(armor_value: float) -> float:
+	"""
+	League of Legends / Brotato style armor formula:
+	Damage Reduction % = Armor / (Armor + 100)
+	Returns: multiplier to apply to damage (1.0 - reduction_percent)
+	"""
+	if armor_value <= 0:
+		return 1.0
+	
+	var reduction = armor_value / (armor_value + 100.0)
+	return 1.0 - reduction
 
 func destroy() -> void:
 	queue_free()  # TODO: hook GameManager death flow

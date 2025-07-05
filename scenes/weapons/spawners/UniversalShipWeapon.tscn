@@ -1,0 +1,13 @@
+[gd_scene load_steps=2 format=3 uid="uid://43a118rmnmth"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_yl8e1"]
+
+[node name="UniversalShipWeapon" type="Node2D"]
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0.75, 0)
+scale = Vector2(2.5, 1)
+texture = SubResource("CanvasTexture_yl8e1")
+
+[node name="Muzzle" type="Node2D" parent="."]
+position = Vector2(2, 0)

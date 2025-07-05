@@ -24,12 +24,13 @@ var base_stats: Dictionary = {
 	"luck": 0.0,
 	"gold_drop_rate": 1.0,
 	"ship_count": 1,
-	"ship_fire_rate": 1.0,
 	"ship_range": 300.0,
 	"bullet_attack_speed": 1.0,
 	"laser_reflects": 1,
 	"bio_spread_chance": 0.0,
 	"explosion_radius_bonus": 0.0,
+	"golden_ship_count": 1,  # Base: 1 golden ship per stage
+	"armor": 0.0,            # Base: 0 armor (no damage reduction)
 }
 
 # Runtime state

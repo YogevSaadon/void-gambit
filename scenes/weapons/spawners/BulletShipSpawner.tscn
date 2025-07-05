@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://bt84jl2imox3h"]
+
+[ext_resource type="Script" path="res://scripts/weapons/spawners/BulletShipSpawner.gd" id="1_hkymo"]
+
+[sub_resource type="CanvasTexture" id="CanvasTexture_fbjrf"]
+
+[node name="BulletShipSpawner" type="Node2D"]
+script = ExtResource("1_hkymo")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+texture = SubResource("CanvasTexture_fbjrf")
