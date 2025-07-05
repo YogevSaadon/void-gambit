@@ -9,7 +9,7 @@ func _enter_tree() -> void:
 	enemy_type = "missile"  
 	
 	# ── Base stats at power-level 1 ─────
-	max_health = 15             # Low HP - can be shot down
+	max_health = 300             # Low HP - can be shot down
 	max_shield = 0
 	speed = 140                 # Fast homing speed
 	shield_recharge_rate = 0

@@ -26,7 +26,7 @@ var base_stats: Dictionary = {
 	"ship_count": 1,
 	"ship_range": 300.0,
 	"bullet_attack_speed": 1.0,
-	"laser_reflects": 1,
+	"laser_reflects": 10,
 	"bio_spread_chance": 0.0,
 	"explosion_radius_bonus": 0.0,
 	"golden_ship_count": 1,  # Base: 1 golden ship per stage
