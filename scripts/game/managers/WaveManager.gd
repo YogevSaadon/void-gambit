@@ -7,7 +7,7 @@ class_name WaveManager
 @export var secondary_spawn_chance: float = 0.75              # 0 – 1  →  0.75 = 75 %
 
 @export var waves: Array[Dictionary] = [
-	{ "duration": 20.0, "enemy_count": 1000, "spawn_interval": 0.6 },
+	{ "duration": 60.0, "enemy_count": 1000, "spawn_interval": 0.6 },
 ]
 
 # ====== Signals ======
