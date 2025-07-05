@@ -7,8 +7,8 @@ enum WeaponType { BULLET, LASER, ROCKET, BIO }
 @export var weapon_type: WeaponType = WeaponType.BULLET
 
 # ===== SPAWNER CONFIGURATION =====
-@export var mini_ship_scene: PackedScene = preload("res://scenes/weapons/spawner/MiniShip.tscn")
-@export var ship_weapon_scene: PackedScene = preload("res://scenes/weapons/spawner/UniversalShipWeapon.tscn")
+@export var mini_ship_scene: PackedScene = preload("res://scenes/weapons/spawners/MiniShip.tscn")
+@export var ship_weapon_scene: PackedScene = preload("res://scenes/weapons/spawners/UniversalShipSpawner.tscn")
 @export var spawn_interval: float = 2.0      # Time between ship spawns
 @export var respawn_delay: float = 5.0       # Time to respawn dead ships
 
