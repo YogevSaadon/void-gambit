@@ -2,8 +2,9 @@
 extends BaseEnemy
 class_name EnemyMissile
 
-# ===== SIMPLE CONFIG =====
+# ===== EXPLOSION CONFIG =====
 @export var explosion_damage: float = 40.0
+@export var explosion_radius: float = 80.0
 
 func _enter_tree() -> void:
 	enemy_type = "missile"  
@@ -39,25 +40,45 @@ func _ready() -> void:
 	if has_node("ContactDamage"):
 		$ContactDamage.queue_free()
 	
-	# Connect to player contact
+	# Connect to player contact for explosion trigger
 	if has_node("DamageZone"):
 		var damage_zone = $DamageZone
 		if not damage_zone.body_entered.is_connected(_on_player_contact):
 			damage_zone.body_entered.connect(_on_player_contact)
 
 func _on_player_contact(body: Node) -> void:
-	"""When missile touches player - deal explosion damage and die"""
+	"""When missile touches player - explode and die"""
 	if body.is_in_group("Player"):
-		# Deal explosion damage directly to player
-		var final_damage = explosion_damage * power_level
-		
-		if body.has_method("receive_damage"):
-			body.receive_damage(int(final_damage))
-			print("Missile hit player for ", final_damage, " damage")
-		
-		# Die
-		queue_free()
+		print("Enemy missile hit player - exploding!")
+		_explode()
+
+func _explode() -> void:
+	"""Create red explosion that damages player"""
+	# Create EnemyExplosion scene
+	var explosion_scene = preload("res://scenes/projectiles/enemy_projectiles/EnemyExplosion.tscn")
+	var explosion = explosion_scene.instantiate()
+	
+	# Position explosion at missile location
+	explosion.global_position = global_position
+	
+	# Configure explosion damage (scaled by power level)
+	explosion.damage = explosion_damage * power_level
+	explosion.radius = explosion_radius
+	explosion.crit_chance = 0.0
+	
+	# Make sure it targets player (EnemyExplosion should already be configured for this)
+	# EnemyExplosion.gd sets: target_group = "Player", collision layers automatically
+	
+	# Add explosion to scene
+	get_tree().current_scene.add_child(explosion)
+	
+	print("Created enemy explosion: damage=", explosion.damage, " radius=", explosion.radius)
+	
+	# Missile dies after exploding
+	queue_free()
 
 func on_death() -> void:
-	"""When shot down - just die normally, no explosion"""
-	super.on_death()
+	"""When missile is shot down - also explode"""
+	print("Enemy missile shot down - exploding!")
+	_explode()
+	# Don't call super.on_death() because we're already exploding
