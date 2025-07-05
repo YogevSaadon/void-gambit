@@ -1,11 +1,11 @@
 extends BaseWeapon
 class_name ShooterWeapon
 
-# ─── Exported defaults ───────────────────────────────
-@export var base_fire_rate : float = 1.0     # shots per second
+# ─── Remove duplicate properties - use BaseWeapon's instead ───
+# REMOVED: @export var base_fire_rate : float = 1.0     # Now in BaseWeapon
+# REMOVED: var final_fire_rate : float = 1.0            # Now in BaseWeapon
 
 # ─── Runtime ─────────────────────────────────────────
-var final_fire_rate : float = 1.0            # set in apply_weapon_modifiers()
 var cooldown_timer  : float = 0.0
 var current_target  : Node  = null
 
@@ -23,13 +23,12 @@ func auto_fire(_delta: float) -> void:
 		return
 	if is_instance_valid(current_target):
 		_fire_once(current_target)
-		cooldown_timer = 1.0 / final_fire_rate
+		cooldown_timer = 1.0 / final_fire_rate  # Use BaseWeapon's final_fire_rate
 
 # ─── Stat application (called by concrete weapon) ────
 func apply_weapon_modifiers(pd: PlayerData) -> void:
-	super.apply_weapon_modifiers(pd)      # sets damage, range, crit
-	# Fire rate is fixed per weapon now
-	final_fire_rate = base_fire_rate
+	super.apply_weapon_modifiers(pd)      # BaseWeapon handles everything now!
+	# REMOVED: final_fire_rate = base_fire_rate  # BaseWeapon does this now
 
 # ─── Hooks for concrete subclasses ───────────────────
 func _fire_once(_target: Node) -> void:

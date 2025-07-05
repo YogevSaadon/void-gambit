@@ -11,7 +11,7 @@ enum ShipState {
 
 # ===== REFERENCES =====
 @onready var weapon_slot: Node2D = $WeaponSlot
-var current_weapon: BaseWeapon = null
+var current_weapon: BaseShipWeapon = null  # ← FIXED: Was BaseWeapon
 var owner_player: Player = null
 
 # ===== MOVEMENT CONFIGURATION =====
@@ -101,6 +101,8 @@ func _update_timers(delta: float) -> void:
 func _update_state_machine() -> void:
 	var player = get_player()
 	if not player:
+		current_target = null  # ← ADDED: Safety check
+		_change_state(ShipState.RETURN_TO_PLAYER)
 		return
 	
 	var distance_to_player = global_position.distance_to(player.global_position)
@@ -279,14 +281,14 @@ func _apply_movement(delta: float) -> void:
 		rotation = lerp_angle(rotation, velocity.angle(), 3.0 * delta)
 
 # ===== WEAPON MANAGEMENT =====
-func setup_weapon(weapon: BaseWeapon) -> void:
+func setup_weapon(weapon: BaseShipWeapon) -> void:  # ← FIXED: Was BaseWeapon
 	"""Called by spawner to attach weapon (already configured with stats)"""
 	if not weapon_slot:
 		push_error("MiniShip: WeaponSlot not found!")
 		return
 	
 	current_weapon = weapon
-	# Weapon comes pre-configured by spawner
+	weapon_slot.add_child(weapon)  # ← FIXED: Actually add weapon to scene tree!
 
 func _update_weapon(delta: float) -> void:
 	"""Update weapon and pass current target"""

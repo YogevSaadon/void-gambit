@@ -23,11 +23,11 @@ var weapon_type: WeaponType = WeaponType.BULLET
 # ===== LASER SYSTEM =====
 var laser_beam_instance: Node = null
 
-# ===== MAIN CONFIGURATION =====
+# ===== MAIN CONFIGURATION METHOD (Called by spawner) =====
 func configure_weapon_with_type(damage: float, fire_rate: float, crit_chance: float, type: WeaponType) -> void:
-	"""Configure weapon with specific type"""
+	"""Configure weapon with specific type - THIS IS THE METHOD THE SPAWNER CALLS"""
 	weapon_type = type
-	configure_weapon(damage, fire_rate, crit_chance)
+	configure_weapon(damage, fire_rate, crit_chance)  # Call parent method
 	_setup_weapon_visuals()
 
 func _setup_weapon_visuals() -> void:
@@ -45,6 +45,19 @@ func _setup_weapon_visuals() -> void:
 			sprite.modulate = Color(1, 1, 0.2, 1)      # Yellow for rockets
 		WeaponType.BIO:
 			sprite.modulate = Color(0.2, 0.7, 0.2, 1)  # Green for bio
+
+# ===== WEAPON UPDATE WITH LASER CLEANUP =====
+func _update_weapon(delta: float) -> void:
+	"""Override base weapon update to handle laser cleanup"""
+	super._update_weapon(delta)
+	
+	# ===== LASER CLEANUP FIX =====
+	# Clean up laser if no target
+	if weapon_type == WeaponType.LASER and laser_beam_instance:
+		if not is_target_valid():
+			if is_instance_valid(laser_beam_instance):
+				laser_beam_instance.queue_free()
+			laser_beam_instance = null
 
 # ===== FIRING IMPLEMENTATION =====
 func _fire_at_target(target: Node) -> void:

@@ -3,11 +3,12 @@ class_name BulletWeapon
 
 @export var bullet_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerBullet.tscn")
 
-
-# ----- override to tell BaseWeapon which bonus to use -----
+# ----- override to tell BaseWeapon which bonuses to use -----
 func _damage_type_key() -> String:
 	return "bullet_damage_percent"
-# ----------------------------------------------------------
+
+func _fire_rate_stat_key() -> String:
+	return "bullet_attack_speed"  # Only bullets scale with attack speed
 
 func _fire_once(target: Node) -> void:
 	var muzzle = $Muzzle
@@ -27,6 +28,4 @@ func _fire_once(target: Node) -> void:
 		b.collision_mask  = 1 << 2
 	get_tree().current_scene.add_child(b)
 
-func apply_weapon_modifiers(pd: PlayerData) -> void:
-	super.apply_weapon_modifiers(pd)  # handles damage, fire‑rate, etc.
-	final_fire_rate = base_fire_rate * pd.get_stat("bullet_attack_speed")
+# Remove the old apply_weapon_modifiers - we use the base class now
