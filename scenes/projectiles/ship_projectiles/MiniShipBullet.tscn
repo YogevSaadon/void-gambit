@@ -1,21 +1,21 @@
-[gd_scene load_steps=4 format=3 uid="uid://bt2csogmo13j6"]
+[gd_scene load_steps=4 format=3 uid="uid://jnqmkrklgaet"]
 
-[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerBullet.gd" id="1_prtgm"]
+[ext_resource type="Script" path="res://scripts/projectiles/player_projectiles/PlayerBullet.gd" id="1_7x3a4"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_j143g"]
-radius = 2.0
-height = 12.0
+radius = 1.0
+height = 8.0
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_ydtic"]
 
-[node name="PlayerBullet" type="Area2D"]
-script = ExtResource("1_prtgm")
+[node name="MiniBullet" type="Area2D"]
+script = ExtResource("1_7x3a4")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 rotation = -1.5713
 shape = SubResource("CapsuleShape2D_j143g")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(-9.53674e-07, 0)
-scale = Vector2(10, 4)
+position = Vector2(5.96046e-08, -5.96046e-08)
+scale = Vector2(6, 2)
 texture = SubResource("CanvasTexture_ydtic")

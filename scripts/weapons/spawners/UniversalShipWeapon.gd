@@ -9,8 +9,8 @@ enum WeaponType { BULLET, LASER, ROCKET, BIO }
 var weapon_type: WeaponType = WeaponType.BULLET
 
 # ===== PROJECTILE SCENES =====
-@export var bullet_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerBullet.tscn")
-@export var missile_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerMissile.tscn")
+@export var bullet_scene: PackedScene = preload("res://scenes/projectiles/ship_projectiles/MiniShipBullet.tscn")
+@export var missile_scene: PackedScene = preload("res://scenes/projectiles/ship_projectiles/MiniShipMissile.tscn")
 @export var laser_beam_scene: PackedScene = preload("res://scenes/weapons/laser/ChainLaserBeamController.tscn")
 
 # ===== WEAPON-SPECIFIC STATS =====
@@ -95,11 +95,11 @@ func _fire_laser(target: Node) -> void:
 		laser_beam_instance = laser_beam_scene.instantiate()
 		get_tree().current_scene.add_child(laser_beam_instance)
 	
-	# Update laser beam target
+	# Update laser beam target (using inherited laser stats)
 	if laser_beam_instance and laser_beam_instance.has_method("set_beam_stats"):
 		laser_beam_instance.set_beam_stats(
 			muzzle, target, final_damage, final_crit_chance,
-			800.0, laser_reflects  # Range doesn't matter for ships
+			400.0, laser_reflects  # Use inherited reflects from spawner
 		)
 
 # ===== ROCKET WEAPON =====
@@ -113,9 +113,9 @@ func _fire_rocket(target: Node) -> void:
 	rocket.global_position = get_muzzle_position()
 	rocket.target_position = target.global_position
 	
-	# Configure rocket stats
+	# Configure rocket stats (using inherited explosion radius from spawner)
 	rocket.damage = final_damage
-	rocket.radius = rocket_explosion_radius
+	rocket.radius = rocket_explosion_radius  # Already scaled by spawner
 	rocket.crit_chance = final_crit_chance
 	
 	get_tree().current_scene.add_child(rocket)
@@ -165,14 +165,13 @@ func _exit_tree() -> void:
 	# Clean up laser beam when weapon is destroyed
 	if laser_beam_instance and is_instance_valid(laser_beam_instance):
 		laser_beam_instance.queue_free()
-	# No super call needed - BaseShipWeapon doesn't have _exit_tree()
 
 # ===== DEBUG INFO =====
 func get_weapon_debug_info() -> Dictionary:
 	var base_info = super.get_weapon_debug_info()
 	base_info["weapon_type"] = WeaponType.keys()[weapon_type]
 	base_info["bullet_speed"] = bullet_speed
-	base_info["rocket_radius"] = rocket_explosion_radius
+	base_info["rocket_radius"] = rocket_explosion_radius * 0.5  # Show actual mini size
 	base_info["bio_dps"] = bio_dps
-	base_info["laser_reflects"] = laser_reflects
+	base_info["laser_reflects"] = max(1, laser_reflects / 2)  # Show actual mini reflects
 	return base_info
