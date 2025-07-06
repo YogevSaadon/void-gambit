@@ -2,45 +2,35 @@
 extends BaseExplosion
 class_name EnemyExplosion
 
-# ====== Enemy-specific configuration ======
+# ===== Enemy-specific configuration =====
 func _ready() -> void:
 	# Configure for enemy explosions (red/orange, targets player)
 	target_group = "Player"                    # Target the player
 	explosion_collision_layer = 5              # Enemy explosions on layer 5
-	explosion_collision_mask = 2               # Detect player on layer 2 (FIXED: was 1, should be 2)
-	initial_color = Color(1, 0.3, 0.1, 0.8)   # Red/orange color instead of white
-	
-	# DEBUG: Print all EnemyExplosion stats
-	print("=== ENEMY EXPLOSION DEBUG ===")
-	print("Target Group: ", target_group)
-	print("Collision Layer: ", explosion_collision_layer)
-	print("Collision Mask: ", explosion_collision_mask)
-	print("Initial Color: ", initial_color)
-	print("Position: ", global_position)
-	print("Damage: ", damage)
-	print("Radius: ", radius)
-	print("Crit Chance: ", crit_chance)
-	
-	# FIND PLAYER AND TEST COLLISION
-	var player = get_tree().get_first_node_in_group("Player")
-	if player:
-		var distance = global_position.distance_to(player.global_position)
-		print("Distance to player: ", distance)
-		print("Player position: ", player.global_position)
-		print("Player collision layer: ", player.collision_layer)
-		
-		# DIRECT DAMAGE TEST - if collision fails, damage directly
-		if distance <= radius:
-			print("Player in explosion radius - applying direct damage!")
-			if player.has_method("receive_damage"):
-				player.receive_damage(int(damage))
-				print("Applied ", damage, " damage directly to player")
-			else:
-				print("ERROR: Player doesn't have receive_damage method!")
-	else:
-		print("ERROR: No player found in Player group!")
-	
-	print("===============================")
+	explosion_collision_mask = 1               # Detect player on layer 1 (CharacterBody2D layer)
+	initial_color = Color(1, 0.3, 0.1, 0.8)   # Red/orange color
 	
 	# Call parent _ready to set up collision and visuals
 	super._ready()
+	
+	# IMPORTANT: For CharacterBody2D collision, we need body_entered not area_entered
+	# The parent class connects both, but let's make sure we're monitoring properly
+	monitoring = true
+	monitorable = false  # Explosions don't need to be detected by others
+	
+	# Force immediate damage check since explosion appears on player
+	_check_immediate_damage()
+
+func _check_immediate_damage() -> void:
+	"""Check for player overlap immediately on spawn"""
+	# Get all overlapping bodies
+	var bodies = get_overlapping_bodies()
+	for body in bodies:
+		if body.is_in_group(target_group):
+			_on_collision(body)
+	
+	# Also check overlapping areas (shouldn't be needed for player but just in case)
+	var areas = get_overlapping_areas()
+	for area in areas:
+		if area.is_in_group(target_group):
+			_on_collision(area)

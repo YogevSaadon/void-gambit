@@ -46,24 +46,50 @@ func _setup_weapon_visuals() -> void:
 		WeaponType.BIO:
 			sprite.modulate = Color(0.2, 0.7, 0.2, 1)  # Green for bio
 
-# ===== WEAPON UPDATE WITH LASER CLEANUP =====
-func _update_weapon(delta: float) -> void:
-	"""Override base weapon update to handle laser cleanup"""
-	super._update_weapon(delta)
+# ===== OVERRIDE TARGET SETTER TO HANDLE LASER =====
+func set_forced_target(target: Node) -> void:
+	"""Override to handle laser cleanup when target changes"""
+	var old_target = forced_target
+	forced_target = target
 	
-	# ===== LASER CLEANUP FIX =====
-	# Clean up laser if no target
-	if weapon_type == WeaponType.LASER and laser_beam_instance:
-		if not is_target_valid():
-			if is_instance_valid(laser_beam_instance):
-				laser_beam_instance.queue_free()
-			laser_beam_instance = null
+	# Clean up laser if target was removed
+	if weapon_type == WeaponType.LASER and old_target != forced_target:
+		if not forced_target and laser_beam_instance:
+			_cleanup_laser()
+
+# ===== WEAPON UPDATE =====
+func _update_weapon(delta: float) -> void:
+	"""Override base weapon update to handle laser properly"""
+	# Update cooldown
+	if cooldown_timer > 0.0:
+		cooldown_timer -= delta
+	
+	# Check if we have a valid target
+	if not is_target_valid():
+		# Clean up laser if target died
+		if weapon_type == WeaponType.LASER:
+			_cleanup_laser()
+		return
+	
+	# Aim at target
+	_aim_at_target(forced_target)
+	
+	# Fire if ready
+	if cooldown_timer <= 0.0:
+		_fire_at_target(forced_target)
+		cooldown_timer = 1.0 / final_fire_rate
 
 # ===== FIRING IMPLEMENTATION =====
 func _fire_at_target(target: Node) -> void:
 	"""Fire weapon based on type"""
 	if not is_target_valid():
 		return
+	
+	# Additional validation for dead enemies
+	if target.has_method("get_actor_stats"):
+		var stats = target.get_actor_stats()
+		if stats.get("hp", 0) <= 0:
+			return
 	
 	match weapon_type:
 		WeaponType.BULLET:
@@ -108,11 +134,11 @@ func _fire_laser(target: Node) -> void:
 		laser_beam_instance = laser_beam_scene.instantiate()
 		get_tree().current_scene.add_child(laser_beam_instance)
 	
-	# Update laser beam target (using inherited laser stats)
+	# Update laser beam target
 	if laser_beam_instance and laser_beam_instance.has_method("set_beam_stats"):
 		laser_beam_instance.set_beam_stats(
 			muzzle, target, final_damage, final_crit_chance,
-			400.0, laser_reflects  # Use inherited reflects from spawner
+			400.0, laser_reflects
 		)
 
 # ===== ROCKET WEAPON =====
@@ -126,9 +152,9 @@ func _fire_rocket(target: Node) -> void:
 	rocket.global_position = get_muzzle_position()
 	rocket.target_position = target.global_position
 	
-	# Configure rocket stats (using inherited explosion radius from spawner)
+	# Configure rocket stats
 	rocket.damage = final_damage
-	rocket.radius = rocket_explosion_radius  # Already scaled by spawner
+	rocket.radius = rocket_explosion_radius
 	rocket.crit_chance = final_crit_chance
 	
 	get_tree().current_scene.add_child(rocket)
@@ -173,18 +199,20 @@ func _get_weapon_color() -> Color:
 		WeaponType.BIO: return Color(0.2, 0.7, 0.2, 1)
 		_: return Color.WHITE
 
+func _cleanup_laser() -> void:
+	"""Clean up laser beam safely"""
+	if laser_beam_instance and is_instance_valid(laser_beam_instance):
+		laser_beam_instance.queue_free()
+	laser_beam_instance = null
+
 # ===== CLEANUP =====
 func _exit_tree() -> void:
 	# Clean up laser beam when weapon is destroyed
-	if laser_beam_instance and is_instance_valid(laser_beam_instance):
-		laser_beam_instance.queue_free()
+	_cleanup_laser()
 
 # ===== DEBUG INFO =====
 func get_weapon_debug_info() -> Dictionary:
 	var base_info = super.get_weapon_debug_info()
 	base_info["weapon_type"] = WeaponType.keys()[weapon_type]
-	base_info["bullet_speed"] = bullet_speed
-	base_info["rocket_radius"] = rocket_explosion_radius * 0.5  # Show actual mini size
-	base_info["bio_dps"] = bio_dps
-	base_info["laser_reflects"] = max(1, laser_reflects / 2)  # Show actual mini reflects
+	base_info["has_laser"] = laser_beam_instance != null
 	return base_info
