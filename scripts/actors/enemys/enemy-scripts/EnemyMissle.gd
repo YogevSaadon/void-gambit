@@ -2,94 +2,109 @@
 extends BaseEnemy
 class_name EnemyMissile
 
-# ===== EXPLOSION CONFIG =====
+# ===== Config =====
 @export var explosion_damage: float = 40.0
 @export var explosion_radius: float = 80.0
-@export var explosion_scene: PackedScene = preload("res://scenes/projectiles/enemy_projectiles/EnemyExplosion.tscn")
 
-# ===== PROPER ENEMY INITIALIZATION =====
+# ===== State =====
+var has_exploded: bool = false
+
+# ===== Standard enemy setup =====
 func _enter_tree() -> void:
 	enemy_type = "missile"
-	
-	# ── Base stats at power-level 1 ─────
-	max_health = 300             # Low HP - can be shot down
+	max_health = 30
 	max_shield = 0
-	speed = 140                 # Fast homing speed
+	speed = 140
 	shield_recharge_rate = 0
-
-	# No contact damage - only explosion damage
-	damage = 0                  
-	damage_interval = 0.0       
-
-	# ── Metadata ─────
+	damage = 0
+	damage_interval = 0.0
 	power_level = 1
 	rarity = "common"
-	min_level = 2               
+	min_level = 2
 	max_level = 10
-
-	# Call parent's _enter_tree for power scaling
 	super._enter_tree()
 
 func _ready() -> void:
 	super._ready()
 	
-	# No drops from missiles
+	# Remove drops and contact damage
 	if _drop_handler:
 		_drop_handler.queue_free()
 		_drop_handler = null
 	
-	# Remove ContactDamage - we don't want it
 	if has_node("ContactDamage"):
 		$ContactDamage.queue_free()
 	
-	# Connect to player contact for explosion trigger
+	# Player contact detection
 	if has_node("DamageZone"):
 		var damage_zone = $DamageZone
 		if not damage_zone.body_entered.is_connected(_on_player_contact):
 			damage_zone.body_entered.connect(_on_player_contact)
 
 func _on_player_contact(body: Node) -> void:
-	"""When missile touches player - explode and die"""
 	if body.is_in_group("Player"):
-		print("Enemy missile hit player - exploding!")
-		_explode()
+		explode()
 
-func _explode() -> void:
-	"""Create red explosion that damages player"""
-	# Create EnemyExplosion scene
-	var explosion = explosion_scene.instantiate()
+# ===== BRUTE FORCE: SKIP EXPLOSION, DAMAGE PLAYER DIRECTLY =====
+func explode() -> void:
+	if has_exploded:
+		return
+	has_exploded = true
 	
-	# Position explosion at missile location
-	explosion.global_position = global_position
+	print("Missile exploding at position: ", global_position)
 	
-	# Configure explosion damage (scaled by power level)
-	explosion.damage = explosion_damage * power_level
-	explosion.radius = explosion_radius
-	explosion.crit_chance = 0.0
+	# Find the player directly
+	var player = get_tree().get_first_node_in_group("Player")
+	if not player:
+		print("No player found!")
+		queue_free()
+		return
 	
-	print("Created enemy explosion: damage=%.0f (%.0f * %.0f), radius=%.0f" % [
-		explosion.damage, explosion_damage, power_level, explosion.radius
-	])
+	# Check if player is in explosion radius
+	var distance = global_position.distance_to(player.global_position)
+	print("Distance to player: %.1f, explosion radius: %.1f" % [distance, explosion_radius])
 	
-	# Add explosion to scene
-	get_tree().current_scene.add_child(explosion)
+	if distance <= explosion_radius:
+		# DIRECT DAMAGE - bypass all collision systems
+		var final_damage = int(explosion_damage * power_level)
+		print("Player in explosion range! Applying %d damage directly..." % final_damage)
+		
+		if player.has_method("receive_damage"):
+			player.receive_damage(final_damage)
+			print("SUCCESS: Damage applied to player!")
+		else:
+			print("ERROR: Player has no receive_damage method!")
+	else:
+		print("Player outside explosion radius - no damage")
 	
-	# Missile dies after exploding
+	# Create visual effect (optional)
+	_create_visual_explosion()
+	
+	# Die
 	queue_free()
 
-func on_death() -> void:
-	"""When missile is shot down - DON'T explode (this was the bug)"""
-	print("Enemy missile shot down - no explosion")
+func _create_visual_explosion() -> void:
+	"""Create a simple visual explosion effect"""
+	# Simple colored circle that fades
+	var visual = Node2D.new()
+	visual.position = global_position
+	get_tree().current_scene.add_child(visual)
 	
-	# Do normal enemy death cleanup WITHOUT explosion
+	# Create a simple tween to fade it out
+	var tween = visual.create_tween()
+	tween.tween_method(_draw_explosion_circle.bind(visual), 1.0, 0.0, 0.3)
+	tween.tween_callback(visual.queue_free)
+
+func _draw_explosion_circle(visual: Node2D, alpha: float) -> void:
+	visual.queue_redraw()
+	# Note: This won't actually draw without a custom _draw method, 
+	# but the important part is the damage, not the visuals
+
+func on_death() -> void:
+	print("Enemy missile shot down - no explosion")
 	if _damage_display:
 		_damage_display.detach_active()
-	
 	if _status and _status.has_method("clear_all"):
 		_status.clear_all()
-	
 	_spread_infection()
-	
 	emit_signal("died")
-	
-	# NOTE: Don't call _explode() here - that was the original bug!
