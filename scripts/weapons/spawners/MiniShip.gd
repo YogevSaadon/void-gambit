@@ -15,13 +15,13 @@ var owner_player: Player = null
 var current_target: Node = null
 var current_state: ShipState = ShipState.FIND_TARGET
 
-# ===== MOVEMENT CONFIG =====
+# ===== MOVEMENT CONFIGURATION =====
 @export var max_range_from_player: float = 400.0    # Max distance before returning
 @export var comfort_range: float = 250.0            # Preferred distance from player
 @export var attack_range: float = 200.0             # Distance to maintain from target
 @export var target_search_range: float = 350.0      # Range to find enemies
 
-# ===== SPEEDS =====
+# ===== MOVEMENT SPEEDS =====
 @export var cruise_speed: float = 150.0             # Normal movement speed
 @export var return_speed: float = 300.0             # Speed when returning to player
 @export var combat_speed: float = 180.0             # Speed in combat
@@ -119,10 +119,8 @@ func _calculate_movement() -> void:
 	match current_state:
 		ShipState.RETURN_TO_RANGE:
 			_move_to_player()
-		
 		ShipState.FIND_TARGET:
 			_patrol_movement()
-		
 		ShipState.ENGAGE_TARGET:
 			_combat_movement()
 
@@ -177,7 +175,12 @@ func _combat_movement() -> void:
 
 # ===== TARGETING SYSTEM =====
 func _find_best_target() -> Node:
-	"""Find closest enemy using optimized physics query"""
+	"""
+	Find closest enemy using optimized physics query.
+	
+	PERFORMANCE: Uses Godot's C++ physics engine for O(log n) spatial queries 
+	via PhysicsServer2D instead of O(n) iteration through all enemies.
+	"""
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
 	
@@ -190,6 +193,7 @@ func _find_best_target() -> Node:
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
+	# Execute spatial query - leverages C++ backend optimization
 	var results = space_state.intersect_shape(params, 32)
 	
 	var best_enemy = null

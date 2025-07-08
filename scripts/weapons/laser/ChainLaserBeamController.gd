@@ -2,24 +2,29 @@
 extends Node2D
 class_name ChainLaserBeamController
 
+# ===== BEAM CONFIGURATION =====
 @export var tick_time: float = 0.05
 @export var validation_interval: float = 0.1
 
+# ===== BEAM STATE =====
 var muzzle: Node2D
 var damage: float
 var crit: float
 var range: float
 var max_chain_len: int = 1
 
+# ===== CHAIN MANAGEMENT =====
 var chain: Array[Node] = []
 var segments: Array[Node] = []
 var tick_accum: float = 0.0
 var validation_timer: float = 0.0
 var hit_this_tick: Dictionary = {}
 
+# ===== CONSTANTS =====
 const SEGMENT_SCENE: PackedScene = preload("res://scenes/weapons/laser/BeamSegment.tscn")
 @onready var pd: PlayerData = get_tree().root.get_node("PlayerData")
 
+# ===== INITIALIZATION =====
 func set_beam_stats(m: Node2D, first_target: Node, dmg: float, cr: float, rng: float, reflects_left: int) -> void:
 	muzzle = m
 	damage = dmg
@@ -29,14 +34,7 @@ func set_beam_stats(m: Node2D, first_target: Node, dmg: float, cr: float, rng: f
 	validation_timer = validation_interval
 	_reset_chain(first_target)
 
-# Get current weapon range from parent weapon
-func _get_current_range() -> float:
-	if muzzle and is_instance_valid(muzzle.get_parent()):
-		var weapon = muzzle.get_parent()
-		if weapon is LaserWeapon and "final_range" in weapon:
-			return weapon.final_range
-	return range
-
+# ===== BEAM UPDATE =====
 func _process(delta: float) -> void:
 	if muzzle == null:
 		_clear_segments()
@@ -63,16 +61,26 @@ func _process(delta: float) -> void:
 		for e in chain:
 			_apply_damage(e)
 
-# Remove destroyed enemies from chain
+# ===== RANGE MANAGEMENT =====
+func _get_current_range() -> float:
+	# Get current weapon range from parent weapon
+	if muzzle and is_instance_valid(muzzle.get_parent()):
+		var weapon = muzzle.get_parent()
+		if weapon is LaserWeapon and "final_range" in weapon:
+			return weapon.final_range
+	return range
+
+# ===== CHAIN VALIDATION =====
 func _clean_invalid_enemies() -> void:
+	# Remove destroyed enemies from chain
 	var original_size = chain.size()
 	chain = chain.filter(func(enemy): return is_instance_valid(enemy))
 	
 	if chain.size() < original_size:
 		_shrink_segments_to(chain.size())
 
-# Check if enemy is valid and in range
 func _is_valid_enemy(e: Node) -> bool:
+	# Check if enemy is valid and in range
 	if not is_instance_valid(e):
 		return false
 	
@@ -81,16 +89,17 @@ func _is_valid_enemy(e: Node) -> bool:
 	var range_sq = current_range * current_range
 	return distance_sq < range_sq
 
-# Remove out-of-range enemies from chain
 func _prune_chain() -> void:
+	# Remove out-of-range enemies from chain
 	for i in range(chain.size()):
 		if not _is_valid_enemy(chain[i]):
 			chain.resize(i)
 			_shrink_segments_to(i)
 			break
 
-# Extend chain to maximum length
+# ===== CHAIN EXTENSION =====
 func _extend_chain() -> void:
+	# Extend chain to maximum length
 	while chain.size() < max_chain_len:
 		var tail: Node = null
 		if not chain.is_empty():
@@ -103,8 +112,14 @@ func _extend_chain() -> void:
 		var from_pos = tail.global_position if tail else muzzle.global_position
 		_add_segment(from_pos, nxt.global_position)
 
-# Find nearest enemy using physics queries
 func _find_next_enemy_from(from_node: Node) -> Node:
+	"""
+	Find nearest enemy using optimized physics query.
+	
+	PERFORMANCE: Uses Godot's C++ physics engine for O(log n) spatial queries 
+	via PhysicsServer2D instead of O(n) iteration. The physics engine maintains 
+	a spatial hash/quadtree internally for fast proximity searches.
+	"""
 	var origin: Vector2
 	if from_node != null:
 		origin = from_node.global_position
@@ -126,6 +141,7 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
+	# Execute spatial query - leverages C++ backend optimization
 	var results = space_state.intersect_shape(params, 32)
 	
 	# Find closest enemy not in chain
@@ -143,16 +159,18 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	
 	return best
 
-# Initialize chain with first target
+# ===== CHAIN INITIALIZATION =====
 func _reset_chain(first_target: Node) -> void:
+	# Initialize chain with first target
 	_clear_segments()
 	chain.clear()
 	if is_instance_valid(first_target):
 		chain.append(first_target)
 		_add_segment(muzzle.global_position, first_target.global_position)
 
-# Apply damage to enemy with crit calculation
+# ===== DAMAGE APPLICATION =====
 func _apply_damage(enemy: Node) -> void:
+	# Apply damage to enemy with crit calculation
 	if not is_instance_valid(enemy):
 		return
 	if enemy in hit_this_tick: 
@@ -164,15 +182,16 @@ func _apply_damage(enemy: Node) -> void:
 	var is_crit: bool = randf() < crit
 	enemy.apply_damage(damage, is_crit)
 
-# Create visual beam segment
+# ===== VISUAL MANAGEMENT =====
 func _add_segment(start: Vector2, end: Vector2) -> void:
+	# Create visual beam segment
 	var seg = SEGMENT_SCENE.instantiate()
 	add_child(seg)
 	seg.update_segment(start, end)
 	segments.append(seg)
 
-# Update visual segments to match chain
 func _update_visuals() -> void:
+	# Update visual segments to match chain
 	if segments.is_empty() or chain.is_empty():
 		return
 	
@@ -181,14 +200,14 @@ func _update_visuals() -> void:
 		if i < segments.size():
 			segments[i].update_segment(chain[i-1].global_position, chain[i].global_position)
 
-# Remove excess segments when chain shrinks
 func _shrink_segments_to(count: int) -> void:
+	# Remove excess segments when chain shrinks
 	while segments.size() > count:
 		segments.back().queue_free()
 		segments.pop_back()
 
-# Clean up all visual segments
 func _clear_segments() -> void:
+	# Clean up all visual segments
 	for s in segments:
 		if is_instance_valid(s):
 			var parent = s.get_parent()
@@ -197,8 +216,9 @@ func _clear_segments() -> void:
 			s.queue_free()
 	segments.clear()
 
-# Cleanup on destruction
+# ===== CLEANUP =====
 func _exit_tree() -> void:
+	# Cleanup on destruction
 	_clear_segments()
 	chain.clear()
 	hit_this_tick.clear()

@@ -1,15 +1,12 @@
+# scripts/weapons/ShooterWeapon.gd
 extends BaseWeapon
 class_name ShooterWeapon
 
-# ─── Remove duplicate properties - use BaseWeapon's instead ───
-# REMOVED: @export var base_fire_rate : float = 1.0     # Now in BaseWeapon
-# REMOVED: var final_fire_rate : float = 1.0            # Now in BaseWeapon
+# ===== RUNTIME STATE =====
+var cooldown_timer: float = 0.0
+var current_target: Node = null
 
-# ─── Runtime ─────────────────────────────────────────
-var cooldown_timer  : float = 0.0
-var current_target  : Node  = null
-
-# ─── Engine callbacks ────────────────────────────────
+# ===== ENGINE CALLBACKS =====
 func _physics_process(delta: float) -> void:
 	current_target = _find_target_in_range()
 	if current_target:
@@ -23,38 +20,41 @@ func auto_fire(_delta: float) -> void:
 		return
 	if is_instance_valid(current_target):
 		_fire_once(current_target)
-		cooldown_timer = 1.0 / final_fire_rate  # Use BaseWeapon's final_fire_rate
+		cooldown_timer = 1.0 / final_fire_rate
 
-# ─── Stat application (called by concrete weapon) ────
+# ===== STAT APPLICATION =====
 func apply_weapon_modifiers(pd: PlayerData) -> void:
-	super.apply_weapon_modifiers(pd)      # BaseWeapon handles everything now!
-	# REMOVED: final_fire_rate = base_fire_rate  # BaseWeapon does this now
+	super.apply_weapon_modifiers(pd)
 
-# ─── Hooks for concrete subclasses ───────────────────
+# ===== HOOKS FOR CONCRETE SUBCLASSES =====
 func _fire_once(_target: Node) -> void:
 	push_warning("%s: _fire_once() not implemented" % self)
 
-# ─── Optimized targeting using Godot's built-in physics ───────────
+# ===== OPTIMIZED TARGET ACQUISITION =====
 func _find_target_in_range() -> Node:
-	# Use Godot's built-in physics queries
+	"""
+	Find closest enemy using Godot's optimized physics queries.
+	
+	PERFORMANCE: This uses Godot's built-in C++ physics engine via PhysicsServer2D 
+	for O(log n) spatial queries instead of O(n) iteration. The physics engine 
+	maintains a spatial hash/quadtree internally for fast proximity searches.
+	"""
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
 	
-	# Create a circle shape for our weapon range
 	var circle = CircleShape2D.new()
 	circle.radius = final_range
 	
-	# Set up the query parameters
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = 1 << 2  # Only check enemy layer (layer 2)
+	params.collision_mask = 1 << 2  # Enemy layer
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	# Query physics engine for enemies in range
-	var results = space_state.intersect_shape(params, 32)  # Max 32 results
+	# Execute spatial query - leverages C++ backend optimization
+	var results = space_state.intersect_shape(params, 32)
 	
-	# Find the closest enemy from results
+	# Find closest enemy from results
 	var best_enemy = null
 	var best_dist_sq = final_range * final_range
 	

@@ -1,7 +1,7 @@
 extends Node
 class_name GameManager
 
-@export var starting_weapon: PackedScene = preload("res://scenes/weapons/RocketWeapon.tscn")
+@export var starting_weapon: PackedScene = preload("res://scenes/weapons/laser/LaserWeapon.tscn")
 
 # ====== Currency & Progress ======
 var credits: int = 0       # Standard currency (from drops)
