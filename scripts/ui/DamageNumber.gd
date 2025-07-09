@@ -2,31 +2,42 @@
 extends Node2D
 class_name DamageNumber
 
+# ===== BULLET HELL DAMAGE DISPLAY SYSTEM =====
+# PROBLEM: Rapid-fire weapons create 50+ damage numbers per enemy causing:
+#   - Visual spam that obscures gameplay
+#   - Performance death from hundreds of UI nodes
+#   - Memory leaks when enemies die mid-animation
+# SOLUTION: Aggregate multiple hits into single animated counter with safe detachment
+# DOMAIN: Essential for bullet-hell games where 1000+ damage events occur per second
+
 signal label_finished
 
 # ===== TIMING CONSTANTS =====
-const HOLD_TIME: float = 0.08
-const FADE_TIME: float = 0.40
-const FLOAT_SPEED: float = 30.0
-const COUNT_SPEED: float = 60.0
+const HOLD_TIME: float = 0.08    # Display time before fade starts
+const FADE_TIME: float = 0.40    # Fade duration for smooth exit
+const FLOAT_SPEED: float = 30.0  # Upward drift speed (game juice)
+const COUNT_SPEED: float = 60.0  # Damage counter animation speed
 
-# ===== DAMAGE STATE =====
-var total_damage: float = 0.0
-var displayed_damage: float = 0.0
-var time_since_hit: float = 0.0
-var fading: bool = false
-var tween: Tween = null
-var is_detached: bool = false
+# ===== DAMAGE AGGREGATION STATE =====
+var total_damage: float = 0.0      # Accumulated damage from multiple hits
+var displayed_damage: float = 0.0  # Current animated display value
+var time_since_hit: float = 0.0    # Timer for fade trigger
+var fading: bool = false           # Animation state flag
+var tween: Tween = null            # Fade animation controller
+var is_detached: bool = false      # Memory safety flag
 
 # ===== VISUAL PROPERTIES =====
-var crit_color: Color = Color(1, 0.3, 0.3)
-var norm_color: Color = Color(1, 1, 1)
+var crit_color: Color = Color(1, 0.3, 0.3)  # Red for critical hits
+var norm_color: Color = Color(1, 1, 1)      # White for normal damage
 
 # ===== COMPONENTS =====
 var label: Label
 
-# ===== MEMORY MANAGEMENT =====
-var _accepting_damage: bool = true  # Prevents new damage, allows animation completion
+# ===== MEMORY SAFETY SYSTEM =====
+# WHY: Enemies die unpredictably while damage numbers animate
+# SOLUTION: _accepting_damage flag prevents new damage on dying enemies
+# BENEFIT: Clean animation completion without memory leaks or visual glitches
+var _accepting_damage: bool = true
 
 # ===== INITIALIZATION =====
 func _ready() -> void:
@@ -37,62 +48,69 @@ func _ready() -> void:
 	label.text = ""
 	_center_label()
 
-# ===== DAMAGE AGGREGATION =====
+# ===== DAMAGE AGGREGATION SYSTEM =====
 func add_damage(amount: float, is_crit: bool) -> void:
-	"""Add damage to counter - aggregates multiple hits into single display"""
+	"""
+	BULLET HELL OPTIMIZATION: Combines rapid hits into single display
+	
+	PROBLEM: High-RoF weapons (300+ bullets/sec) create visual chaos
+	SOLUTION: Aggregate damage values, smooth-count to final total
+	PERFORMANCE: 1 UI element per enemy instead of 50+ overlapping numbers
+	"""
 	if not _accepting_damage:
-		return
+		return  # Enemy dying - reject new damage but continue animation
 		
 	total_damage += amount
 	label.modulate = crit_color if is_crit else norm_color
 
-	# Initialize or update display
+	# SMOOTH COUNTING: Initialize or update display target
 	if displayed_damage == 0.0:
-		displayed_damage = total_damage
+		displayed_damage = total_damage      # First hit - instant display
 		label.text = str(int(displayed_damage))
 	else:
-		label.text = str(int(total_damage))
+		label.text = str(int(total_damage))  # Update target for counting animation
 
 	_center_label()
-	time_since_hit = 0.0
+	time_since_hit = 0.0  # Reset fade timer
 
-	# Cancel fade if in progress
+	# ANIMATION INTERRUPTION: Cancel fade if new damage arrives
 	if fading:
 		fading = false
 		if tween and tween.is_valid():
 			tween.kill()
 		modulate.a = 1.0
 
-# ===== UPDATE LOOP =====
+# ===== SMOOTH ANIMATION SYSTEM =====
 func _process(delta: float) -> void:
-	# Smooth count-up animation
+	# SMOOTH COUNTING: Animate from displayed_damage to total_damage
+	# GAME JUICE: Creates satisfying visual feedback for big hits
 	if displayed_damage < total_damage:
 		var step: float = min(COUNT_SPEED * delta, total_damage - displayed_damage)
 		displayed_damage += step
 		label.text = str(int(displayed_damage))
 		_center_label()
 
-	# Upward drift
+	# VISUAL POLISH: Upward drift for game feel
 	position.y -= FLOAT_SPEED * delta
 
-	# Fade timing
+	# LIFECYCLE MANAGEMENT: Trigger fade after hold time
 	time_since_hit += delta
 	if not fading and time_since_hit >= HOLD_TIME:
 		if not is_detached:
-			detach()
+			detach()  # Safe detachment from dying enemy
 		else:
-			_start_fade()
+			_start_fade()  # Normal fade sequence
 
 # ===== UTILITY METHODS =====
 func _center_label() -> void:
-	"""Center label on this node's origin"""
+	"""Center label on node origin for consistent positioning"""
 	if not is_instance_valid(label):
 		return
 	var size: Vector2 = label.get_minimum_size()
 	label.position = Vector2(-size.x * 0.5, -size.y * 0.5)
 
 func _start_fade() -> void:
-	"""Begin fade out animation"""
+	"""Smooth fade-out animation with cleanup"""
 	fading = true
 	tween = create_tween()
 	tween.tween_property(self, "modulate:a", 0.0, FADE_TIME)\
@@ -100,51 +118,55 @@ func _start_fade() -> void:
 	tween.tween_callback(_on_fade_done)
 
 func _on_fade_done() -> void:
-	"""Clean up after fade completes"""
+	"""Complete animation lifecycle"""
 	emit_signal("label_finished")
 	queue_free()
 
-# ===== MEMORY MANAGEMENT SYSTEM =====
+# ===== BULLET HELL MEMORY SAFETY =====
 func detach() -> void:
 	"""
-	Detach from parent when enemy dies - prevents memory leaks.
+	CRITICAL SYSTEM: Prevents memory leaks when enemies die during animation
 	
-	SAFETY: Preserves world position and reparents to scene root to complete 
-	animation without holding references to destroyed enemies.
+	PROBLEM: Enemy death destroys damage number mid-animation
+	CONSEQUENCES: Visual glitches, abrupt cutoffs, poor game feel
+	SOLUTION: Reparent to scene root, preserve world position, complete animation
+	
+	MEMORY SAFETY: Breaks parent reference to allow enemy cleanup
+	VISUAL CONTINUITY: Animation completes naturally for player feedback
 	"""
 	if is_detached:
 		return
 	is_detached = true
 
-	# Preserve world position
+	# POSITION PRESERVATION: Maintain world coordinates during reparenting
 	var gpos: Vector2 = global_position
 
-	# Cache the SceneTree reference before removal
+	# SAFE REFERENCE: Cache tree before parent removal
 	var tree: SceneTree = get_tree()
 
 	if get_parent():
 		get_parent().remove_child(self)
 
-	# Choose a safe parent for the floating number
+	# FALLBACK HIERARCHY: Find safe parent for orphaned damage number
 	var target_parent: Node = null
 	if tree != null:
 		target_parent = tree.get_current_scene()
 		if target_parent == null:
 			target_parent = tree.root
 	else:
-		target_parent = get_viewport()
+		target_parent = get_viewport()  # Last resort
 
-	# Safety check before re-parenting
+	# REPARENTING WITH VALIDATION: Ensure safe attachment
 	if target_parent and is_instance_valid(target_parent):
 		target_parent.add_child(self)
-		global_position = gpos
+		global_position = gpos  # Restore world position
 	else:
-		# Can't find safe parent, just let it free naturally
+		# GRACEFUL DEGRADATION: No safe parent found
 		queue_free()
 
 # ===== CLEANUP =====
 func _exit_tree() -> void:
-	"""Stop accepting damage and clean up"""
+	"""Final cleanup - stop accepting damage and kill animations"""
 	_accepting_damage = false
 	if tween and tween.is_valid():
 		tween.kill()

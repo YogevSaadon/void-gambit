@@ -2,11 +2,13 @@
 extends BaseWeapon
 class_name ShooterWeapon
 
-# ===== RUNTIME STATE =====
+# ===== AUTO-TARGETING WEAPON BASE =====
+# PERFORMANCE: Uses spatial queries instead of O(n) enemy iteration
+# ARCHITECTURE: Template pattern - subclasses implement _fire_once()
+
 var cooldown_timer: float = 0.0
 var current_target: Node = null
 
-# ===== ENGINE CALLBACKS =====
 func _physics_process(delta: float) -> void:
 	current_target = _find_target_in_range()
 	if current_target:
@@ -22,22 +24,19 @@ func auto_fire(_delta: float) -> void:
 		_fire_once(current_target)
 		cooldown_timer = 1.0 / final_fire_rate
 
-# ===== STAT APPLICATION =====
 func apply_weapon_modifiers(pd: PlayerData) -> void:
 	super.apply_weapon_modifiers(pd)
 
-# ===== HOOKS FOR CONCRETE SUBCLASSES =====
 func _fire_once(_target: Node) -> void:
 	push_warning("%s: _fire_once() not implemented" % self)
 
-# ===== OPTIMIZED TARGET ACQUISITION =====
 func _find_target_in_range() -> Node:
 	"""
-	Find closest enemy using Godot's optimized physics queries.
+	PERFORMANCE OPTIMIZATION: O(log n) spatial queries via PhysicsServer2D
 	
-	PERFORMANCE: This uses Godot's built-in C++ physics engine via PhysicsServer2D 
-	for O(log n) spatial queries instead of O(n) iteration. The physics engine 
-	maintains a spatial hash/quadtree internally for fast proximity searches.
+	WHY NOT O(n) ITERATION: With 100+ enemies, linear search causes frame drops
+	GODOT OPTIMIZATION: Physics engine maintains spatial hash/quadtree in C++
+	RESULT LIMITING: Cap at 32 enemies for consistent frame times
 	"""
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
@@ -51,10 +50,10 @@ func _find_target_in_range() -> Node:
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	# Execute spatial query - leverages C++ backend optimization
+	# SPATIAL QUERY: Leverages C++ backend for fast proximity search
 	var results = space_state.intersect_shape(params, 32)
 	
-	# Find closest enemy from results
+	# CLOSEST SELECTION: Linear search through small result set (max 32)
 	var best_enemy = null
 	var best_dist_sq = final_range * final_range
 	

@@ -2,29 +2,30 @@
 extends Node2D
 class_name ChainLaserBeamController
 
-# ===== BEAM CONFIGURATION =====
+# ===== CHAIN LASER REFLECTION SYSTEM =====
+# DOMAIN: Bullet hell visual beam weapons that chain between enemies
+# CHALLENGE: Enemies die unpredictably, breaking visual chains mid-beam
+# SOLUTION: Dynamic chain rebuilding with spatial optimization
+
 @export var tick_time: float = 0.05
 @export var validation_interval: float = 0.1
 
-# ===== BEAM STATE =====
 var muzzle: Node2D
 var damage: float
 var crit: float
 var range: float
 var max_chain_len: int = 1
 
-# ===== CHAIN MANAGEMENT =====
-var chain: Array[Node] = []
-var segments: Array[Node] = []
+# ===== CHAIN STATE MANAGEMENT =====
+var chain: Array[Node] = []           # Current enemy chain
+var segments: Array[Node] = []        # Visual beam segments
 var tick_accum: float = 0.0
 var validation_timer: float = 0.0
-var hit_this_tick: Dictionary = {}
+var hit_this_tick: Dictionary = {}    # Prevents double-damage per tick
 
-# ===== CONSTANTS =====
 const SEGMENT_SCENE: PackedScene = preload("res://scenes/weapons/laser/BeamSegment.tscn")
 @onready var pd: PlayerData = get_tree().root.get_node("PlayerData")
 
-# ===== INITIALIZATION =====
 func set_beam_stats(m: Node2D, first_target: Node, dmg: float, cr: float, rng: float, reflects_left: int) -> void:
 	muzzle = m
 	damage = dmg
@@ -34,7 +35,6 @@ func set_beam_stats(m: Node2D, first_target: Node, dmg: float, cr: float, rng: f
 	validation_timer = validation_interval
 	_reset_chain(first_target)
 
-# ===== BEAM UPDATE =====
 func _process(delta: float) -> void:
 	if muzzle == null:
 		_clear_segments()
@@ -42,6 +42,7 @@ func _process(delta: float) -> void:
 
 	_clean_invalid_enemies()
 
+	# STAGGERED VALIDATION: Prevents frame spikes from simultaneous chain rebuilds
 	validation_timer -= delta
 	if validation_timer <= 0.0:
 		validation_timer = validation_interval
@@ -54,6 +55,7 @@ func _process(delta: float) -> void:
 		_clear_segments()
 		return
 
+	# DAMAGE TICK SYSTEM: Continuous damage while beam is active
 	tick_accum += delta
 	if tick_accum >= tick_time:
 		tick_accum = 0.0
@@ -61,9 +63,8 @@ func _process(delta: float) -> void:
 		for e in chain:
 			_apply_damage(e)
 
-# ===== RANGE MANAGEMENT =====
 func _get_current_range() -> float:
-	# Get current weapon range from parent weapon
+	# DYNAMIC RANGE: Adapts to weapon upgrades in real-time
 	if muzzle and is_instance_valid(muzzle.get_parent()):
 		var weapon = muzzle.get_parent()
 		if weapon is LaserWeapon and "final_range" in weapon:
@@ -72,7 +73,6 @@ func _get_current_range() -> float:
 
 # ===== CHAIN VALIDATION =====
 func _clean_invalid_enemies() -> void:
-	# Remove destroyed enemies from chain
 	var original_size = chain.size()
 	chain = chain.filter(func(enemy): return is_instance_valid(enemy))
 	
@@ -80,7 +80,6 @@ func _clean_invalid_enemies() -> void:
 		_shrink_segments_to(chain.size())
 
 func _is_valid_enemy(e: Node) -> bool:
-	# Check if enemy is valid and in range
 	if not is_instance_valid(e):
 		return false
 	
@@ -90,16 +89,15 @@ func _is_valid_enemy(e: Node) -> bool:
 	return distance_sq < range_sq
 
 func _prune_chain() -> void:
-	# Remove out-of-range enemies from chain
+	# RANGE VALIDATION: Remove enemies that moved out of range
 	for i in range(chain.size()):
 		if not _is_valid_enemy(chain[i]):
 			chain.resize(i)
 			_shrink_segments_to(i)
 			break
 
-# ===== CHAIN EXTENSION =====
 func _extend_chain() -> void:
-	# Extend chain to maximum length
+	# CHAIN BUILDING: Extend to maximum reflection count
 	while chain.size() < max_chain_len:
 		var tail: Node = null
 		if not chain.is_empty():
@@ -114,11 +112,11 @@ func _extend_chain() -> void:
 
 func _find_next_enemy_from(from_node: Node) -> Node:
 	"""
-	Find nearest enemy using optimized physics query.
+	CHAIN TARGETING: Find nearest enemy not already in laser chain
 	
-	PERFORMANCE: Uses Godot's C++ physics engine for O(log n) spatial queries 
-	via PhysicsServer2D instead of O(n) iteration. The physics engine maintains 
-	a spatial hash/quadtree internally for fast proximity searches.
+	PERFORMANCE: O(log n) spatial query instead of O(n) enemy iteration
+	EXCLUSION LOGIC: Prevents laser from targeting same enemy twice
+	RESULT LIMITING: Caps search results for consistent performance
 	"""
 	var origin: Vector2
 	if from_node != null:
@@ -128,7 +126,6 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 
 	var current_range = _get_current_range()
 
-	# Use Godot physics backend for fast spatial queries
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
 	
@@ -141,17 +138,16 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	# Execute spatial query - leverages C++ backend optimization
+	# SPATIAL QUERY: Leverages Godot's C++ physics engine optimization
 	var results = space_state.intersect_shape(params, 32)
 	
-	# Find closest enemy not in chain
 	var best: Node = null
 	var best_d_sq: float = current_range * current_range
 	
 	for result in results:
 		var enemy = result.collider
 		if not is_instance_valid(enemy) or enemy in chain:
-			continue
+			continue  # Skip invalid or already-chained enemies
 		var d_sq = origin.distance_squared_to(enemy.global_position)
 		if d_sq < best_d_sq:
 			best_d_sq = d_sq
@@ -159,22 +155,18 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	
 	return best
 
-# ===== CHAIN INITIALIZATION =====
 func _reset_chain(first_target: Node) -> void:
-	# Initialize chain with first target
 	_clear_segments()
 	chain.clear()
 	if is_instance_valid(first_target):
 		chain.append(first_target)
 		_add_segment(muzzle.global_position, first_target.global_position)
 
-# ===== DAMAGE APPLICATION =====
 func _apply_damage(enemy: Node) -> void:
-	# Apply damage to enemy with crit calculation
 	if not is_instance_valid(enemy):
 		return
 	if enemy in hit_this_tick: 
-		return
+		return  # Prevent double-damage in single tick
 	hit_this_tick[enemy] = true
 	if not enemy.has_method("apply_damage"):
 		return
@@ -184,14 +176,12 @@ func _apply_damage(enemy: Node) -> void:
 
 # ===== VISUAL MANAGEMENT =====
 func _add_segment(start: Vector2, end: Vector2) -> void:
-	# Create visual beam segment
 	var seg = SEGMENT_SCENE.instantiate()
 	add_child(seg)
 	seg.update_segment(start, end)
 	segments.append(seg)
 
 func _update_visuals() -> void:
-	# Update visual segments to match chain
 	if segments.is_empty() or chain.is_empty():
 		return
 	
@@ -201,13 +191,11 @@ func _update_visuals() -> void:
 			segments[i].update_segment(chain[i-1].global_position, chain[i].global_position)
 
 func _shrink_segments_to(count: int) -> void:
-	# Remove excess segments when chain shrinks
 	while segments.size() > count:
 		segments.back().queue_free()
 		segments.pop_back()
 
 func _clear_segments() -> void:
-	# Clean up all visual segments
 	for s in segments:
 		if is_instance_valid(s):
 			var parent = s.get_parent()
@@ -216,9 +204,7 @@ func _clear_segments() -> void:
 			s.queue_free()
 	segments.clear()
 
-# ===== CLEANUP =====
 func _exit_tree() -> void:
-	# Cleanup on destruction
 	_clear_segments()
 	chain.clear()
 	hit_this_tick.clear()
