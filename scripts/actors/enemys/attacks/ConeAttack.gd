@@ -26,14 +26,15 @@ var _player_in_range : bool = false
 # How often we re-check distance to player (seconds)
 const RANGE_CHECK_INTERVAL := 0.2
 
-
 # ─────────────────────────────────────────────────────────────
 #  LIFECYCLE
 # ─────────────────────────────────────────────────────────────
 func _ready() -> void:
-	# find owning enemy (any depth up the tree)
+	# GODOT SCENE TREE NAVIGATION: Find owning enemy via parent traversal
 	_owner_enemy = _find_parent_enemy()
-	assert(_owner_enemy, "ConeAttack must be inside a BaseEnemy scene")
+	if not _owner_enemy:
+		push_error("ConeAttack: No BaseEnemy parent found in scene hierarchy")
+		return
 
 	# scale damage by enemy power level
 	_final_damage = base_damage * _owner_enemy.power_level
@@ -46,12 +47,10 @@ func _ready() -> void:
 	if weapon_sprite:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.2
 
-
 # If your enemy already calls weapon.tick_attack(delta) you can
 # delete this fallback.  It just makes sure the gun still works.
 func _physics_process(delta: float) -> void:
 	tick_attack(delta)
-
 
 # ─────────────────────────────────────────────────────────────
 #  MAIN UPDATE CALLED EACH FRAME
@@ -70,16 +69,25 @@ func tick_attack(delta: float) -> void:
 		_fire_cone_attack()
 		_fire_timer = fire_interval
 
-
 # ─────────────────────────────────────────────────────────────
 #  HELPERS
 # ─────────────────────────────────────────────────────────────
 func _find_parent_enemy() -> BaseEnemy:
+	"""
+	GODOT SCENE TREE NAVIGATION: Standard parent traversal pattern
+	ARCHITECTURE: Components find their owners through scene hierarchy
+	ERROR HANDLING: Explicit failure with detailed error message
+	"""
 	var p := get_parent()
 	while p and not (p is BaseEnemy):
 		p = p.get_parent()
+	
+	# EXPLICIT FAILURE: Better than silent null return
+	if not p:
+		var script_name = get_script().get_path().get_file()
+		push_error("%s: No BaseEnemy found in parent hierarchy" % script_name)
+	
 	return p as BaseEnemy
-
 
 func _update_player_cache() -> void:
 	var player := EnemyUtils.get_player()
@@ -89,7 +97,6 @@ func _update_player_cache() -> void:
 
 	_player_pos = player.global_position
 	_player_in_range = _owner_enemy.global_position.distance_to(_player_pos) <= shooting_range
-
 
 func _fire_cone_attack() -> void:
 	if not muzzle or not bullet_scene:
@@ -117,7 +124,6 @@ func _fire_cone_attack() -> void:
 	
 	_flash()
 
-
 func _fire_bullet_in_direction(direction: Vector2) -> void:
 	# ─── Instantiate and place the projectile ───
 	var bullet := bullet_scene.instantiate()
@@ -139,7 +145,6 @@ func _fire_bullet_in_direction(direction: Vector2) -> void:
 
 	# Add the projectile to the current scene (or to a dedicated 'Projectiles' node)
 	get_tree().current_scene.add_child(bullet)
-
 
 func _flash() -> void:
 	if not weapon_sprite:

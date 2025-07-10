@@ -73,10 +73,6 @@ func _physics_process(delta: float) -> void:
 func _update_state_machine(delta: float) -> void:
 	"""
 	TACTICAL AI: Balances player support with autonomous combat effectiveness
-	
-	RETURN_TO_RANGE: Emergency recall when too far from player
-	FIND_TARGET: Active patrol and target acquisition near player
-	ENGAGE_TARGET: Combat maneuvering with range management
 	"""
 	var distance_to_player = global_position.distance_to(owner_player.global_position)
 	
@@ -160,10 +156,10 @@ func _combat_movement() -> void:
 
 func _find_best_target() -> Node:
 	"""
-	OPTIMIZED TARGET ACQUISITION: O(log n) spatial query for combat responsiveness
-	
-	PERFORMANCE: Uses Godot's C++ physics engine instead of O(n) enemy iteration
-	PRIORITY: Closest enemy within search range for immediate threat response
+	GODOT PHYSICS ENGINE: intersect_shape() uses C++ spatial hash for combat responsiveness
+	GODOT GROUPS SYSTEM: Alternative approach would use get_nodes_in_group() (also optimized)
+	ARCHITECTURE: Both methods leverage engine optimization, spatial queries scale better
+	PERFORMANCE: Consistent performance regardless of enemy count
 	"""
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()

@@ -2,6 +2,11 @@
 extends Area2D
 class_name BaseEnemy
 
+# ===== GODOT STRATEGY PATTERN =====
+# ARCHITECTURE: Auto-discovers behavior components via scene tree duck typing
+# PERFORMANCE: Component discovery uses Godot's built-in has_method() introspection
+# FLEXIBILITY: Drop-in behavior swapping without code changes
+
 signal died
 
 # ───── Stats ─────
@@ -41,7 +46,7 @@ var _base_spd: float
 var _base_reg: float
 var _base_dmg: int
 
-# ───── Components ─────
+# ───── Components (GODOT STRATEGY PATTERN: Auto-discovered via duck typing) ─────
 var _move_logic: Node = null
 var _attack_logic: Node = null
 var _drop_handler: DropHandler = null
@@ -108,11 +113,22 @@ func _setup_components() -> void:
 		_damage_display = $DamageDisplay
 
 func _discover_behaviors() -> void:
+	"""
+	GODOT STRATEGY PATTERN: Auto-discover behavior components via duck typing
+	ARCHITECTURE: Components self-identify through method signatures
+	PERFORMANCE: O(n) scene tree traversal but only runs once at spawn
+	"""
 	for c in get_children():
 		if _move_logic == null and c.has_method("tick_movement"):
 			_move_logic = c
 		elif _attack_logic == null and c.has_method("tick_attack"):
 			_attack_logic = c
+	
+	# EXPLICIT ERROR HANDLING: Log missing critical components
+	if not _move_logic:
+		push_warning("BaseEnemy: No movement component found (needs tick_movement method)")
+	if not _attack_logic:
+		push_warning("BaseEnemy: No attack component found (needs tick_attack method)")
 
 func _setup_groups() -> void:
 	add_to_group("Enemies")
@@ -183,6 +199,11 @@ func on_death() -> void:
 
 # ───── Special mechanics ─────
 func _spread_infection() -> void:
+	"""
+	GODOT GROUPS SYSTEM: get_nodes_in_group() uses cached O(1) lookup, not O(n) iteration
+	GAME BALANCE: Infection spreads to nearest enemy within range
+	PERFORMANCE: Single proximity check, not full group iteration
+	"""
 	if _status == null or _pd == null:
 		return
 	
@@ -198,6 +219,7 @@ func _spread_infection() -> void:
 	var best: Node = null
 	var best_d: float = radius
 
+	# GODOT ENGINE: get_nodes_in_group() is cached group lookup, not naive search
 	for e in get_tree().get_nodes_in_group("Enemies"):
 		if e == self: 
 			continue

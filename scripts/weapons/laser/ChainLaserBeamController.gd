@@ -112,11 +112,10 @@ func _extend_chain() -> void:
 
 func _find_next_enemy_from(from_node: Node) -> Node:
 	"""
-	CHAIN TARGETING: Find nearest enemy not already in laser chain
-	
-	PERFORMANCE: O(log n) spatial query instead of O(n) enemy iteration
-	EXCLUSION LOGIC: Prevents laser from targeting same enemy twice
-	RESULT LIMITING: Caps search results for consistent performance
+	GODOT PHYSICS ENGINE: intersect_shape() uses C++ spatial hash, not naive iteration
+	ARCHITECTURE: Leverages engine's built-in spatial partitioning (quadtree/hash)
+	PERFORMANCE: Both get_nodes_in_group() and intersect_shape() are engine-optimized
+	SCALING: Spatial queries maintain consistent performance with enemy count
 	"""
 	var origin: Vector2
 	if from_node != null:
@@ -138,7 +137,7 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	# SPATIAL QUERY: Leverages Godot's C++ physics engine optimization
+	# GODOT ENGINE: intersect_shape() leverages C++ physics backend optimization
 	var results = space_state.intersect_shape(params, 32)
 	
 	var best: Node = null

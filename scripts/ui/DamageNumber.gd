@@ -3,12 +3,8 @@ extends Node2D
 class_name DamageNumber
 
 # ===== BULLET HELL DAMAGE DISPLAY SYSTEM =====
-# PROBLEM: Rapid-fire weapons create 50+ damage numbers per enemy causing:
-#   - Visual spam that obscures gameplay
-#   - Performance death from hundreds of UI nodes
-#   - Memory leaks when enemies die mid-animation
-# SOLUTION: Aggregate multiple hits into single animated counter with safe detachment
 # DOMAIN: Essential for bullet-hell games where 1000+ damage events occur per second
+# SOLUTION: Aggregate multiple hits into single animated counter with safe detachment
 
 signal label_finished
 
@@ -34,9 +30,8 @@ var norm_color: Color = Color(1, 1, 1)      # White for normal damage
 var label: Label
 
 # ===== MEMORY SAFETY SYSTEM =====
-# WHY: Enemies die unpredictably while damage numbers animate
-# SOLUTION: _accepting_damage flag prevents new damage on dying enemies
-# BENEFIT: Clean animation completion without memory leaks or visual glitches
+# GODOT SCENE TREE: _accepting_damage flag prevents new damage on dying enemies
+# ARCHITECTURE: Clean animation completion without memory leaks or visual glitches
 var _accepting_damage: bool = true
 
 # ===== INITIALIZATION =====
@@ -52,9 +47,6 @@ func _ready() -> void:
 func add_damage(amount: float, is_crit: bool) -> void:
 	"""
 	BULLET HELL OPTIMIZATION: Combines rapid hits into single display
-	
-	PROBLEM: High-RoF weapons (300+ bullets/sec) create visual chaos
-	SOLUTION: Aggregate damage values, smooth-count to final total
 	PERFORMANCE: 1 UI element per enemy instead of 50+ overlapping numbers
 	"""
 	if not _accepting_damage:
@@ -83,7 +75,6 @@ func add_damage(amount: float, is_crit: bool) -> void:
 # ===== SMOOTH ANIMATION SYSTEM =====
 func _process(delta: float) -> void:
 	# SMOOTH COUNTING: Animate from displayed_damage to total_damage
-	# GAME JUICE: Creates satisfying visual feedback for big hits
 	if displayed_damage < total_damage:
 		var step: float = min(COUNT_SPEED * delta, total_damage - displayed_damage)
 		displayed_damage += step
@@ -122,15 +113,11 @@ func _on_fade_done() -> void:
 	emit_signal("label_finished")
 	queue_free()
 
-# ===== BULLET HELL MEMORY SAFETY =====
+# ===== GODOT SCENE TREE REPARENTING =====
 func detach() -> void:
 	"""
-	CRITICAL SYSTEM: Prevents memory leaks when enemies die during animation
-	
-	PROBLEM: Enemy death destroys damage number mid-animation
-	CONSEQUENCES: Visual glitches, abrupt cutoffs, poor game feel
-	SOLUTION: Reparent to scene root, preserve world position, complete animation
-	
+	GODOT SCENE TREE REPARENTING: Standard pattern for orphaned UI elements
+	ARCHITECTURE: get_tree().current_scene is Godot's canonical scene root
 	MEMORY SAFETY: Breaks parent reference to allow enemy cleanup
 	VISUAL CONTINUITY: Animation completes naturally for player feedback
 	"""
@@ -147,7 +134,7 @@ func detach() -> void:
 	if get_parent():
 		get_parent().remove_child(self)
 
-	# FALLBACK HIERARCHY: Find safe parent for orphaned damage number
+	# GODOT PATTERN: Scene root is standard fallback parent
 	var target_parent: Node = null
 	if tree != null:
 		target_parent = tree.get_current_scene()

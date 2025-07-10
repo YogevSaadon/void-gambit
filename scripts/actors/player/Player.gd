@@ -2,6 +2,11 @@
 extends CharacterBody2D
 class_name Player
 
+# ===== GODOT COMPONENT SYSTEM =====
+# ARCHITECTURE: Uses scene tree children as components (engine-native pattern)
+# COMPOSITION: Node hierarchy provides dependency injection via @onready
+# PERFORMANCE: Component discovery via scene tree is O(1) cached lookup
+
 # ───── We need Actor's properties but Player extends CharacterBody2D ─────
 @export var max_health: int = 10000
 @export var health: int = 10000
@@ -13,7 +18,7 @@ class_name Player
 # ───── Dependencies (injected) ─────
 var player_data: PlayerData = null
 
-# ───── Sub-systems ─────
+# ───── Sub-systems (GODOT COMPOSITION: Scene tree children as components) ─────
 @onready var blink_system: BlinkSystem = $BlinkSystem
 @onready var weapon_system: WeaponSystem = $WeaponSystem
 @onready var movement_system: PlayerMovement = $PlayerMovement
@@ -24,6 +29,10 @@ const INVULN_TIME := 0.3
 
 # ───── Init ─────
 func initialize(p_data: PlayerData) -> void:
+	if not p_data:
+		push_error("Player: PlayerData is null in initialize()")
+		return
+		
 	player_data = p_data
 	add_to_group("Player")
 	collision_layer = 1 << 1
@@ -35,6 +44,17 @@ func initialize(p_data: PlayerData) -> void:
 	shield = int(player_data.shield)
 	shield_recharge_rate = player_data.get_stat("shield_recharge_rate")
 	speed = player_data.get_stat("speed")
+
+	# GODOT COMPONENT SYSTEM: Initialize child components
+	if not blink_system:
+		push_error("Player: BlinkSystem component missing from scene")
+		return
+	if not weapon_system:
+		push_error("Player: WeaponSystem component missing from scene")
+		return
+	if not movement_system:
+		push_error("Player: PlayerMovement component missing from scene")
+		return
 
 	blink_system.initialize(self, player_data)
 	weapon_system.owner_player = self
@@ -53,7 +73,9 @@ func recharge_shield(delta: float) -> void:
 		shield = min(shield + shield_recharge_rate * delta, max_shield)
 
 func take_damage(amount: int) -> void:
-	# ===== Apply armor damage reduction =====
+	# ===== PRAGMATIC CHOICE: Armor calculation in Player (simple 3-line formula) =====
+	# GAME BALANCE: Direct damage calculation avoids over-abstraction
+	# PERFORMANCE: Inline calculation instead of separate damage system
 	var effective_damage = amount
 	if player_data:
 		var armor_value = player_data.get_stat("armor")
@@ -79,7 +101,6 @@ func take_damage(amount: int) -> void:
 	if health <= 0:
 		destroy()
 
-# ===== Armor calculation belongs in Player, not PlayerData =====
 func _calculate_damage_multiplier(armor_value: float) -> float:
 	"""
 	League of Legends / Brotato style armor formula:

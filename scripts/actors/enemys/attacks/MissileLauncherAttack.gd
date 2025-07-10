@@ -23,8 +23,11 @@ var _player_in_range : bool = false
 const RANGE_CHECK_INTERVAL := 0.2
 
 func _ready() -> void:
+	# GODOT SCENE TREE NAVIGATION: Find owning enemy via parent traversal
 	_owner_enemy = _find_parent_enemy()
-	assert(_owner_enemy, "MissileLauncherAttack must be inside a BaseEnemy scene")
+	if not _owner_enemy:
+		push_error("MissileLauncherAttack: Failed to initialize - no BaseEnemy parent")
+		return
 
 	# Randomise timers so enemies don't fire in sync
 	_fire_timer  = randf_range(0.0, fire_interval)
@@ -73,9 +76,20 @@ func _launch_missile() -> void:
 	_flash()
 
 func _find_parent_enemy() -> BaseEnemy:
+	"""
+	GODOT SCENE TREE NAVIGATION: Standard parent traversal pattern
+	ARCHITECTURE: Components find their owners through scene hierarchy
+	ERROR HANDLING: Explicit failure with detailed error message for debugging
+	"""
 	var p := get_parent()
 	while p and not (p is BaseEnemy):
 		p = p.get_parent()
+	
+	# EXPLICIT FAILURE: Better than silent null return for debugging
+	if not p:
+		var script_name = get_script().get_path().get_file()
+		push_error("%s: No BaseEnemy found in parent hierarchy. Check scene structure." % script_name)
+	
 	return p as BaseEnemy
 
 func _update_player_cache() -> void:

@@ -30,9 +30,11 @@ const RANGE_CHECK_INTERVAL := 0.2
 #  LIFECYCLE
 # ─────────────────────────────────────────────────────────────
 func _ready() -> void:
-	# find owning enemy (any depth up the tree)
+	# GODOT SCENE TREE NAVIGATION: Find owning enemy via parent traversal
 	_owner_enemy = _find_parent_enemy()
-	assert(_owner_enemy, "CircleAttack must be inside a BaseEnemy scene")
+	if not _owner_enemy:
+		push_error("StarAttack: Failed to initialize - no BaseEnemy parent")
+		return
 
 	# scale damage by enemy power level
 	_final_damage = base_damage * _owner_enemy.power_level
@@ -71,9 +73,20 @@ func tick_attack(delta: float) -> void:
 #  HELPERS
 # ─────────────────────────────────────────────────────────────
 func _find_parent_enemy() -> BaseEnemy:
+	"""
+	GODOT SCENE TREE NAVIGATION: Standard parent traversal pattern
+	ARCHITECTURE: Components find their owners through scene hierarchy
+	ERROR HANDLING: Explicit failure with detailed error message for debugging
+	"""
 	var p := get_parent()
 	while p and not (p is BaseEnemy):
 		p = p.get_parent()
+	
+	# EXPLICIT FAILURE: Better than silent null return for debugging
+	if not p:
+		var script_name = get_script().get_path().get_file()
+		push_error("%s: No BaseEnemy found in parent hierarchy. Check scene structure." % script_name)
+	
 	return p as BaseEnemy
 
 func _update_player_cache() -> void:
