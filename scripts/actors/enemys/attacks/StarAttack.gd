@@ -2,16 +2,12 @@
 extends Node2D
 class_name StarAttack
 
-# ───── TUNABLES ──────────────────────────────────────────────
-@export var base_damage   : float       = 25.0
-@export var shooting_range: float       = 5000.0    # EXTREME range - shoots from anywhere on map
-@export var fire_interval : float       = 6.0       # Much slower than single shot (3.0)
-@export var bullet_count  : int         = 16        # Double the bullets (was 8)
-@export var bullet_scene  : PackedScene = preload(
-	"res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn"
-)
+@export var base_damage   : float = 25.0
+@export var shooting_range: float = 5000.0
+@export var fire_interval : float = 6.0
+@export var bullet_count  : int = 16
+@export var bullet_scene  : PackedScene = preload("res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn")
 
-# ───── RUNTIME STATE ─────────────────────────────────────────
 var _owner_enemy  : BaseEnemy
 var _fire_timer   : float = 0.0
 var _range_timer  : float = 0.0
@@ -19,73 +15,73 @@ var _final_damage : float
 var _player_pos   : Vector2
 var _player_in_range : bool = false
 
-# ───── CHILD REFERENCES ─────────────────────────────────────
 @onready var muzzle        : Node2D   = $Muzzle
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-# How often we re-check distance to player (seconds)
 const RANGE_CHECK_INTERVAL := 0.2
 
-# ─────────────────────────────────────────────────────────────
-#  LIFECYCLE
-# ─────────────────────────────────────────────────────────────
 func _ready() -> void:
-	# GODOT SCENE TREE NAVIGATION: Find owning enemy via parent traversal
 	_owner_enemy = _find_parent_enemy()
 	if not _owner_enemy:
-		push_error("StarAttack: Failed to initialize - no BaseEnemy parent")
 		return
 
-	# scale damage by enemy power level
 	_final_damage = base_damage * _owner_enemy.power_level
-
-	# randomise timers so waves of enemies don't fire in sync
 	_fire_timer  = randf_range(0.0, fire_interval)
 	_range_timer = randf_range(0.0, RANGE_CHECK_INTERVAL)
 
-	# (optional) make the gun graphic bigger for stronger enemies
 	if weapon_sprite:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.2
 
-# If your enemy already calls weapon.tick_attack(delta) you can
-# delete this fallback.  It just makes sure the gun still works.
 func _physics_process(delta: float) -> void:
 	tick_attack(delta)
 
-# ─────────────────────────────────────────────────────────────
-#  MAIN UPDATE CALLED EACH FRAME
-# ─────────────────────────────────────────────────────────────
 func tick_attack(delta: float) -> void:
 	_fire_timer  -= delta
 	_range_timer -= delta
 
-	# periodically refresh distance cache
 	if _range_timer <= 0.0:
 		_range_timer = RANGE_CHECK_INTERVAL
 		_update_player_cache()
 
-	# shoot when ready
 	if _player_in_range and _fire_timer <= 0.0:
 		_fire_circle_attack()
 		_fire_timer = fire_interval
 
-# ─────────────────────────────────────────────────────────────
-#  HELPERS
-# ─────────────────────────────────────────────────────────────
+func _fire_circle_attack() -> void:
+	if not muzzle or not bullet_scene:
+		push_error("StarAttack: Missing muzzle or bullet scene")
+		return
+
+	# Fire bullets in all directions (360° circle)
+	for i in bullet_count:
+		var angle = (i / float(bullet_count)) * TAU
+		var direction = Vector2(cos(angle), sin(angle))
+		_fire_bullet_in_direction(direction)
+	
+	_flash()
+
+func _fire_bullet_in_direction(direction: Vector2) -> void:
+	var bullet := bullet_scene.instantiate()
+	bullet.global_position = muzzle.global_position
+
+	if bullet.has_method("set_direction"):
+		bullet.call("set_direction", direction)
+	else:
+		if bullet is BaseBullet:
+			var b := bullet as BaseBullet
+			b.direction = direction
+			b.damage    = _final_damage
+
+	bullet.rotation = direction.angle()
+	get_tree().current_scene.add_child(bullet)
+
 func _find_parent_enemy() -> BaseEnemy:
-	"""
-	GODOT SCENE TREE NAVIGATION: Standard parent traversal pattern
-	ARCHITECTURE: Components find their owners through scene hierarchy
-	ERROR HANDLING: Explicit failure with detailed error message for debugging
-	"""
 	var p := get_parent()
 	while p and not (p is BaseEnemy):
 		p = p.get_parent()
 	
-	# EXPLICIT FAILURE: Better than silent null return for debugging
 	if not p:
-		var script_name = get_script().get_path().get_file()
-		push_error("%s: No BaseEnemy found in parent hierarchy. Check scene structure." % script_name)
+		push_error("StarAttack: No BaseEnemy parent found")
 	
 	return p as BaseEnemy
 
@@ -97,41 +93,6 @@ func _update_player_cache() -> void:
 
 	_player_pos = player.global_position
 	_player_in_range = true  # Star ALWAYS shoots regardless of range
-
-func _fire_circle_attack() -> void:
-	if not muzzle or not bullet_scene:
-		push_error("CircleAttack: Missing muzzle or bullet scene")
-		return
-
-	# ─── Fire bullets in all directions (360° circle) ───
-	for i in bullet_count:
-		var angle = (i / float(bullet_count)) * TAU  # Evenly spaced around circle
-		var direction = Vector2(cos(angle), sin(angle))
-		_fire_bullet_in_direction(direction)
-	
-	_flash()
-
-func _fire_bullet_in_direction(direction: Vector2) -> void:
-	# ─── Instantiate and place the projectile ───
-	var bullet := bullet_scene.instantiate()
-	bullet.global_position = muzzle.global_position
-
-	# ─── Set bullet direction and properties ───
-	if bullet.has_method("set_direction"):
-		bullet.call("set_direction", direction)
-	else:
-		# …otherwise treat it as BaseBullet and assign the vars directly.
-		if bullet is BaseBullet:
-			var b := bullet as BaseBullet
-			b.direction = direction
-			b.damage    = _final_damage
-		else:
-			push_warning("Bullet doesn't expose direction; it will sit still!")
-
-	bullet.rotation = direction.angle()
-
-	# Add the projectile to the current scene
-	get_tree().current_scene.add_child(bullet)
 
 func _flash() -> void:
 	if not weapon_sprite:

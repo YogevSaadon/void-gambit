@@ -26,14 +26,9 @@ var _player_in_range : bool = false
 # How often we re-check distance to player (seconds)
 const RANGE_CHECK_INTERVAL := 0.2
 
-# ─────────────────────────────────────────────────────────────
-#  LIFECYCLE
-# ─────────────────────────────────────────────────────────────
 func _ready() -> void:
-	# GODOT SCENE TREE NAVIGATION: Find owning enemy via parent traversal
 	_owner_enemy = _find_parent_enemy()
 	if not _owner_enemy:
-		push_error("ConeAttack: No BaseEnemy parent found in scene hierarchy")
 		return
 
 	# scale damage by enemy power level
@@ -47,14 +42,9 @@ func _ready() -> void:
 	if weapon_sprite:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.2
 
-# If your enemy already calls weapon.tick_attack(delta) you can
-# delete this fallback.  It just makes sure the gun still works.
 func _physics_process(delta: float) -> void:
 	tick_attack(delta)
 
-# ─────────────────────────────────────────────────────────────
-#  MAIN UPDATE CALLED EACH FRAME
-# ─────────────────────────────────────────────────────────────
 func tick_attack(delta: float) -> void:
 	_fire_timer  -= delta
 	_range_timer -= delta
@@ -69,23 +59,13 @@ func tick_attack(delta: float) -> void:
 		_fire_cone_attack()
 		_fire_timer = fire_interval
 
-# ─────────────────────────────────────────────────────────────
-#  HELPERS
-# ─────────────────────────────────────────────────────────────
 func _find_parent_enemy() -> BaseEnemy:
-	"""
-	GODOT SCENE TREE NAVIGATION: Standard parent traversal pattern
-	ARCHITECTURE: Components find their owners through scene hierarchy
-	ERROR HANDLING: Explicit failure with detailed error message
-	"""
 	var p := get_parent()
 	while p and not (p is BaseEnemy):
 		p = p.get_parent()
 	
-	# EXPLICIT FAILURE: Better than silent null return
 	if not p:
-		var script_name = get_script().get_path().get_file()
-		push_error("%s: No BaseEnemy found in parent hierarchy" % script_name)
+		push_error("ConeAttack: No BaseEnemy parent found")
 	
 	return p as BaseEnemy
 

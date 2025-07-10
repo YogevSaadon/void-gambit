@@ -2,11 +2,6 @@
 extends Area2D
 class_name BaseEnemy
 
-# ===== GODOT STRATEGY PATTERN =====
-# ARCHITECTURE: Auto-discovers behavior components via scene tree duck typing
-# PERFORMANCE: Component discovery uses Godot's built-in has_method() introspection
-# FLEXIBILITY: Drop-in behavior swapping without code changes
-
 signal died
 
 # ───── Stats ─────
@@ -46,7 +41,7 @@ var _base_spd: float
 var _base_reg: float
 var _base_dmg: int
 
-# ───── Components (GODOT STRATEGY PATTERN: Auto-discovered via duck typing) ─────
+# ───── Components ─────
 var _move_logic: Node = null
 var _attack_logic: Node = null
 var _drop_handler: DropHandler = null
@@ -113,22 +108,12 @@ func _setup_components() -> void:
 		_damage_display = $DamageDisplay
 
 func _discover_behaviors() -> void:
-	"""
-	GODOT STRATEGY PATTERN: Auto-discover behavior components via duck typing
-	ARCHITECTURE: Components self-identify through method signatures
-	PERFORMANCE: O(n) scene tree traversal but only runs once at spawn
-	"""
+	"""Auto-discover behavior components via duck typing"""
 	for c in get_children():
 		if _move_logic == null and c.has_method("tick_movement"):
 			_move_logic = c
 		elif _attack_logic == null and c.has_method("tick_attack"):
 			_attack_logic = c
-	
-	# EXPLICIT ERROR HANDLING: Log missing critical components
-	if not _move_logic:
-		push_warning("BaseEnemy: No movement component found (needs tick_movement method)")
-	if not _attack_logic:
-		push_warning("BaseEnemy: No attack component found (needs tick_attack method)")
 
 func _setup_groups() -> void:
 	add_to_group("Enemies")
@@ -199,11 +184,6 @@ func on_death() -> void:
 
 # ───── Special mechanics ─────
 func _spread_infection() -> void:
-	"""
-	GODOT GROUPS SYSTEM: get_nodes_in_group() uses cached O(1) lookup, not O(n) iteration
-	GAME BALANCE: Infection spreads to nearest enemy within range
-	PERFORMANCE: Single proximity check, not full group iteration
-	"""
 	if _status == null or _pd == null:
 		return
 	
@@ -216,17 +196,40 @@ func _spread_infection() -> void:
 		return
 	
 	var radius: float = _pd.get_stat("weapon_range") * 0.4
+	
+	# Spatial query returns max 32 nearby enemies
+	var space_state = get_world_2d().direct_space_state
+	var params = PhysicsShapeQueryParameters2D.new()
+	
+	var circle = CircleShape2D.new()
+	circle.radius = radius
+	
+	params.shape = circle
+	params.transform = Transform2D(0, global_position)
+	params.collision_mask = 1 << 2  # Enemy layer
+	params.collide_with_areas = true
+	params.collide_with_bodies = false
+	
+	var results = space_state.intersect_shape(params, 32)
+	
+	# Find closest in small result set (O(32), not O(all_enemies))
 	var best: Node = null
 	var best_d: float = radius
-
-	# GODOT ENGINE: get_nodes_in_group() is cached group lookup, not naive search
-	for e in get_tree().get_nodes_in_group("Enemies"):
-		if e == self: 
+	
+	for result in results:
+		var enemy = result.collider
+		if enemy == self or not is_instance_valid(enemy):
 			continue
-		var d := global_position.distance_to(e.global_position)
+		var d := global_position.distance_to(enemy.global_position)
 		if d < best_d:
 			best_d = d
-			best = e
+			best = enemy
+	
+	# Apply infection to closest enemy
+	if best and best.has_node("StatusComponent"):
+		var target_status = best.get_node("StatusComponent")
+		if target_status and target_status.has_method("apply_infection"):
+			target_status.apply_infection(infection.dps, infection.remaining_time)
 
 # ───── MEMORY LEAK FIX ─────
 func _exit_tree() -> void:

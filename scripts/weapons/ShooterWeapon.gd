@@ -2,10 +2,6 @@
 extends BaseWeapon
 class_name ShooterWeapon
 
-# ===== AUTO-TARGETING WEAPON BASE =====
-# GODOT PHYSICS ENGINE: Uses spatial queries instead of naive enemy iteration
-# ARCHITECTURE: Template pattern - subclasses implement _fire_once()
-
 var cooldown_timer: float = 0.0
 var current_target: Node = null
 
@@ -31,12 +27,6 @@ func _fire_once(_target: Node) -> void:
 	push_warning("%s: _fire_once() not implemented" % self)
 
 func _find_target_in_range() -> Node:
-	"""
-	GODOT PHYSICS ENGINE: intersect_shape() uses C++ spatial hash, not naive iteration
-	ARCHITECTURE: Leverages Godot's built-in spatial partitioning (quadtree/hash grid)
-	PERFORMANCE: Both approaches are engine-optimized, spatial queries scale better
-	SCALING: Consistent performance regardless of enemy count (100 vs 1000 enemies)
-	"""
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
 	
@@ -45,14 +35,14 @@ func _find_target_in_range() -> Node:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = 1 << 2  # Enemy layer
+	params.collision_mask = 1 << 2
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	# GODOT ENGINE: intersect_shape() leverages C++ backend for fast proximity search
+	# Spatial query returns max 32 nearby enemies
 	var results = space_state.intersect_shape(params, 32)
 	
-	# CLOSEST SELECTION: Linear search through small result set (max 32)
+	# Find closest in small result set (O(32), not O(all_enemies))
 	var best_enemy = null
 	var best_dist_sq = final_range * final_range
 	
