@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://dmk5jmuglpj6p"]
+[gd_scene load_steps=5 format=3 uid="uid://dmk5jmuglpj6p"]
 
 [ext_resource type="Script" path="res://scripts/weapons/spawners/MiniShip.gd" id="1_voqwc"]
 [ext_resource type="Script" path="res://scripts/weapons/spawners/MiniShipMovement.gd" id="2_yrlcx"]
+[ext_resource type="Script" path="res://scripts/weapons/spawners/TargetSelector.gd" id="3_0vrue"]
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_yfbd8"]
 
@@ -16,3 +17,6 @@ texture = SubResource("CanvasTexture_yfbd8")
 
 [node name="Movement" type="Node2D" parent="."]
 script = ExtResource("2_yrlcx")
+
+[node name="TargetSelector" type="Node2D" parent="."]
+script = ExtResource("3_0vrue")

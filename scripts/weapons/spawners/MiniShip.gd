@@ -4,6 +4,7 @@ class_name MiniShip
 
 # ===== COMPONENTS =====
 var movement_component: Node = null  # Will be MiniShipMovement
+var targeting_component: Node = null  # Will be TargetSelector
 var current_weapon: BaseShipWeapon = null
 var owner_player: Player = null
 
@@ -24,14 +25,29 @@ func _ready() -> void:
 	else:
 		movement_component = get_node("Movement")
 	
+	# Create targeting component
+	if not has_node("TargetSelector"):
+		targeting_component = preload("res://scripts/weapons/spawners/TargetSelector.gd").new()
+		targeting_component.name = "TargetSelector"
+		add_child(targeting_component)
+	else:
+		targeting_component = get_node("TargetSelector")
+	
 	if owner_player:
 		global_position = owner_player.global_position
-		movement_component.initialize(self, owner_player)
+		if movement_component:
+			movement_component.initialize(self, owner_player)
+		if targeting_component:
+			targeting_component.initialize(self)
 
 func _physics_process(delta: float) -> void:
 	if not is_instance_valid(owner_player):
 		queue_free()
 		return
+	
+	# Update targeting first
+	if targeting_component:
+		targeting_component.update_targeting(delta)
 	
 	# Delegate movement to movement component
 	if movement_component:
@@ -55,15 +71,9 @@ func setup_weapon(weapon: BaseShipWeapon) -> void:
 		push_error("MiniShip: WeaponSlot node not found!")
 
 func _update_weapon_target() -> void:
-	if current_weapon and is_instance_valid(current_weapon) and movement_component:
-		var current_state = movement_component.get_current_state()
-		var current_target = movement_component.get_current_target()
-		
-		# Use enum value directly instead of class reference
-		if current_state == 2 and current_target:  # 2 = ENGAGE_TARGET
-			current_weapon.set_forced_target(current_target)
-		else:
-			current_weapon.set_forced_target(null)
+	if current_weapon and is_instance_valid(current_weapon) and targeting_component:
+		var current_target = targeting_component.get_current_target()
+		current_weapon.set_forced_target(current_target)
 
 func set_owner_player(player: Player) -> void:
 	owner_player = player
@@ -71,17 +81,27 @@ func set_owner_player(player: Player) -> void:
 		global_position = owner_player.global_position
 		if movement_component:
 			movement_component.initialize(self, owner_player)
+		if targeting_component:
+			targeting_component.initialize(self)
 
-# ===== GETTERS (Delegate to movement component) =====
+# ===== GETTERS (Delegate to components) =====
+func get_current_target() -> Node:
+	if targeting_component:
+		return targeting_component.get_current_target()
+	return null
+
 func get_current_state_name() -> String:
 	if movement_component:
 		return movement_component.get_current_state_name()
 	return "No Movement"
 
 func get_debug_info() -> Dictionary:
+	var info = {}
 	if movement_component:
-		return movement_component.get_debug_info()
-	return {"error": "No movement component"}
+		info["movement"] = movement_component.get_debug_info()
+	if targeting_component:
+		info["targeting"] = targeting_component.get_debug_info()
+	return info
 
 func _exit_tree() -> void:
 	if current_weapon:
