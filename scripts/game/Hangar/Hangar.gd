@@ -16,7 +16,6 @@ class_name Hangar
 @onready var center_panel = $StoreSlotMachinePanel
 @onready var store_panel = $StoreSlotMachinePanel/StorePanel
 @onready var slot_machine_panel = $StoreSlotMachinePanel/SlotMachinePanel
-@onready var slot_machine_currency_label = $StoreSlotMachinePanel/SlotMachinePanel/SlotMachineCurrencyLabel
 
 # ====== Managers ======
 @onready var gm = get_tree().root.get_node("GameManager")
@@ -28,6 +27,7 @@ func _ready() -> void:
 	pd.current_rerolls = int(pd.get_stat("rerolls_per_wave")) 
 	player_stats_panel.initialize(pd)
 	store_panel.initialize(gm, pd, pem, player_stats_panel)
+	slot_machine_panel.initialize(gm, pd, pem, player_stats_panel)
 	_connect_signals()
 	_refresh_ui()
 	_show_store()
@@ -39,7 +39,6 @@ func _connect_signals() -> void:
 
 func _refresh_ui() -> void:
 	wave_label.text = "Level %d" % gm.level_number
-	slot_machine_currency_label.text = "Coins: %d" % gm.coins
 	player_stats_panel.update_stats()
 
 # ====== Toggle Panels ======

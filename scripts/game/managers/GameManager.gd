@@ -21,7 +21,7 @@ func _initialize_loadout() -> void:
 
 func reset_run() -> void:
 	credits = 110
-	coins = 0
+	coins = 100
 	level_number = 1
 	_initialize_loadout()
 

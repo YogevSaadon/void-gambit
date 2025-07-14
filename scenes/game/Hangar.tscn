@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3asvvqqrvvu3"]
+[gd_scene load_steps=6 format=3 uid="uid://c3asvvqqrvvu3"]
 
 [ext_resource type="Script" path="res://scripts/game/hangar/Hangar.gd" id="1_pr6oe"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StorePanel.gd" id="2_jdma5"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StatPanel.gd" id="2_nkioq"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StoreItem.gd" id="2_pxfni"]
+[ext_resource type="Script" path="res://scripts/game/hangar/SlotMachinePanel.gd" id="5_0uvjc"]
 
 [node name="Hangar" type="Control"]
 layout_mode = 3
@@ -86,6 +87,7 @@ offset_right = 462.0
 offset_bottom = 146.0
 
 [node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
+visible = false
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
@@ -117,6 +119,14 @@ script = ExtResource("2_pxfni")
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+script = ExtResource("5_0uvjc")
 
 [node name="SlotMachineCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/SlotMachinePanel"]
 layout_mode = 2
+
+[node name="SpinButton" type="Button" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+layout_mode = 2
+
+[node name="SlotResultItem" type="Button" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+layout_mode = 2
+script = ExtResource("2_pxfni")
