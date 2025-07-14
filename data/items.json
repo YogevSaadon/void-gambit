@@ -1,17 +1,9 @@
 {
-  "_comment": "VOID GAMBIT ITEM DATABASE - UNIFIED SYSTEM",
-  "_design_rationale": {
-	"single_database": "All items (common, unique, store-exclusive, slot-machine-exclusive) are stored in one file for easier maintenance, no duplicate IDs, and consistent schema updates.",
-	"sources_array": "Defines where each item can appear: ['store', 'slot_machine', 'augment']. Allows flexible distribution without separate databases.",
-	"unique_system": "unique:true = once per run maximum. unique:false + stackable:false = one copy only. unique:false + stackable:true = multiple copies allowed.",
-	"behavior_complexity": "Indicates if item needs scripts. 'simple' = stats only, 'complex' = requires behavior_scene with game-changing logic.",
-	"filtering_approach": "Game systems filter this single source by 'sources' and 'unique' status rather than managing separate item pools."
-  },
-  "_usage_examples": {
-	"store_filtering": "get_items_for_source('store', owned_ids) - returns available store items excluding owned unique items",
-	"slot_machine_filtering": "get_items_for_source('slot_machine', owned_ids) - returns available slot machine items",
-	"unique_enforcement": "unique items are skipped if already in owned_ids array",
-	"source_exclusivity": "items with sources:['store'] only appear in store, sources:['slot_machine'] only in slot machine"
+  "_comment": "VOID GAMBIT ITEM DATABASE",
+  "_system_design": {
+	"architecture": "Single unified database containing all game items for consistent management and easy maintenance",
+	"source_filtering": "Items specify availability via 'sources' array: store items use ['store'], slot machine items use ['slot_machine']",
+	"uniqueness_system": "stackable controls multiple copies, unique enforces once-per-run limitation for special items"
   },
   "items": [
 	{
@@ -24,7 +16,6 @@
 	  "unique": false,
 	  "category": "stat",
 	  "sources": ["store", "slot_machine"],
-	  "behavior_complexity": "simple",
 	  "stat_modifiers": { "max_hp": 25 }
 	},
 	{
@@ -36,34 +27,8 @@
 	  "stackable": false,
 	  "unique": true,
 	  "category": "behavior",
-	  "sources": ["store", "augment"],
-	  "behavior_complexity": "complex",
+	  "sources": ["store", "slot_machine"],
 	  "behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
-	},
-	{
-	  "id": "golden_coin_purchase",
-	  "name": "Golden Coin",
-	  "description": "Currency for the slot machine",
-	  "rarity": "special",
-	  "price": 5,
-	  "stackable": true,
-	  "unique": false,
-	  "category": "currency",
-	  "sources": ["store"],
-	  "behavior_complexity": "simple"
-	},
-	{
-	  "id": "triple_reroll",
-	  "name": "Extra Rerolls",
-	  "description": "+3 rerolls this wave",
-	  "rarity": "uncommon",
-	  "price": 0,
-	  "stackable": true,
-	  "unique": false,
-	  "category": "utility",
-	  "sources": ["slot_machine"],
-	  "behavior_complexity": "simple",
-	  "stat_modifiers": { "rerolls_per_wave": 3 }
 	}
   ]
 }

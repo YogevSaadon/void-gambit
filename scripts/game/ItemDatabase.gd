@@ -57,12 +57,10 @@ func load_from_json(path: String = "res://data/items.json") -> void:
 			
 			# Special handling for sources array
 			if key == "sources" and typeof(value) == TYPE_ARRAY:
-				print("Loading sources for %s: %s" % [dict.get("name", "Unknown"), value])
 				var sources_array: Array[String] = []
 				for source in value:
 					sources_array.append(str(source))
 				item.sources = sources_array
-				print("Final sources: %s" % item.sources)
 			else:
 				item.set(key, value)
 
@@ -74,36 +72,18 @@ func load_from_json(path: String = "res://data/items.json") -> void:
 
 func get_items_for_source(source: String, owned_ids: Array = []) -> Array:
 	var available = []
-	
-	print("=== FILTERING DEBUG ===")
-	print("Looking for source: '%s'" % source)
-	print("Total items in database: %d" % _items_by_id.size())
-	
 	for item in _items_by_id.values():
-		print("Item: %s" % item.name)
-		print("  sources: %s (type: %s)" % [item.sources, typeof(item.sources)])
-		print("  has source '%s': %s" % [source, item.sources.has(source) if item.sources else false])
-		
-		if not item.sources:
-			print("  SKIP: No sources field")
-			continue
-			
-		if not item.sources.has(source):
-			print("  SKIP: Wrong source")
+		if not item.sources or not item.sources.has(source):
 			continue
 			
 		if item.unique and owned_ids.has(item.id):
-			print("  SKIP: Unique already owned")
 			continue
 			
 		if not item.stackable and owned_ids.has(item.id):
-			print("  SKIP: Non-stackable already owned")
 			continue
-		
-		print("  ADDED to available items")
+			
 		available.append(item)
 	
-	print("Final available items: %d" % available.size())
 	return available
 
 func get_store_items(owned_ids: Array = []) -> Array:
