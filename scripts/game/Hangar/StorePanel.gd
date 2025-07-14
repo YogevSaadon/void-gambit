@@ -1,4 +1,3 @@
-# res://scripts/ui/StorePanel.gd
 extends Node
 class_name StorePanel
 
@@ -36,21 +35,19 @@ func _connect_signals() -> void:
 		btn.pressed.connect(_on_store_item_pressed.bind(btn))
 
 func _update_ui() -> void:
-	# Show the correct currency (credits)
 	store_currency_label.text = "Credits: %d" % gm.credits
 	reroll_button.text        = "Reroll (%d)" % pd.current_rerolls
 	reroll_button.disabled    = pd.current_rerolls <= 0
 
 func _populate_items() -> void:
 	var owned_ids: Array = pd.passive_item_ids
-	var available_items = item_db.get_all_items().filter(func(itm):
-		return itm.stackable or not owned_ids.has(itm.id)
-	)
+	var available_items = item_db.get_store_items(owned_ids)
 	available_items.shuffle()
+	
 	for i in range(store_items.size()):
 		if i < available_items.size():
 			store_items[i].set_item(available_items[i])
-			store_items[i].visible  = true
+			store_items[i].visible = true
 			store_items[i].disabled = false
 		else:
 			store_items[i].visible = false
@@ -69,7 +66,6 @@ func _on_store_item_pressed(button: Button) -> void:
 	if button.purchase_item(pd, gm, pem):
 		_update_ui()
 		stat_panel.update_stats()
-		# hide the other three slots after one purchase
 		for slot in store_items:
 			if slot != button:
 				slot.visible = false

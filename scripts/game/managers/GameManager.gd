@@ -20,7 +20,7 @@ func _initialize_loadout() -> void:
 	equipped_weapons[0] = starting_weapon
 
 func reset_run() -> void:
-	credits = 0
+	credits = 110
 	coins = 0
 	level_number = 1
 	_initialize_loadout()
