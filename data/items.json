@@ -8,16 +8,28 @@
   },
   "items": [
 	{
-	  "id": "reinforced_plating",
-	  "name": "Reinforced Plating",
-	  "description": "+25 Max HP",
+	  "id": "emergency_rations",
+	  "name": "Emergency Rations",
+	  "description": "+15 Max HP",
 	  "rarity": "common",
-	  "price": 1,
+	  "price": 17,
 	  "stackable": true,
 	  "unique": false,
 	  "category": "stat",
 	  "sources": ["store", "slot_machine"],
-	  "stat_modifiers": { "max_hp": 25 }
+	  "stat_modifiers": { "max_hp": 15 }
+	},
+	{
+	  "id": "blink_stabilizer",
+	  "name": "Blink Stabilizer",
+	  "description": "Reduces blink cooldown by 1 second",
+	  "rarity": "rare",
+	  "price": 80,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "blink_cooldown": -1.0 }
 	},
 	{
 	  "id": "warp_detonator",
