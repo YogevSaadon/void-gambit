@@ -1,29 +1,21 @@
 extends Node
 class_name GameManager
 
-@export var starting_weapon: PackedScene = preload("res://scenes/weapons/spawners/BulletShipSpawner.tscn")
-
 # ====== Currency & Progress ======
 var credits: int = 0       # Standard currency (from drops)
 var coins: int = 0         # Premium/gold currency
 var level_number: int = 1  # Current run level
 
-# ====== Weapon Loadout ======
-var equipped_weapons: Array[PackedScene] = []
-
+# ====== Lifecycle ======
 func _ready() -> void:
-	_initialize_loadout()
-
-func _initialize_loadout() -> void:
-	equipped_weapons.clear()
-	equipped_weapons.resize(6)
-	equipped_weapons[0] = starting_weapon
+	# Weapon management now handled by PlayerData
+	pass
 
 func reset_run() -> void:
 	credits = 110
 	coins = 100
 	level_number = 1
-	_initialize_loadout()
+	# Weapon reset now handled by PlayerData.reset()
 
 func next_level() -> void:
 	level_number += 1

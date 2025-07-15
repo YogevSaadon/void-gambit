@@ -36,30 +36,57 @@ func _update_ui() -> void:
 
 func _on_spin_pressed() -> void:
 	if gm.coins <= 0:
+		print("SlotMachine: Not enough coins!")
 		return
 	
 	# Deduct coin
 	gm.spend_coins(1)
+	print("SlotMachine: Spent 1 coin, remaining: %d" % gm.coins)
 	
-	# Get random item
+	# Get available items and weapons
 	var owned_ids: Array = pd.passive_item_ids
 	var available_items = item_db.get_slot_machine_items(owned_ids)
-	var random_item = slot_logic.get_random_item(available_items)
+	var available_weapons = item_db.get_slot_machine_weapons()
 	
-	if random_item:
+	print("SlotMachine: Found %d items, %d weapons" % [available_items.size(), available_weapons.size()])
+	
+	# Combine items and weapons
+	var all_available = available_items + available_weapons
+	
+	if all_available.is_empty():
+		print("SlotMachine: No items or weapons available!")
+		_update_ui()
+		return
+	
+	print("SlotMachine: Total available: %d" % all_available.size())
+	
+	# Simple random selection (not using luck system for now to debug)
+	var random_result = all_available[randi() % all_available.size()]
+	
+	print("SlotMachine: Selected: %s (type: %s)" % [random_result.name, random_result.get_script().get_path()])
+	
+	if random_result:
 		# Show result
-		slot_result_item.set_item(random_item)
+		slot_result_item.set_item_or_weapon(random_result)
 		slot_result_item.visible = true
 		
 		# Add to inventory
-		pd.add_item(random_item)
-		pem.initialize_from_player_data(pd)
-		
-		print("Slot machine gave: %s" % random_item.name)
+		if random_result is PassiveItem:
+			pd.add_item(random_result)
+			pem.initialize_from_player_data(pd)
+			print("Slot machine gave ITEM: %s" % random_result.name)
+		elif random_result is WeaponItem:
+			var success = pd.add_weapon(random_result)
+			if not success:
+				print("Slot machine gave weapon but all slots full: %s" % random_result.name)
+			else:
+				print("Slot machine gave WEAPON: %s" % random_result.name)
+		else:
+			print("SlotMachine: Unknown result type: %s" % random_result)
 	
-	# Update UI (this will refresh coin count and button state)
+	# Update UI
 	_update_ui()
 	
-	# Update stats panel like the store does
+	# Update stats panel
 	if stat_panel:
 		stat_panel.update_stats()

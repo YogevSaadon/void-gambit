@@ -1,9 +1,10 @@
 {
   "_comment": "VOID GAMBIT ITEM DATABASE",
   "_system_design": {
-	"architecture": "Single unified database containing all game items for consistent management and easy maintenance",
+	"architecture": "Single unified database containing all game items and weapons for consistent management",
 	"source_filtering": "Items specify availability via 'sources' array: store items use ['store'], slot machine items use ['slot_machine']",
-	"uniqueness_system": "stackable controls multiple copies, unique enforces once-per-run limitation for special items"
+	"uniqueness_system": "stackable controls multiple copies, unique enforces once-per-run limitation for special items",
+	"weapons": "Two weapon types: Direct weapons (player fires) and Hangars (spawn AI ships)"
   },
   "items": [
 	{
@@ -29,6 +30,96 @@
 	  "category": "behavior",
 	  "sources": ["store", "slot_machine"],
 	  "behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
+	}
+  ],
+  "weapons": [
+	{
+	  "id": "basic_bullet_weapon",
+	  "name": "Bullet Gun",
+	  "description": "Direct bullet weapon - you fire bullets",
+	  "rarity": "common",
+	  "price": 2,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/BulletWeapon.tscn",
+	  "weapon_type": "bullet"
+	},
+	{
+	  "id": "bullet_hangar",
+	  "name": "Bullet Hangar",
+	  "description": "Spawns AI ships that fire bullets for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/BulletShipSpawner.tscn",
+	  "weapon_type": "bullet"
+	},
+	{
+	  "id": "basic_laser",
+	  "name": "Laser Gun",
+	  "description": "Direct laser weapon - you fire chain lasers",
+	  "rarity": "common",
+	  "price": 2,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/laser/LaserWeapon.tscn",
+	  "weapon_type": "laser"
+	},
+	{
+	  "id": "laser_hangar",
+	  "name": "Laser Hangar",
+	  "description": "Spawns AI ships that fire lasers for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/LaserShipSpawner.tscn",
+	  "weapon_type": "laser"
+	},
+	{
+	  "id": "basic_rocket",
+	  "name": "Rocket Launcher",
+	  "description": "Direct rocket weapon - you fire explosive rockets",
+	  "rarity": "common",
+	  "price": 2,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/RocketWeapon.tscn",
+	  "weapon_type": "rocket"
+	},
+	{
+	  "id": "rocket_hangar",
+	  "name": "Rocket Hangar",
+	  "description": "Spawns AI ships that fire rockets for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/RocketShipSpawner.tscn",
+	  "weapon_type": "rocket"
+	},
+	{
+	  "id": "basic_bio",
+	  "name": "Bio Gun",
+	  "description": "Direct bio weapon - you apply infection damage",
+	  "rarity": "common",
+	  "price": 2,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/BioWeapon.tscn",
+	  "weapon_type": "bio"
+	},
+	{
+	  "id": "bio_hangar",
+	  "name": "Bio Hangar", 
+	  "description": "Spawns AI ships that apply bio damage for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/BioShipSpawner.tscn",
+	  "weapon_type": "bio"
 	}
   ]
 }

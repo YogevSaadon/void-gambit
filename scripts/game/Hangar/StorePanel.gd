@@ -42,11 +42,15 @@ func _update_ui() -> void:
 func _populate_items() -> void:
 	var owned_ids: Array = pd.passive_item_ids
 	var available_items = item_db.get_store_items(owned_ids)
-	available_items.shuffle()
+	var available_weapons = item_db.get_store_weapons()
+	
+	# Combine items and weapons
+	var all_store_items = available_items + available_weapons
+	all_store_items.shuffle()
 	
 	for i in range(store_items.size()):
-		if i < available_items.size():
-			store_items[i].set_item(available_items[i])
+		if i < all_store_items.size():
+			store_items[i].set_item_or_weapon(all_store_items[i])
 			store_items[i].visible = true
 			store_items[i].disabled = false
 		else:

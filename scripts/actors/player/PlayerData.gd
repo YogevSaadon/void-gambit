@@ -41,6 +41,10 @@ var current_rerolls: int = 0
 # Passive item memory
 var passive_item_ids: Array[String] = []
 
+# Weapon inventory (6 slots to match your weapon system)
+var equipped_weapons: Array[String] = []  # Weapon IDs
+const MAX_WEAPON_SLOTS = 6
+
 # Dynamic modifier layers
 var additive_mods: Dictionary = {}
 var percent_mods: Dictionary = {}
@@ -54,6 +58,11 @@ func reset() -> void:
 	passive_item_ids.clear()
 	additive_mods.clear()
 	percent_mods.clear()
+	
+	# Weapon reset
+	equipped_weapons.clear()
+	equipped_weapons.resize(MAX_WEAPON_SLOTS)
+	equipped_weapons[0] = "basic_bullet_weapon"  # Default weapon
 
 func add_item(item: PassiveItem) -> void:
 	if (not item.stackable) and passive_item_ids.has(item.id):
@@ -69,7 +78,6 @@ func add_item(item: PassiveItem) -> void:
 		else:
 			additive_mods[stat] = additive_mods.get(stat, 0.0) + mod
 	emit_signal("item_added", item)
-
 
 func get_stat(stat: String) -> float:
 	var base = base_stats.get(stat, 0.0)
@@ -89,3 +97,57 @@ func get_passive_items() -> Array:
 func sync_from_player(p: Node) -> void:
 	hp = p.health
 	shield = p.shield
+
+# ====== WEAPON MANAGEMENT ======
+
+func add_weapon(weapon: WeaponItem) -> bool:
+	"""Try to equip weapon in first empty slot. Returns true if successful."""
+	for i in range(MAX_WEAPON_SLOTS):
+		if equipped_weapons[i] == "" or equipped_weapons[i] == null:
+			equipped_weapons[i] = weapon.id
+			print("Equipped %s in slot %d" % [weapon.name, i])
+			return true
+	
+	print("All weapon slots full, cannot equip %s" % weapon.name)
+	return false
+
+func remove_weapon(slot_index: int) -> void:
+	"""Remove weapon from specific slot (for future use)"""
+	if slot_index >= 0 and slot_index < MAX_WEAPON_SLOTS:
+		if slot_index == 0:
+			equipped_weapons[slot_index] = "basic_bullet_weapon"  # Keep default
+		else:
+			equipped_weapons[slot_index] = ""
+
+func get_equipped_weapons() -> Array[WeaponItem]:
+	"""Get array of actual WeaponItem objects"""
+	var weapons: Array[WeaponItem] = []
+	var db = get_tree().root.get_node_or_null("ItemDatabase")
+	if not db:
+		push_error("PlayerData: ItemDatabase not found")
+		return weapons
+	
+	for weapon_id in equipped_weapons:
+		if weapon_id != "" and weapon_id != null:
+			var weapon = db.get_weapon(weapon_id)
+			if weapon:
+				weapons.append(weapon)
+			else:
+				weapons.append(null)
+		else:
+			weapons.append(null)
+	
+	return weapons
+
+func get_equipped_weapon_scenes() -> Array[PackedScene]:
+	"""Get array of weapon scenes for Player.equip_weapon()"""
+	var scenes: Array[PackedScene] = []
+	var equipped = get_equipped_weapons()
+	
+	for weapon in equipped:
+		if weapon and weapon.weapon_scene:
+			scenes.append(weapon.weapon_scene)
+		else:
+			scenes.append(null)
+	
+	return scenes

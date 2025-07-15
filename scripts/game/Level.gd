@@ -57,11 +57,27 @@ func _connect_wave_signals() -> void:
 	wave_manager.level_completed.connect(_on_level_completed)
 
 func _equip_player_weapons() -> void:
+	"""Load weapons from PlayerData with proper null handling"""
 	player.clear_all_weapons()
-	for i in range(game_manager.equipped_weapons.size()):
-		var weapon_scene = game_manager.equipped_weapons[i]
-		if weapon_scene:
+	
+	var weapon_scenes = player_data.get_equipped_weapon_scenes()
+	print("Loading %d weapon slots from PlayerData" % weapon_scenes.size())
+	
+	for i in range(weapon_scenes.size()):
+		var weapon_scene = weapon_scenes[i]
+		if weapon_scene != null:
 			player.equip_weapon(weapon_scene, i)
+			print("Equipped weapon in slot %d: %s" % [i, weapon_scene.resource_path])
+		else:
+			print("No weapon equipped in slot %d" % i)
+	
+	# Verify default weapon is equipped
+	var equipped_weapons = player_data.equipped_weapons
+	if equipped_weapons.is_empty() or equipped_weapons[0] == "":
+		push_warning("Level: No default weapon found, setting basic_bullet_weapon")
+		player_data.equipped_weapons.resize(player_data.MAX_WEAPON_SLOTS)
+		player_data.equipped_weapons[0] = "basic_bullet_weapon"
+		_equip_player_weapons()  # Retry
 
 func _start_level() -> void:
 	wave_manager.set_level(game_manager.level_number)
