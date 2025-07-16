@@ -1,5 +1,5 @@
 {
-  "_comment": "VOID GAMBIT ITEM DATABASE",
+  "_comment": "VOID GAMBIT ITEM DATABASE - Complete Version",
   "_system_design": {
 	"architecture": "Single unified database containing all game items and weapons for consistent management",
 	"source_filtering": "Items specify availability via 'sources' array: store items use ['store'], slot machine items use ['slot_machine']",
@@ -7,6 +7,9 @@
 	"weapons": "Two weapon types: Direct weapons (player fires) and Hangars (spawn AI ships)"
   },
   "items": [
+	{
+	  "_category": "=== EXAMPLE ITEMS  ==="
+	},
 	{
 	  "id": "emergency_rations",
 	  "name": "Emergency Rations",
@@ -22,29 +25,1916 @@
 	{
 	  "id": "blink_stabilizer",
 	  "name": "Blink Stabilizer",
-	  "description": "Reduces blink cooldown by 1 second",
+	  "description": "Reduces blink cooldown by 2 seconds",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": false,
+	  "unique": true,
+	  "category": "stat",
+	  "sources": ["store"],
+	  "stat_modifiers": { "blink_cooldown": -2.0 }
+	},
+	{
+	  "id": "warp_detonator",
+	  "name": "Warp Detonator",
+	  "description": "Blink causes an explosion",
+	  "rarity": "epic",
+	  "price": 150,
+	  "stackable": false,
+	  "unique": true,
+	  "category": "behavior",
+	  "sources": ["store"],
+	  "behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
+	},
+	{
+	  "_category": "=== HEALTH & ARMOR ITEMS ==="
+	},
+	{
+	  "id": "bio_stabilizer",
+	  "name": "Bio-Stabilizer",
+	  "description": "+20 Max HP",
+	  "rarity": "common",
+	  "price": 25,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 20 }
+	},
+	{
+	  "id": "hull_plating",
+	  "name": "Hull Plating",
+	  "description": "+25 Max HP",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 25 }
+	},
+	{
+	  "id": "regenerative_tissue",
+	  "name": "Regenerative Tissue",
+	  "description": "+35 Max HP",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 35 }
+	},
+	{
+	  "id": "combat_stims",
+	  "name": "Combat Stims",
+	  "description": "+40 Max HP",
+	  "rarity": "uncommon",
+	  "price": 50,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 40 }
+	},
+	{
+	  "id": "titanium_frame",
+	  "name": "Titanium Frame",
+	  "description": "+50 Max HP",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 50 }
+	},
+	{
+	  "id": "symbiotic_organism",
+	  "name": "Symbiotic Organism",
+	  "description": "+70 Max HP",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 70 }
+	},
+	{
+	  "id": "quantum_flesh",
+	  "name": "Quantum Flesh",
+	  "description": "+85 Max HP",
+	  "rarity": "rare",
+	  "price": 85,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 85 }
+	},
+	{
+	  "id": "void_core_reactor",
+	  "name": "Void Core Reactor",
+	  "description": "+100 Max HP",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 100 }
+	},
+	{
+	  "id": "phoenix_dna",
+	  "name": "Phoenix DNA",
+	  "description": "+140 Max HP",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 140 }
+	},
+	{
+	  "id": "stellar_forge_heart",
+	  "name": "Stellar Forge Heart",
+	  "description": "+170 Max HP",
+	  "rarity": "epic",
+	  "price": 180,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_hp": 170 }
+	},
+	{
+	  "_category": "=== ARMOR ITEMS ==="
+	},
+	{
+	  "id": "deflector_mesh",
+	  "name": "Deflector Mesh",
+	  "description": "+5 Armor",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 5 }
+	},
+	{
+	  "id": "hardened_plates",
+	  "name": "Hardened Plates",
+	  "description": "+8 Armor",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 8 }
+	},
+	{
+	  "id": "kinetic_dampeners",
+	  "name": "Kinetic Dampeners",
+	  "description": "+12 Armor",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 12 }
+	},
+	{
+	  "id": "ablative_coating",
+	  "name": "Ablative Coating",
+	  "description": "+15 Armor",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 15 }
+	},
+	{
+	  "id": "adaptive_alloy",
+	  "name": "Adaptive Alloy",
+	  "description": "+22 Armor",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 22 }
+	},
+	{
+	  "id": "phase_barrier",
+	  "name": "Phase Barrier",
+	  "description": "+28 Armor",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 28 }
+	},
+	{
+	  "id": "neutron_skin",
+	  "name": "Neutron Skin",
+	  "description": "+40 Armor",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "armor": 40 }
+	},
+	{
+	  "_category": "=== SHIELD & SHIELD RECHARGE ITEMS ==="
+	},
+	{
+	  "id": "personal_barrier",
+	  "name": "Personal Barrier",
+	  "description": "+20 Max Shield",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 20 }
+	},
+	{
+	  "id": "field_generator",
+	  "name": "Field Generator",
+	  "description": "+25 Max Shield",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 25 }
+	},
+	{
+	  "id": "plasma_membrane",
+	  "name": "Plasma Membrane",
+	  "description": "+40 Max Shield",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 40 }
+	},
+	{
+	  "id": "ionic_shell",
+	  "name": "Ionic Shell",
+	  "description": "+50 Max Shield",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 50 }
+	},
+	{
+	  "id": "temporal_bubble",
+	  "name": "Temporal Bubble",
+	  "description": "+80 Max Shield",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 80 }
+	},
+	{
+	  "id": "void_membrane",
+	  "name": "Void Membrane",
+	  "description": "+100 Max Shield",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 100 }
+	},
+	{
+	  "id": "quantum_aegis",
+	  "name": "Quantum Aegis",
+	  "description": "+150 Max Shield",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "max_shield": 150 }
+	},
+	{
+	  "id": "power_cell",
+	  "name": "Power Cell",
+	  "description": "+3 Shield Recharge Rate",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 3 }
+	},
+	{
+	  "id": "capacitor_bank",
+	  "name": "Capacitor Bank",
+	  "description": "+5 Shield Recharge Rate",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 5 }
+	},
+	{
+	  "id": "fusion_coil",
+	  "name": "Fusion Coil",
+	  "description": "+8 Shield Recharge Rate",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 8 }
+	},
+	{
+	  "id": "crystal_matrix",
+	  "name": "Crystal Matrix",
+	  "description": "+12 Shield Recharge Rate",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 12 }
+	},
+	{
+	  "id": "zero_point_tap",
+	  "name": "Zero-Point Tap",
+	  "description": "+20 Shield Recharge Rate",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 20 }
+	},
+	{
+	  "id": "stellar_collector",
+	  "name": "Stellar Collector",
+	  "description": "+25 Shield Recharge Rate",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "shield_recharge_rate": 25 }
+	},
+	{
+	  "_category": "=== MOBILITY ITEMS ==="
+	},
+	{
+	  "id": "servo_motors",
+	  "name": "Servo Motors",
+	  "description": "+15 Speed",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 15 }
+	},
+	{
+	  "id": "thruster_pack",
+	  "name": "Thruster Pack",
+	  "description": "+20 Speed",
+	  "rarity": "common",
+	  "price": 25,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 20 }
+	},
+	{
+	  "id": "neural_accelerator",
+	  "name": "Neural Accelerator",
+	  "description": "+25 Speed",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 25 }
+	},
+	{
+	  "id": "gravity_nullifier",
+	  "name": "Gravity Nullifier",
+	  "description": "+35 Speed",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 35 }
+	},
+	{
+	  "id": "warp_step",
+	  "name": "Warp Step",
+	  "description": "+45 Speed",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 45 }
+	},
+	{
+	  "id": "time_dilation_field",
+	  "name": "Time Dilation Field",
+	  "description": "+70 Speed",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 70 }
+	},
+	{
+	  "id": "phase_shifter",
+	  "name": "Phase Shifter",
+	  "description": "+85 Speed",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 85 }
+	},
+	{
+	  "id": "quantum_leap_drive",
+	  "name": "Quantum Leap Drive",
+	  "description": "+120 Speed",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "speed": 120 }
+	},
+	{
+	  "_category": "=== COMBAT ITEMS - RANGE ==="
+	},
+	{
+	  "id": "targeting_scope",
+	  "name": "Targeting Scope",
+	  "description": "+50 Weapon Range",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 50 }
+	},
+	{
+	  "id": "signal_booster",
+	  "name": "Signal Booster",
+	  "description": "+75 Weapon Range",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 75 }
+	},
+	{
+	  "id": "quantum_lens",
+	  "name": "Quantum Lens",
+	  "description": "+120 Weapon Range",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 120 }
+	},
+	{
+	  "id": "void_sight",
+	  "name": "Void Sight",
+	  "description": "+150 Weapon Range",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 150 }
+	},
+	{
+	  "id": "temporal_scope",
+	  "name": "Temporal Scope",
+	  "description": "+200 Weapon Range",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 200 }
+	},
+	{
+	  "id": "stellar_rangefinder",
+	  "name": "Stellar Rangefinder",
+	  "description": "+250 Weapon Range",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "weapon_range": 250 }
+	},
+	{
+	  "_category": "=== COMBAT ITEMS - CRIT ==="
+	},
+	{
+	  "id": "precision_circuits",
+	  "name": "Precision Circuits",
+	  "description": "+4% Crit Chance",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.04 }
+	},
+	{
+	  "id": "lucky_charm",
+	  "name": "Lucky Charm",
+	  "description": "+6% Crit Chance",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.06 }
+	},
+	{
+	  "id": "neural_interface",
+	  "name": "Neural Interface",
+	  "description": "+8% Crit Chance",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.08 }
+	},
+	{
+	  "id": "probability_matrix",
+	  "name": "Probability Matrix",
+	  "description": "+12% Crit Chance",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.12 }
+	},
+	{
+	  "id": "fate_weaver",
+	  "name": "Fate Weaver",
+	  "description": "+18% Crit Chance",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.18 }
+	},
+	{
+	  "id": "deaths_touch",
+	  "name": "Death's Touch",
+	  "description": "+22% Crit Chance",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_chance": 0.22 }
+	},
+	{
+	  "id": "amplifier_core",
+	  "name": "Amplifier Core",
+	  "description": "+0.2 Crit Damage Multiplier",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 0.2 }
+	},
+	{
+	  "id": "overcharge_cell",
+	  "name": "Overcharge Cell",
+	  "description": "+0.3 Crit Damage Multiplier",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 0.3 }
+	},
+	{
+	  "id": "fusion_catalyst",
+	  "name": "Fusion Catalyst",
+	  "description": "+0.5 Crit Damage Multiplier",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 0.5 }
+	},
+	{
+	  "id": "void_crystal",
+	  "name": "Void Crystal",
+	  "description": "+0.7 Crit Damage Multiplier",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 0.7 }
+	},
+	{
+	  "id": "reality_piercer",
+	  "name": "Reality Piercer",
+	  "description": "+1.0 Crit Damage Multiplier",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 1.0 }
+	},
+	{
+	  "id": "star_breaker",
+	  "name": "Star Breaker",
+	  "description": "+1.3 Crit Damage Multiplier",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "crit_damage": 1.3 }
+	},
+	{
+	  "_category": "=== DAMAGE ITEMS ==="
+	},
+	{
+	  "id": "power_surge",
+	  "name": "Power Surge",
+	  "description": "+8% Damage Percent",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.08 }
+	},
+	{
+	  "id": "combat_enhancer",
+	  "name": "Combat Enhancer",
+	  "description": "+12% Damage Percent",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.12 }
+	},
+	{
+	  "id": "fury_implant",
+	  "name": "Fury Implant",
+	  "description": "+20% Damage Percent",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.20 }
+	},
+	{
+	  "id": "berserker_gene",
+	  "name": "Berserker Gene",
+	  "description": "+25% Damage Percent",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.25 }
+	},
+	{
+	  "id": "destroyer_protocol",
+	  "name": "Destroyer Protocol",
+	  "description": "+40% Damage Percent",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.40 }
+	},
+	{
+	  "id": "wrath_of_stars",
+	  "name": "Wrath of Stars",
+	  "description": "+50% Damage Percent",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.50 }
+	},
+	{
+	  "id": "apocalypse_core",
+	  "name": "Apocalypse Core",
+	  "description": "+80% Damage Percent",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "damage_percent": 0.80 }
+	},
+	{
+	  "_category": "=== WEAPON-SPECIFIC DAMAGE ITEMS ==="
+	},
+	{
+	  "id": "kinetic_multiplier",
+	  "name": "Kinetic Multiplier",
+	  "description": "+15% Bullet Damage",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bullet_damage_percent": 0.15 }
+	},
+	{
+	  "id": "tungsten_core",
+	  "name": "Tungsten Core",
+	  "description": "+25% Bullet Damage",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bullet_damage_percent": 0.25 }
+	},
+	{
+	  "id": "railgun_module",
+	  "name": "Railgun Module",
+	  "description": "+35% Bullet Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bullet_damage_percent": 0.35 }
+	},
+	{
+	  "id": "photon_amplifier",
+	  "name": "Photon Amplifier",
+	  "description": "+20% Laser Damage",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "laser_damage_percent": 0.20 }
+	},
+	{
+	  "id": "prism_array",
+	  "name": "Prism Array",
+	  "description": "+30% Laser Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "laser_damage_percent": 0.30 }
+	},
+	{
+	  "id": "stellar_lens",
+	  "name": "Stellar Lens",
+	  "description": "+45% Laser Damage",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "laser_damage_percent": 0.45 }
+	},
+	{
+	  "id": "blast_catalyst",
+	  "name": "Blast Catalyst",
+	  "description": "+20% Explosive Damage",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "explosive_damage_percent": 0.20 }
+	},
+	{
+	  "id": "antimatter_traces",
+	  "name": "Antimatter Traces",
+	  "description": "+35% Explosive Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "explosive_damage_percent": 0.35 }
+	},
+	{
+	  "id": "nova_core",
+	  "name": "Nova Core",
+	  "description": "+50% Explosive Damage",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "explosive_damage_percent": 0.50 }
+	},
+	{
+	  "id": "viral_mutagen",
+	  "name": "Viral Mutagen",
+	  "description": "+20% Bio Damage",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bio_damage_percent": 0.20 }
+	},
+	{
+	  "id": "plague_essence",
+	  "name": "Plague Essence",
+	  "description": "+30% Bio Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bio_damage_percent": 0.30 }
+	},
+	{
+	  "id": "life_drinker",
+	  "name": "Life Drinker",
+	  "description": "+45% Bio Damage",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "bio_damage_percent": 0.45 }
+	},
+	{
+	  "_category": "=== SHIP WEAPON ITEMS ==="
+	},
+	{
+	  "id": "fleet_commander",
+	  "name": "Fleet Commander",
+	  "description": "+15% Ship Damage",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_damage_percent": 0.15 }
+	},
+	{
+	  "id": "ai_pilot",
+	  "name": "AI Pilot",
+	  "description": "+25% Ship Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_damage_percent": 0.25 }
+	},
+	{
+	  "id": "squadron_leader",
+	  "name": "Squadron Leader",
+	  "description": "+40% Ship Damage",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_damage_percent": 0.40 }
+	},
+	{
+	  "id": "ace_protocol",
+	  "name": "Ace Protocol",
+	  "description": "+55% Ship Damage",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_damage_percent": 0.55 }
+	},
+	{
+	  "id": "hangar_bay",
+	  "name": "Hangar Bay",
+	  "description": "+1 Ship Count",
+	  "rarity": "common",
+	  "price": 17,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_count": 1 }
+	},
+	{
+	  "id": "drone_factory",
+	  "name": "Drone Factory",
+	  "description": "+1 Ship Count",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_count": 1 }
+	},
+	{
+	  "id": "fleet_beacon",
+	  "name": "Fleet Beacon",
+	  "description": "+2 Ship Count",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_count": 2 }
+	},
+	{
+	  "id": "swarm_protocol",
+	  "name": "Swarm Protocol",
+	  "description": "+2 Ship Count",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_count": 2 }
+	},
+	{
+	  "id": "carrier_core",
+	  "name": "Carrier Core",
+	  "description": "+3 Ship Count",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "ship_count": 3 }
+	},
+	{
+	  "_category": "=== ECONOMY ITEMS ==="
+	},
+	{
+	  "id": "rabbits_foot",
+	  "name": "Rabbit's Foot",
+	  "description": "+8 Luck",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "luck": 8 }
+	},
+	{
+	  "id": "fates_coin",
+	  "name": "Fate's Coin",
+	  "description": "+25 Luck",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "luck": 25 }
+	},
+	{
+	  "id": "gold_detector",
+	  "name": "Gold Detector",
+	  "description": "+1 Golden Ship Count",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "golden_ship_count": 1 }
+	},
+	{
+	  "id": "prosperity_field",
+	  "name": "Prosperity Field",
+	  "description": "+2 Golden Ship Count",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "golden_ship_count": 2 }
+	},
+	{
+	  "id": "lucky_reroller",
+	  "name": "Lucky Reroller",
+	  "description": "+1 Free Reroll per Hangar",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { "rerolls_per_wave": 1 }
+	},
+	{
+	  "_category": "=== MULTI-STAT ITEMS - WEAPON SYNERGIES ==="
+	},
+	{
+	  "id": "laser_mastery_core",
+	  "name": "Laser Mastery Core",
+	  "description": "+20% Laser Damage, +2 Laser Reflects",
+	  "rarity": "uncommon",
+	  "price": 45,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"laser_damage_percent": 0.20,
+		"laser_reflects": 2
+	  }
+	},
+	{
+	  "id": "explosive_ordnance_kit",
+	  "name": "Explosive Ordnance Kit",
+	  "description": "+25% Explosive Damage, +15% Explosion Radius",
+	  "rarity": "uncommon",
+	  "price": 65,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"explosive_damage_percent": 0.25,
+		"explosion_radius_bonus": 0.15
+	  }
+	},
+	{
+	  "id": "bio_warfare_module",
+	  "name": "Bio-Warfare Module",
+	  "description": "+20% Bio Damage, +10% Bio Spread Chance",
+	  "rarity": "uncommon",
+	  "price": 45,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bio_damage_percent": 0.20,
+		"bio_spread_chance": 0.10
+	  }
+	},
+	{
+	  "id": "fleet_coordination_hub",
+	  "name": "Fleet Coordination Hub",
+	  "description": "+20% Ship Damage, +1 Ship Count",
+	  "rarity": "uncommon",
+	  "price": 65,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"ship_damage_percent": 0.20,
+		"ship_count": 1
+	  }
+	},
+	{
+	  "id": "high_tech_augment",
+	  "name": "High-Tech Augment",
+	  "description": "+25% Laser Damage, +20% Bio Damage",
+	  "rarity": "rare",
+	  "price": 75,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"laser_damage_percent": 0.25,
+		"bio_damage_percent": 0.20
+	  }
+	},
+	{
+	  "id": "military_arsenal",
+	  "name": "Military Arsenal",
+	  "description": "+20% Bullet Damage, +25% Explosive Damage",
+	  "rarity": "rare",
+	  "price": 95,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bullet_damage_percent": 0.20,
+		"explosive_damage_percent": 0.25
+	  }
+	},
+	{
+	  "id": "alien_hybrid_core",
+	  "name": "Alien Hybrid Core",
+	  "description": "+15% Bio Damage, +15% Laser Damage, +10% Ship Damage",
+	  "rarity": "rare",
+	  "price": 85,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bio_damage_percent": 0.15,
+		"laser_damage_percent": 0.15,
+		"ship_damage_percent": 0.10
+	  }
+	},
+	{
+	  "id": "omni_weapon_interface",
+	  "name": "Omni-Weapon Interface",
+	  "description": "+10% Bullet Damage, +10% Laser Damage, +10% Explosive Damage",
+	  "rarity": "rare",
+	  "price": 75,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bullet_damage_percent": 0.10,
+		"laser_damage_percent": 0.10,
+		"explosive_damage_percent": 0.10
+	  }
+	},
+	{
+	  "_category": "=== MULTI-STAT ITEMS - DEFENSE BUNDLES ==="
+	},
+	{
+	  "id": "combat_medpack",
+	  "name": "Combat Medpack",
+	  "description": "+30 Max HP, +2 Shield Recharge Rate",
+	  "rarity": "common",
+	  "price": 25,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 30,
+		"shield_recharge_rate": 2
+	  }
+	},
+	{
+	  "id": "pilots_gear",
+	  "name": "Pilot's Gear",
+	  "description": "+15 Speed, +20 Max Shield",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"speed": 15,
+		"max_shield": 20
+	  }
+	},
+	{
+	  "id": "fortress_protocol",
+	  "name": "Fortress Protocol",
+	  "description": "+50 Max HP, +8 Armor",
+	  "rarity": "uncommon",
+	  "price": 45,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 50,
+		"armor": 8
+	  }
+	},
+	{
+	  "id": "evasion_system",
+	  "name": "Evasion System",
+	  "description": "+25 Speed, +35 Max Shield",
+	  "rarity": "uncommon",
+	  "price": 65,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"speed": 25,
+		"max_shield": 35
+	  }
+	},
+	{
+	  "id": "battle_hardened",
+	  "name": "Battle Hardened",
+	  "description": "+40 Max HP, +10 Armor, +5 Speed",
+	  "rarity": "uncommon",
+	  "price": 55,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 40,
+		"armor": 10,
+		"speed": 5
+	  }
+	},
+	{
+	  "id": "titan_configuration",
+	  "name": "Titan Configuration",
+	  "description": "+80 Max HP, +15 Armor, +50 Max Shield",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 80,
+		"armor": 15,
+		"max_shield": 50
+	  }
+	},
+	{
+	  "id": "phase_warrior",
+	  "name": "Phase Warrior",
+	  "description": "+60 Speed, +70 Max Shield, +8 Shield Recharge Rate",
 	  "rarity": "rare",
 	  "price": 80,
 	  "stackable": true,
 	  "unique": false,
 	  "category": "stat",
 	  "sources": ["store", "slot_machine"],
-	  "stat_modifiers": { "blink_cooldown": -1.0 }
+	  "stat_modifiers": { 
+		"speed": 60,
+		"max_shield": 70,
+		"shield_recharge_rate": 8
+	  }
 	},
 	{
-	  "id": "warp_detonator",
-	  "name": "Warp Detonator",
-	  "description": "Blink causes an explosion.",
-	  "rarity": "epic",
-	  "price": 2,
-	  "stackable": false,
-	  "unique": true,
-	  "category": "behavior",
+	  "_category": "=== MULTI-STAT ITEMS - OFFENSE SYNERGIES ==="
+	},
+	{
+	  "id": "targeting_computer",
+	  "name": "Targeting Computer",
+	  "description": "+4% Crit Chance, +50 Weapon Range",
+	  "rarity": "common",
+	  "price": 20,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
 	  "sources": ["store", "slot_machine"],
-	  "behavior_scene": "res://scripts/effects/BlinkExplosionEffect.gd"
+	  "stat_modifiers": { 
+		"crit_chance": 0.04,
+		"weapon_range": 50
+	  }
+	},
+	{
+	  "id": "combat_stims_offensive",
+	  "name": "Combat Stims",
+	  "description": "+10% Damage Percent, +15 Speed",
+	  "rarity": "common",
+	  "price": 35,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.10,
+		"speed": 15
+	  }
+	},
+	{
+	  "id": "berserker_implant",
+	  "name": "Berserker Implant",
+	  "description": "+6% Crit Chance, +20% Damage Percent",
+	  "rarity": "uncommon",
+	  "price": 50,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"crit_chance": 0.06,
+		"damage_percent": 0.20
+	  }
+	},
+	{
+	  "id": "snipers_focus",
+	  "name": "Sniper's Focus",
+	  "description": "+100 Weapon Range, +8% Crit Chance, +0.3 Crit Damage",
+	  "rarity": "uncommon",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"weapon_range": 100,
+		"crit_chance": 0.08,
+		"crit_damage": 0.3
+	  }
+	},
+	{
+	  "id": "gunslingers_edge",
+	  "name": "Gunslinger's Edge",
+	  "description": "+25% Bullet Damage, +10% Crit Chance",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bullet_damage_percent": 0.25,
+		"crit_chance": 0.10
+	  }
+	},
+	{
+	  "id": "death_dealer",
+	  "name": "Death Dealer",
+	  "description": "+15% Crit Chance, +0.8 Crit Damage, +150 Weapon Range",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"crit_chance": 0.15,
+		"crit_damage": 0.8,
+		"weapon_range": 150
+	  }
+	},
+	{
+	  "id": "war_machine",
+	  "name": "War Machine",
+	  "description": "+30% Damage Percent, +2 Ship Count",
+	  "rarity": "rare",
+	  "price": 85,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.30,
+		"ship_count": 2
+	  }
+	},
+	{
+	  "_category": "=== MULTI-STAT ITEMS - ECONOMY COMBAT ==="
+	},
+	{
+	  "id": "fortune_of_war",
+	  "name": "Fortune of War",
+	  "description": "+12 Luck, +6% Crit Chance",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"luck": 12,
+		"crit_chance": 0.06
+	  }
+	},
+	{
+	  "id": "golden_arsenal",
+	  "name": "Golden Arsenal",
+	  "description": "+1 Golden Ship Count, +15% Ship Damage",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"golden_ship_count": 1,
+		"ship_damage_percent": 0.15
+	  }
+	},
+	{
+	  "id": "merchant_marine",
+	  "name": "Merchant Marine",
+	  "description": "+2 Golden Ship Count, +20% Ship Damage, +1 Ship Count",
+	  "rarity": "rare",
+	  "price": 90,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"golden_ship_count": 2,
+		"ship_damage_percent": 0.20,
+		"ship_count": 1
+	  }
+	},
+	{
+	  "id": "lucky_gambler",
+	  "name": "Lucky Gambler",
+	  "description": "+20 Luck, +1 Free Reroll, +10% Crit Chance",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"luck": 20,
+		"rerolls_per_wave": 1,
+		"crit_chance": 0.10
+	  }
+	},
+	{
+	  "id": "survivors_kit",
+	  "name": "Survivor's Kit",
+	  "description": "+25 Max HP, +1 Free Reroll",
+	  "rarity": "common",
+	  "price": 25,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 25,
+		"rerolls_per_wave": 1
+	  }
+	},
+	{
+	  "id": "insurance_policy",
+	  "name": "Insurance Policy",
+	  "description": "+40 Max HP, +1 Golden Ship Count",
+	  "rarity": "uncommon",
+	  "price": 45,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 40,
+		"golden_ship_count": 1
+	  }
+	},
+	{
+	  "id": "treasure_hunter",
+	  "name": "Treasure Hunter",
+	  "description": "+20 Speed, +1 Golden Ship Count",
+	  "rarity": "uncommon",
+	  "price": 65,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"speed": 20,
+		"golden_ship_count": 1
+	  }
+	},
+	{
+	  "id": "speed_trader",
+	  "name": "Speed Trader",
+	  "description": "+30 Speed, +1 Free Reroll",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"speed": 30,
+		"rerolls_per_wave": 1
+	  }
+	},
+	{
+	  "id": "blink_merchant",
+	  "name": "Blink Merchant",
+	  "description": "Blink Cooldown -1 second, +1 Golden Ship Count",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"blink_cooldown": -1.0,
+		"golden_ship_count": 1
+	  }
+	},
+	{
+	  "_category": "=== MULTI-STAT ITEMS - SPECIALIZED ROLES ==="
+	},
+	{
+	  "id": "berserkers_fury",
+	  "name": "Berserker's Fury",
+	  "description": "+40% Damage Percent, +12% Crit Chance, +30 Speed",
+	  "rarity": "rare",
+	  "price": 80,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.40,
+		"crit_chance": 0.12,
+		"speed": 30
+	  }
+	},
+	{
+	  "id": "kamikaze_protocol",
+	  "name": "Kamikaze Protocol",
+	  "description": "+50% Explosive Damage, +20% Damage Percent, +40 Speed",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"explosive_damage_percent": 0.50,
+		"damage_percent": 0.20,
+		"speed": 40
+	  }
+	},
+	{
+	  "id": "fleet_admiral",
+	  "name": "Fleet Admiral",
+	  "description": "+3 Ship Count, +25% Ship Damage, +60 Max HP",
+	  "rarity": "rare",
+	  "price": 110,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"ship_count": 3,
+		"ship_damage_percent": 0.25,
+		"max_hp": 60
+	  }
+	},
+	{
+	  "id": "fortress_command",
+	  "name": "Fortress Command",
+	  "description": "+100 Max HP, +20 Armor, +2 Ship Count",
+	  "rarity": "rare",
+	  "price": 85,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 100,
+		"armor": 20,
+		"ship_count": 2
+	  }
+	},
+	{
+	  "id": "omni_soldier",
+	  "name": "Omni-Soldier",
+	  "description": "+20% Damage Percent, +50 Max HP, +20 Speed, +100 Weapon Range",
+	  "rarity": "epic",
+	  "price": 120,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.20,
+		"max_hp": 50,
+		"speed": 20,
+		"weapon_range": 100
+	  }
+	},
+	{
+	  "id": "void_champion",
+	  "name": "Void Champion",
+	  "description": "+30% Bio Damage, +80 Max Shield, +15% Crit Chance, +1 Ship Count",
+	  "rarity": "epic",
+	  "price": 160,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bio_damage_percent": 0.30,
+		"max_shield": 80,
+		"crit_chance": 0.15,
+		"ship_count": 1
+	  }
+	},
+	{
+	  "id": "charmed_life",
+	  "name": "Charmed Life",
+	  "description": "+18 Luck, +40 Max HP, +1 Free Reroll",
+	  "rarity": "uncommon",
+	  "price": 45,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"luck": 18,
+		"max_hp": 40,
+		"rerolls_per_wave": 1
+	  }
+	},
+	{
+	  "id": "nine_lives",
+	  "name": "Nine Lives",
+	  "description": "+60 Max HP, +2 Free Rerolls, +10 Speed",
+	  "rarity": "uncommon",
+	  "price": 65,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"max_hp": 60,
+		"rerolls_per_wave": 2,
+		"speed": 10
+	  }
+	},
+	{
+	  "_category": "=== MULTI-STAT ITEMS - THEMATIC COLLECTIONS ==="
+	},
+	{
+	  "id": "xenomorph_symbiont",
+	  "name": "Xenomorph Symbiont",
+	  "description": "+30% Bio Damage, +80 Max HP, +5 Shield Recharge",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bio_damage_percent": 0.30,
+		"max_hp": 80,
+		"shield_recharge_rate": 5
+	  }
+	},
+	{
+	  "id": "void_entity_pact",
+	  "name": "Void Entity Pact",
+	  "description": "+25% Bio Damage, +60 Max Shield, +15 Luck",
+	  "rarity": "rare",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bio_damage_percent": 0.25,
+		"max_shield": 60,
+		"luck": 15
+	  }
+	},
+	{
+	  "id": "soldiers_loadout",
+	  "name": "Soldier's Loadout",
+	  "description": "+20% Bullet Damage, +15% Explosive Damage, +6 Armor",
+	  "rarity": "uncommon",
+	  "price": 50,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bullet_damage_percent": 0.20,
+		"explosive_damage_percent": 0.15,
+		"armor": 6
+	  }
+	},
+	{
+	  "id": "spec_ops_kit",
+	  "name": "Spec Ops Kit",
+	  "description": "+25% Bullet Damage, +20 Speed, +1 Free Reroll",
+	  "rarity": "uncommon",
+	  "price": 70,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"bullet_damage_percent": 0.25,
+		"speed": 20,
+		"rerolls_per_wave": 1
+	  }
+	},
+	{
+	  "id": "pirates_bounty",
+	  "name": "Pirate's Bounty",
+	  "description": "+2 Golden Ship Count, +15% Bullet Damage",
+	  "rarity": "uncommon",
+	  "price": 40,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"golden_ship_count": 2,
+		"bullet_damage_percent": 0.15
+	  }
+	},
+	{
+	  "id": "smugglers_cache",
+	  "name": "Smuggler's Cache",
+	  "description": "+1 Golden Ship Count, +30 Speed, +1 Free Reroll",
+	  "rarity": "uncommon",
+	  "price": 60,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"golden_ship_count": 1,
+		"speed": 30,
+		"rerolls_per_wave": 1
+	  }
+	},
+	{
+	  "id": "neural_combatant",
+	  "name": "Neural Combatant",
+	  "description": "+10% Crit Chance, +40 Speed, +100 Weapon Range",
+	  "rarity": "rare",
+	  "price": 75,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"crit_chance": 0.10,
+		"speed": 40,
+		"weapon_range": 100
+	  }
+	},
+	{
+	  "id": "cyber_warrior",
+	  "name": "Cyber Warrior",
+	  "description": "+25% Damage Percent, +15 Armor, +50 Max Shield",
+	  "rarity": "rare",
+	  "price": 100,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.25,
+		"armor": 15,
+		"max_shield": 50
+	  }
+	},
+	{
+	  "_category": "=== LEGENDARY TIER ITEMS ==="
+	},
+	{
+	  "id": "void_emperor",
+	  "name": "Void Emperor",
+	  "description": "+40% Damage Percent, +3 Ship Count, +30% Ship Damage, +100 Max HP",
+	  "rarity": "legendary",
+	  "price": 250,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"damage_percent": 0.40,
+		"ship_count": 3,
+		"ship_damage_percent": 0.30,
+		"max_hp": 100
+	  }
+	},
+	{
+	  "id": "reality_bender",
+	  "name": "Reality Bender",
+	  "description": "+25 Luck, +20% Crit Chance, +1.0 Crit Damage, +2 Free Rerolls",
+	  "rarity": "legendary",
+	  "price": 180,
+	  "stackable": true,
+	  "unique": false,
+	  "category": "stat",
+	  "sources": ["store", "slot_machine"],
+	  "stat_modifiers": { 
+		"luck": 25,
+		"crit_chance": 0.20,
+		"crit_damage": 1.0,
+		"rerolls_per_wave": 2
+	  }
 	}
   ],
   "weapons": [
+	{
+	  "_category": "=== DIRECT WEAPONS (PLAYER FIRES) ==="
+	},
 	{
 	  "id": "basic_bullet_weapon",
 	  "name": "Bullet Gun",
@@ -54,17 +1944,6 @@
 	  "category": "weapon",
 	  "sources": ["store", "slot_machine"],
 	  "weapon_scene": "res://scenes/weapons/BulletWeapon.tscn",
-	  "weapon_type": "bullet"
-	},
-	{
-	  "id": "bullet_hangar",
-	  "name": "Bullet Hangar",
-	  "description": "Spawns AI ships that fire bullets for you",
-	  "rarity": "common",
-	  "price": 3,
-	  "category": "weapon",
-	  "sources": ["store", "slot_machine"],
-	  "weapon_scene": "res://scenes/weapons/spawners/BulletShipSpawner.tscn",
 	  "weapon_type": "bullet"
 	},
 	{
@@ -79,17 +1958,6 @@
 	  "weapon_type": "laser"
 	},
 	{
-	  "id": "laser_hangar",
-	  "name": "Laser Hangar",
-	  "description": "Spawns AI ships that fire lasers for you",
-	  "rarity": "common",
-	  "price": 3,
-	  "category": "weapon",
-	  "sources": ["store", "slot_machine"],
-	  "weapon_scene": "res://scenes/weapons/spawners/LaserShipSpawner.tscn",
-	  "weapon_type": "laser"
-	},
-	{
 	  "id": "basic_rocket",
 	  "name": "Rocket Launcher",
 	  "description": "Direct rocket weapon - you fire explosive rockets",
@@ -98,17 +1966,6 @@
 	  "category": "weapon",
 	  "sources": ["store", "slot_machine"],
 	  "weapon_scene": "res://scenes/weapons/RocketWeapon.tscn",
-	  "weapon_type": "rocket"
-	},
-	{
-	  "id": "rocket_hangar",
-	  "name": "Rocket Hangar",
-	  "description": "Spawns AI ships that fire rockets for you",
-	  "rarity": "common",
-	  "price": 3,
-	  "category": "weapon",
-	  "sources": ["store", "slot_machine"],
-	  "weapon_scene": "res://scenes/weapons/spawners/RocketShipSpawner.tscn",
 	  "weapon_type": "rocket"
 	},
 	{
@@ -121,6 +1978,42 @@
 	  "sources": ["store", "slot_machine"],
 	  "weapon_scene": "res://scenes/weapons/BioWeapon.tscn",
 	  "weapon_type": "bio"
+	},
+	{
+	  "_category": "=== HANGAR WEAPONS (SPAWN AI SHIPS) ==="
+	},
+	{
+	  "id": "bullet_hangar",
+	  "name": "Bullet Hangar",
+	  "description": "Spawns AI ships that fire bullets for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/BulletShipSpawner.tscn",
+	  "weapon_type": "bullet"
+	},
+	{
+	  "id": "laser_hangar",
+	  "name": "Laser Hangar",
+	  "description": "Spawns AI ships that fire lasers for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/LaserShipSpawner.tscn",
+	  "weapon_type": "laser"
+	},
+	{
+	  "id": "rocket_hangar",
+	  "name": "Rocket Hangar",
+	  "description": "Spawns AI ships that fire rockets for you",
+	  "rarity": "common",
+	  "price": 3,
+	  "category": "weapon",
+	  "sources": ["store", "slot_machine"],
+	  "weapon_scene": "res://scenes/weapons/spawners/RocketShipSpawner.tscn",
+	  "weapon_type": "rocket"
 	},
 	{
 	  "id": "bio_hangar",
