@@ -60,10 +60,19 @@ func _on_spin_pressed() -> void:
 	
 	print("SlotMachine: Total available: %d" % all_available.size())
 	
-	# Simple random selection (not using luck system for now to debug)
-	var random_result = all_available[randi() % all_available.size()]
+	# ===== FIXED: USE LUCK-BASED SELECTION =====
+	var player_luck = pd.get_stat("luck")
+	print("SlotMachine: Player luck: %.1f" % player_luck)
 	
-	print("SlotMachine: Selected: %s (type: %s)" % [random_result.name, random_result.get_script().get_path()])
+	# Use the luck system you built!
+	var random_result = slot_logic.get_luck_based_item(all_available, player_luck)
+	
+	# Fallback to random if luck system fails
+	if not random_result:
+		print("SlotMachine: Luck system failed, using fallback")
+		random_result = all_available[randi() % all_available.size()]
+	
+	print("SlotMachine: Selected: %s (rarity: %s)" % [random_result.name, random_result.rarity])
 	
 	if random_result:
 		# Show result
