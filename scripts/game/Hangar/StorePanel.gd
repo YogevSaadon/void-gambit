@@ -82,7 +82,7 @@ func _populate_items() -> void:
 			store_items[i].set_item_or_weapon(selected_items[i])
 			store_items[i].visible = true
 			store_items[i].disabled = false
-			# ===== REMOVED: _apply_rarity_styling(store_items[i], selected_items[i])
+			_apply_rarity_styling(store_items[i], selected_items[i])
 		else:
 			store_items[i].visible = false
 	
@@ -94,6 +94,35 @@ func _show_progression_milestones(level: int) -> void:
 	var milestones = rarity_system.get_progression_milestones(level)
 	for milestone in milestones:
 		print("STORE MILESTONE: " + milestone)
+
+# Visual rarity styling
+func _apply_rarity_styling(button: StoreItem, item) -> void:
+	var base_color = item.get_rarity_color()
+	button.add_theme_color_override("font_color", base_color)
+	
+	match item.rarity:
+		"epic":
+			_add_glow_effect(button, Color(0.6, 0, 1, 0.3))
+		"legendary":
+			_add_glow_effect(button, Color(1, 0.8, 0, 0.5))
+			_add_pulse_animation(button)
+
+# Visual effects
+func _add_glow_effect(button: Button, glow_color: Color) -> void:
+	var tween = create_tween()
+	tween.set_loops()
+	tween.tween_method(_set_button_modulate.bind(button), glow_color, Color.WHITE, 1.0)
+	tween.tween_method(_set_button_modulate.bind(button), Color.WHITE, glow_color, 1.0)
+
+func _add_pulse_animation(button: Button) -> void:
+	var tween = create_tween()
+	tween.set_loops()
+	tween.tween_property(button, "scale", Vector2(1.05, 1.05), 0.8)
+	tween.tween_property(button, "scale", Vector2(1.0, 1.0), 0.8)
+
+func _set_button_modulate(button: Button, color: Color) -> void:
+	if is_instance_valid(button):
+		button.modulate = color
 
 # Debug information
 func _print_rarity_debug_info(level: int) -> void:

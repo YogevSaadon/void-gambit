@@ -89,16 +89,18 @@ offset_right = 462.0
 offset_bottom = 146.0
 
 [node name="StoreWrapper" type="Control" parent="StoreSlotMachinePanel"]
-visible = false
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="StoreBackground" type="TextureRect" parent="StoreSlotMachinePanel/StoreWrapper"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -332.0
+offset_top = -19.0
+offset_right = 82.0
+offset_bottom = 529.0
 texture = ExtResource("5_2t4po")
+expand_mode = 1
 
 [node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel/StoreWrapper"]
 layout_mode = 0
@@ -135,9 +137,12 @@ offset_bottom = 40.0
 
 [node name="SlotBackground" type="TextureRect" parent="StoreSlotMachinePanel/SlotWrapper"]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = -355.0
+offset_top = -8.0
+offset_right = 90.0
+offset_bottom = 522.0
 texture = ExtResource("6_jgd4m")
+expand_mode = 1
 
 [node name="SlotMachinePanel" type="VBoxContainer" parent="StoreSlotMachinePanel/SlotWrapper"]
 layout_mode = 0
