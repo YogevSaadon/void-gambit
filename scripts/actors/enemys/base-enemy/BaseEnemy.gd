@@ -134,6 +134,12 @@ func _physics_process(delta: float) -> void:
 	if velocity.length() > 10.0:  # Only rotate when actually moving
 		var target_angle = velocity.angle()
 		rotation = lerp_angle(rotation, target_angle, rotation_speed * delta)
+	
+	# ===== FIX: KEEP DAMAGE ANCHOR UPRIGHT =====
+	var damage_anchor = get_node_or_null("DamageAnchor")
+	if damage_anchor:
+		# Counter-rotate the anchor so it always points "up"
+		damage_anchor.rotation = -rotation
 
 # ───── Core mechanics ─────
 func move(delta: float) -> void:

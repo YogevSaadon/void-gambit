@@ -1,3 +1,4 @@
+# scripts/game/Hangar/Hangar.gd
 extends Node
 class_name Hangar
 
@@ -14,8 +15,14 @@ class_name Hangar
 @onready var inventory_grid = $LeftPanel/InventoryScroll/InventoryGrid
 
 @onready var center_panel = $StoreSlotMachinePanel
-@onready var store_panel = $StoreSlotMachinePanel/StorePanel
-@onready var slot_machine_panel = $StoreSlotMachinePanel/SlotMachinePanel
+
+# ===== CHANGED: Update paths to include wrappers =====
+@onready var store_panel = $StoreSlotMachinePanel/StoreWrapper/StorePanel
+@onready var slot_machine_panel = $StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel
+
+# ===== NEW: Add wrapper references =====
+@onready var store_wrapper = $StoreSlotMachinePanel/StoreWrapper
+@onready var slot_wrapper = $StoreSlotMachinePanel/SlotWrapper
 
 # ====== Managers ======
 @onready var gm = get_tree().root.get_node("GameManager")
@@ -41,20 +48,20 @@ func _refresh_ui() -> void:
 	wave_label.text = "Level %d" % gm.level_number
 	player_stats_panel.update_stats()
 
-# ====== Toggle Panels ======
+# ===== CHANGED: Toggle Wrappers instead of Panels =====
 func _show_store() -> void:
-	store_panel.visible = true
-	slot_machine_panel.visible = false
+	store_wrapper.visible = true      # Changed from store_panel.visible = true
+	slot_wrapper.visible = false      # Changed from slot_machine_panel.visible = false
 	switch_button.text = "Slot Machine"
 
 func _show_slot_machine() -> void:
-	store_panel.visible = false
-	slot_machine_panel.visible = true
+	store_wrapper.visible = false     # Changed from store_panel.visible = false
+	slot_wrapper.visible = true       # Changed from slot_machine_panel.visible = true
 	switch_button.text = "Store"
 
 # ====== Button Handlers ======
 func _on_switch_pressed() -> void:
-	if store_panel.visible:
+	if store_wrapper.visible:         # Changed from store_panel.visible
 		_show_slot_machine()
 	else:
 		_show_store()

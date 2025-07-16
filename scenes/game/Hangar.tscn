@@ -1,10 +1,12 @@
-[gd_scene load_steps=6 format=3 uid="uid://c3asvvqqrvvu3"]
+[gd_scene load_steps=8 format=3 uid="uid://c3asvvqqrvvu3"]
 
 [ext_resource type="Script" path="res://scripts/game/hangar/Hangar.gd" id="1_pr6oe"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StorePanel.gd" id="2_jdma5"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StatPanel.gd" id="2_nkioq"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StoreItem.gd" id="2_pxfni"]
 [ext_resource type="Script" path="res://scripts/game/hangar/SlotMachinePanel.gd" id="5_0uvjc"]
+[ext_resource type="Texture2D" uid="uid://v76toocjr0f4" path="res://assets/store-people.png" id="5_2t4po"]
+[ext_resource type="Texture2D" uid="uid://bxc4isbbfj30" path="res://assets/Slot-people.png" id="6_jgd4m"]
 
 [node name="Hangar" type="Control"]
 layout_mode = 3
@@ -86,47 +88,69 @@ offset_top = 106.0
 offset_right = 462.0
 offset_bottom = 146.0
 
-[node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
+[node name="StoreWrapper" type="Control" parent="StoreSlotMachinePanel"]
 visible = false
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="StoreBackground" type="TextureRect" parent="StoreSlotMachinePanel/StoreWrapper"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+texture = ExtResource("5_2t4po")
+
+[node name="StorePanel" type="VBoxContainer" parent="StoreSlotMachinePanel/StoreWrapper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 83.0
 script = ExtResource("2_jdma5")
 
-[node name="StoreCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/StorePanel"]
+[node name="StoreCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
 layout_mode = 2
 
-[node name="RerollButton" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+[node name="RerollButton" type="Button" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
 layout_mode = 2
 
-[node name="StoreItem0" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
-layout_mode = 2
-script = ExtResource("2_pxfni")
-
-[node name="StoreItem1" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+[node name="StoreItem0" type="Button" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
 
-[node name="StoreItem2" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+[node name="StoreItem1" type="Button" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
 
-[node name="StoreItem3" type="Button" parent="StoreSlotMachinePanel/StorePanel"]
+[node name="StoreItem2" type="Button" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
 
-[node name="SlotMachinePanel" type="VBoxContainer" parent="StoreSlotMachinePanel"]
+[node name="StoreItem3" type="Button" parent="StoreSlotMachinePanel/StoreWrapper/StorePanel"]
+layout_mode = 2
+script = ExtResource("2_pxfni")
+
+[node name="SlotWrapper" type="Control" parent="StoreSlotMachinePanel"]
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="SlotBackground" type="TextureRect" parent="StoreSlotMachinePanel/SlotWrapper"]
 layout_mode = 0
 offset_right = 40.0
 offset_bottom = 40.0
+texture = ExtResource("6_jgd4m")
+
+[node name="SlotMachinePanel" type="VBoxContainer" parent="StoreSlotMachinePanel/SlotWrapper"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 47.0
 script = ExtResource("5_0uvjc")
 
-[node name="SlotMachineCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+[node name="SlotMachineCurrencyLabel" type="Label" parent="StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel"]
 layout_mode = 2
 
-[node name="SpinButton" type="Button" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+[node name="SpinButton" type="Button" parent="StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel"]
 layout_mode = 2
 
-[node name="SlotResultItem" type="Button" parent="StoreSlotMachinePanel/SlotMachinePanel"]
+[node name="SlotResultItem" type="Button" parent="StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel"]
 layout_mode = 2
 script = ExtResource("2_pxfni")
