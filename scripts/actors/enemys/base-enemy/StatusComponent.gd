@@ -84,7 +84,7 @@ func _is_infection_safe() -> bool:
 	return is_instance_valid(infection)
 
 func _safe_update_infection(delta: float) -> void:
-	"""Safely update infection properties"""
+	"""Safely update infection properties - FIXED RACE CONDITION"""
 	if not infection or _processing_disabled:
 		return
 		
@@ -99,8 +99,14 @@ func _safe_update_infection(delta: float) -> void:
 	if infection.tick_accumulator <= 0.0:
 		infection.tick_accumulator += infection.tick_interval
 		_tick_damage()
+		
+		# CRITICAL FIX: Check if enemy died from tick damage
+		# _tick_damage() can kill the enemy, which calls _disable_processing(), which sets infection = null
+		if not infection or _processing_disabled:
+			return  # Enemy died from infection damage, exit safely
 
-	if infection.remaining_time <= 0.0:
+	# SECOND CHECK: Only access infection.remaining_time if infection still exists
+	if infection and infection.remaining_time <= 0.0:
 		infection = null
 
 func _disable_processing() -> void:
@@ -124,7 +130,9 @@ func _tick_damage() -> void:
 		
 	var damage_amount: float = infection.dps * infection.tick_interval
 	var is_crit = randf() < pd.get_stat("crit_chance")
+	
 	# Parent is the enemy node—call its apply_damage:
+	# NOTE: This can cause the enemy to die, which triggers _disable_processing()
 	if get_parent().has_method("apply_damage"):
 		get_parent().apply_damage(damage_amount, is_crit)
 

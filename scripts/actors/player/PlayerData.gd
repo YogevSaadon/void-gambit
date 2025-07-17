@@ -62,7 +62,7 @@ func reset() -> void:
 	# Weapon reset
 	equipped_weapons.clear()
 	equipped_weapons.resize(MAX_WEAPON_SLOTS)
-	equipped_weapons[0] = "basic_bullet_weapon"  # Default weapon
+	equipped_weapons[0] = "bio_hangar"  # Default weapon
 
 func add_item(item: PassiveItem) -> void:
 	if (not item.stackable) and passive_item_ids.has(item.id):
