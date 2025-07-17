@@ -16,9 +16,9 @@ func _enter_tree() -> void:
 	damage_interval = 2.5       # Much slower than Diamond (2.0)
 	
 	# ── Metadata ─────
-	power_level = 1
+	power_level = 15
 	rarity = "epic"             # Rarer than Diamond (rare)
-	min_level = 6               # Appears much later than Diamond (level 4)
+	min_level = 8               # Appears much later than Diamond (level 4)
 	max_level = 20              # Very high level enemy
 	
 	# Call parent's _enter_tree to apply power scaling

@@ -16,7 +16,7 @@ func _enter_tree() -> void:
 	damage_interval = 1.5       # Much slower than Triangle (1.0)
 	
 	# ── Metadata ─────
-	power_level = 1
+	power_level = 5
 	rarity = "uncommon"         # Slightly rarer than basic ships
 	min_level = 3               # Appears from level 3+
 	max_level = 15              # Can appear in very high levels

@@ -16,7 +16,7 @@ func _enter_tree() -> void:
 	damage_interval = 1.0    # Standard contact damage timing
 	
 	# ── Metadata ─────
-	power_level = 1
+	power_level = 2
 	rarity = "common"
 	min_level = 1
 	max_level = 10           # Can appear in higher levels

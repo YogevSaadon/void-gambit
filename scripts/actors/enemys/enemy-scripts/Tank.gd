@@ -16,9 +16,9 @@ func _enter_tree() -> void:
 	damage_interval = 0.6       # Faster than Biter (0.8)
 
 	# ── Metadata ─────
-	power_level = 1
+	power_level = 5
 	rarity = "common"
-	min_level = 2               # Appears from level 2+
+	min_level = 4               # Appears from level 2+
 	max_level = 8
 
 	# Call parent's _enter_tree
