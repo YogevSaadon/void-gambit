@@ -1,9 +1,10 @@
+# scripts/game/Level.gd
 extends Node2D
 class_name Level
 
-# ====== Exports ======
-@export var enemy_scene: PackedScene                          # Triangle (25 %)
-@export var secondary_enemy_scene: PackedScene                # Biter (75 %)
+# ====== Exports (REMOVED - No longer needed) ======
+# @export var enemy_scene: PackedScene                          # ← REMOVED
+# @export var secondary_enemy_scene: PackedScene                # ← REMOVED
 
 # ====== Nodes ======
 var player: Player = null
@@ -26,29 +27,17 @@ func _ready() -> void:
 	pem.register_player(player)
 	pem.initialize_from_player_data(player_data)
 
-	_set_wave_enemy_scene()
+	# ===== REMOVED: No longer need to set enemy scenes =====
+	# _set_wave_enemy_scene()  # ← REMOVED
+
 	level_ui.set_player(player)
 	_connect_wave_signals()
 	_equip_player_weapons()
 	_start_level()
 
-# ====== Wave Setup ======
-func _set_wave_enemy_scene() -> void:
-	# --- preload Triangle if not set ---
-	if enemy_scene == null:
-		enemy_scene = preload(
-			"res://scenes/actors/enemys/EnemyMissle.tscn"
-		)
-	# --- preload Biter if not set ---
-	if secondary_enemy_scene == null:
-		secondary_enemy_scene = preload(
-			"res://scenes/actors/enemys/EnemyMissle.tscn"
-		)
-
-	# pass both scenes + chance to WaveManager
-	wave_manager.enemy_scene            = enemy_scene
-	wave_manager.secondary_enemy_scene  = secondary_enemy_scene
-	wave_manager.secondary_spawn_chance = 0.75    # 75 % Biter
+# ===== REMOVED: Enemy scene setup no longer needed =====
+# func _set_wave_enemy_scene() -> void:
+# 	# This entire function is removed - WaveManager now handles enemy selection
 
 func _connect_wave_signals() -> void:
 	wave_manager.wave_started.connect(_on_wave_started)
@@ -82,6 +71,14 @@ func _equip_player_weapons() -> void:
 func _start_level() -> void:
 	wave_manager.set_level(game_manager.level_number)
 	wave_manager.start_level()
+	
+	# ===== NEW: Print level info for debugging =====
+	print("=== STARTING LEVEL %d ===" % game_manager.level_number)
+	var level_info = PowerBudgetCalculator.get_level_info(game_manager.level_number)
+	print("Power Budget: %d" % level_info.power_budget)
+	print("Tier: %s (%dx multiplier)" % [level_info.tier_name, level_info.tier_multiplier])
+	print("Wave Duration: %.0fs" % level_info.wave_duration)
+	print("========================")
 
 # ====== Wave Signal Handlers ======
 func _on_wave_started(wave_number: int) -> void:
