@@ -10,6 +10,7 @@ class_name Hangar
 
 @onready var left_panel = $LeftPanel
 @onready var player_stats_panel = $LeftPanel/PlayerStatsPanel
+@onready var toggle_stats_button = $LeftPanel/Button  # ← Fixed path for your Button node
 @onready var weapon_slots_panel = $LeftPanel/WeaponSlotsPanel
 @onready var inventory_scroll = $LeftPanel/InventoryScroll
 @onready var inventory_grid = $LeftPanel/InventoryScroll/InventoryGrid
@@ -43,6 +44,10 @@ func _ready() -> void:
 func _connect_signals() -> void:
 	next_level_button.pressed.connect(_on_next_level_pressed)
 	switch_button.pressed.connect(_on_switch_pressed)
+	
+	# Connect the toggle stats button
+	toggle_stats_button.pressed.connect(_on_toggle_stats_pressed)
+	toggle_stats_button.text = "Advanced"  # Set initial text
 
 func _refresh_ui() -> void:
 	wave_label.text = "Level %d" % gm.level_number
@@ -69,3 +74,8 @@ func _on_switch_pressed() -> void:
 func _on_next_level_pressed() -> void:
 	gm.next_level()
 	get_tree().change_scene_to_file("res://scenes/game/Level.tscn")
+
+# ====== NEW: Toggle Stats Handler ======
+func _on_toggle_stats_pressed() -> void:
+	player_stats_panel.toggle_stats_view()
+	toggle_stats_button.text = player_stats_panel.get_current_view_name()

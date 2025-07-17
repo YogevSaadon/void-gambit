@@ -41,17 +41,14 @@ offset_top = 189.0
 offset_right = 1029.0
 offset_bottom = 274.0
 
-[node name="PlayerStatsPanel" type="VBoxContainer" parent="LeftPanel"]
+[node name="PlayerStatsPanel" type="ScrollContainer" parent="LeftPanel"]
 layout_mode = 2
 script = ExtResource("2_nkioq")
 
-[node name="HealthLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
+[node name="StatsContainer" type="VBoxContainer" parent="LeftPanel/PlayerStatsPanel"]
 layout_mode = 2
 
-[node name="ShieldLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
-layout_mode = 2
-
-[node name="BlinksLabel" type="Label" parent="LeftPanel/PlayerStatsPanel"]
+[node name="Button" type="Button" parent="LeftPanel"]
 layout_mode = 2
 
 [node name="WeaponSlotsPanel" type="HBoxContainer" parent="LeftPanel"]
