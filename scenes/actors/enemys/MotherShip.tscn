@@ -9,21 +9,20 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/attacks/ChildShipSpawner.gd" id="6_7o7sf"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 10.1312
+radius = 81.0496
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(17.5, 21.875)
+size = Vector2(140, 175)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
 [node name="EnemyMotherShip" type="Area2D"]
-scale = Vector2(8, 8)
 script = ExtResource("1_68eh3")
 
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-position = Vector2(-0.25, 5.96046e-07)
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(-2, 0)
 rotation = 1.5708
-scale = Vector2(0.03, 0.03)
+scale = Vector2(0.24, 0.24)
 texture = ExtResource("2_8400f")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
@@ -38,7 +37,7 @@ offset_right = 60.0
 offset_bottom = 60.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(0, -112)
 
 [node name="DamageZone" type="Area2D" parent="."]
 script = ExtResource("3_hx3ga")
@@ -56,7 +55,7 @@ script = ExtResource("5_0vsq4")
 script = ExtResource("3_hx3ga")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.125, -0.3125)
+position = Vector2(1, -2.5)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 
@@ -64,7 +63,7 @@ debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 script = ExtResource("6_7o7sf")
 
 [node name="Muzzle" type="Marker2D" parent="WeaponNode"]
-position = Vector2(9, 0)
+position = Vector2(36864, 0)
 
 [node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
 modulate = Color(0, 0, 0, 1)

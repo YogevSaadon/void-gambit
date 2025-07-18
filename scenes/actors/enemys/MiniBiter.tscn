@@ -8,18 +8,16 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/MiniSawBlade.gd" id="5_jqqkb"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 9.21954
+radius = 13.8293
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(20, 21)
+size = Vector2(30, 31.5)
 
 [node name="EnemyMiniBiter" type="Area2D"]
-scale = Vector2(1.5, 1.5)
 script = ExtResource("1_lsmv7")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(3.8743e-07, 0)
-scale = Vector2(0.03, 0.03)
+scale = Vector2(0.045, 0.045)
 texture = ExtResource("2_njf8w")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
@@ -34,7 +32,7 @@ offset_right = 420.0
 offset_bottom = 100.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(0, -21)
 
 [node name="DamageZone" type="Area2D" parent="."]
 script = ExtResource("3_euirh")
@@ -52,6 +50,6 @@ script = ExtResource("5_jqqkb")
 script = ExtResource("3_euirh")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -0.5)
+position = Vector2(0, -0.75)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)

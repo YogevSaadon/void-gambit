@@ -8,18 +8,18 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChargeMovment.gd" id="5_mngkw"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
+radius = 70.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(23, 21)
+size = Vector2(80.5, 73.5)
 
 [node name="EnemyTank" type="Area2D"]
-scale = Vector2(3.5, 3.5)
 script = ExtResource("1_cu3ng")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-position = Vector2(2, 1.13687e-13)
+position = Vector2(7, 0)
 rotation = 4.71239
-scale = Vector2(0.03, 0.03)
+scale = Vector2(0.105, 0.105)
 texture = ExtResource("2_0x33x")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
@@ -34,7 +34,7 @@ offset_right = 60.0
 offset_bottom = 60.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(0, -49)
 
 [node name="DamageZone" type="Area2D" parent="."]
 script = ExtResource("3_7oi30")
@@ -52,6 +52,6 @@ script = ExtResource("5_mngkw")
 script = ExtResource("3_7oi30")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, 0.5)
+position = Vector2(1.75, 1.75)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)

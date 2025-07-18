@@ -9,20 +9,19 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/attacks/TripleShotAttack.gd" id="6_c8v1f"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 7.51665
+radius = 15.0333
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(12, 11.5)
+size = Vector2(24, 23)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
 [node name="EnemyChildShip" type="Area2D"]
-scale = Vector2(2, 2)
 script = ExtResource("1_53pby")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 rotation = 1.5708
-scale = Vector2(0.03, 0.03)
+scale = Vector2(0.06, 0.06)
 texture = ExtResource("2_prgwt")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
@@ -34,7 +33,7 @@ offset_right = 20.0
 offset_bottom = 20.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
-position = Vector2(0, -14)
+position = Vector2(0, -28)
 
 [node name="DamageZone" type="Area2D" parent="."]
 script = ExtResource("3_6631y")
@@ -52,7 +51,7 @@ script = ExtResource("5_lr0o2")
 script = ExtResource("3_6631y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1.5, 0.25)
+position = Vector2(-3, 0.5)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 
@@ -60,7 +59,7 @@ debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 script = ExtResource("6_c8v1f")
 
 [node name="Muzzle" type="Marker2D" parent="WeaponNode"]
-position = Vector2(9, 0)
+position = Vector2(72, 0)
 
 [node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
 modulate = Color(0, 0, 0, 1)

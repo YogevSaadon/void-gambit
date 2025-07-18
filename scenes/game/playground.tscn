@@ -24,6 +24,7 @@ position = Vector2(221, 276)
 
 [node name="EnemyChildShip" parent="." instance=ExtResource("3_1h3r0")]
 position = Vector2(140, 189)
+scale = Vector2(2, 2)
 
 [node name="EnemyDiamond" parent="." instance=ExtResource("4_qm0y2")]
 position = Vector2(543, 214)
@@ -31,11 +32,9 @@ position = Vector2(543, 214)
 [node name="EnemyMissle" parent="." instance=ExtResource("5_1hxjo")]
 position = Vector2(195, 143)
 
-[node name="EnemyGoldShip" parent="." instance=ExtResource("6_uaomn")]
-position = Vector2(140, 362)
-
 [node name="EnemyMiniBiter" parent="." instance=ExtResource("7_sxp2h")]
 position = Vector2(197, 188)
+scale = Vector2(1.5, 1.5)
 
 [node name="EnemyMotherShip" parent="." instance=ExtResource("8_e64y1")]
 position = Vector2(533, 439)
@@ -54,3 +53,6 @@ position = Vector2(129, 464)
 
 [node name="MiniShip" parent="." instance=ExtResource("13_o3whb")]
 position = Vector2(134, 140)
+
+[node name="EnemyGoldShip" parent="." instance=ExtResource("6_uaomn")]
+position = Vector2(143, 350)
