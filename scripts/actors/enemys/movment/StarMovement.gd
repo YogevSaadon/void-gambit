@@ -2,6 +2,12 @@
 extends BaseRangeKeepingMovement
 class_name StarMovement
 
+# ===== NEW: SPINNING CONFIGURATION =====
+@export var base_spin_speed: float = 1.5     # Constant rotation speed (radians per second)
+
+# ===== NEW: SPINNING STATE =====
+var cumulative_rotation: float = 0.0 # Total rotation for smooth spinning
+
 func configure_movement() -> void:
 	# ===== STAR CONFIGURATION =====
 	# Star: Extreme long-range fortress that stays consistently far
@@ -30,3 +36,29 @@ func configure_movement() -> void:
 	# ===== SPEED CHANGE TIMING (Very sluggish) =====
 	config_slowdown_duration = 1.5    # Much longer slowdown (vs 0.5)
 	config_speedup_duration = 2.5     # Very slow recovery (vs 0.8)
+
+# ===== NEW: OVERRIDE MOVEMENT TO ADD SPINNING =====
+func _on_movement_ready() -> void:
+	# Call parent initialization
+	super._on_movement_ready()
+	
+	# Random initial rotation to prevent sync
+	cumulative_rotation = randf() * TAU
+
+func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
+	# ===== NEW: UPDATE SPINNING ROTATION =====
+	_update_spinning_rotation(delta)
+	
+	# Call parent movement calculation
+	return super._calculate_target_position(player, delta)
+
+# ===== NEW: SPINNING ROTATION SYSTEM =====
+func _update_spinning_rotation(delta: float) -> void:
+	"""Update the constant spinning rotation of the star"""
+	# Simple constant spin - no speed variations
+	cumulative_rotation += base_spin_speed * delta
+	enemy.rotation = cumulative_rotation
+	
+	# Keep rotation in reasonable range to prevent float overflow
+	if cumulative_rotation > TAU * 10:
+		cumulative_rotation -= TAU * 10
