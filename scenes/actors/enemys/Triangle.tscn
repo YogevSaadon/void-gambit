@@ -61,7 +61,7 @@ debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 script = ExtResource("6_6lrpy")
 
 [node name="Muzzle" type="Marker2D" parent="WeaponNode"]
-position = Vector2(729, 0)
+position = Vector2(9, 0)
 
 [node name="WeaponSprite" type="Sprite2D" parent="WeaponNode"]
 modulate = Color(0, 0, 0, 1)
