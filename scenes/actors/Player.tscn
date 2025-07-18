@@ -8,14 +8,14 @@
 [ext_resource type="Script" path="res://scripts/actors/player/BlinkSystem.gd" id="4_erngv"]
 
 [node name="Player" instance=ExtResource("1_uvhjo")]
-position = Vector2(1, -5)
-scale = Vector2(2.3, 2.3)
+position = Vector2(5.96046e-08, -4.76837e-07)
+scale = Vector2(2.5, 2.5)
 script = ExtResource("2_ehrxk")
 
 [node name="Sprite" parent="." index="0"]
-position = Vector2(1.3113e-06, -1.78814e-06)
+position = Vector2(0.516506, 0.00709733)
 rotation = 1.58454
-scale = Vector2(0.0429688, 0.0351563)
+scale = Vector2(0.03, 0.03)
 texture = ExtResource("3_g6v3y")
 
 [node name="Camera2D" type="Camera2D" parent="." index="2"]
@@ -24,25 +24,26 @@ texture = ExtResource("3_g6v3y")
 script = ExtResource("3_74jok")
 
 [node name="Weapon0" type="Node2D" parent="WeaponSystem" index="0"]
-position = Vector2(10, 6)
+position = Vector2(6.4, -3.2)
 
 [node name="Weapon1" type="Node2D" parent="WeaponSystem" index="1"]
-position = Vector2(-12, 6)
+position = Vector2(7.2, 4)
 
 [node name="Weapon2" type="Node2D" parent="WeaponSystem" index="2"]
-position = Vector2(5, -1)
+position = Vector2(0.8, -6)
 
 [node name="Weapon3" type="Node2D" parent="WeaponSystem" index="3"]
-position = Vector2(-5, -1)
+position = Vector2(1.6, 5.6)
 
 [node name="Weapon4" type="Node2D" parent="WeaponSystem" index="4"]
-position = Vector2(-3, -6)
+position = Vector2(-4, -4)
 
 [node name="Weapon5" type="Node2D" parent="WeaponSystem" index="5"]
-position = Vector2(2, -6)
+position = Vector2(-4, 3.6)
 
 [node name="BlinkSystem" type="Node2D" parent="." index="4"]
 script = ExtResource("4_erngv")
 
 [node name="PlayerMovement" type="Node2D" parent="." index="5"]
+position = Vector2(1.6, 3.6)
 script = ExtResource("4_ca1r7")

@@ -2,48 +2,36 @@
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/ChildShip.gd" id="1_53pby"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_2dtgu"]
+[ext_resource type="Texture2D" uid="uid://drorenjlam20f" path="res://assets/enemys/EnemyChildShip.png" id="2_prgwt"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_6631y"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_57lqr"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChildShipMovement.gd" id="5_lr0o2"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/attacks/TripleShotAttack.gd" id="6_c8v1f"]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 5.0
+radius = 7.51665
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(8, 8)
+size = Vector2(12, 11.5)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
 [node name="EnemyChildShip" type="Area2D"]
+scale = Vector2(2, 2)
 script = ExtResource("1_53pby")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.164706, 0, 0.454902, 1)
-position = Vector2(3, -1.19209e-07)
-rotation = -0.6353
-scale = Vector2(3.6854, 4.08086)
-skew = -0.476475
-texture = SubResource("CanvasTexture_h5rir")
-
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-modulate = Color(0.164706, 0, 0.454902, 1)
-position = Vector2(-1.05085, 0)
-scale = Vector2(7.8983, -4.08086)
-texture = SubResource("CanvasTexture_h5rir")
+rotation = 1.5708
+scale = Vector2(0.03, 0.03)
+texture = ExtResource("2_prgwt")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
-position = Vector2(-4.76837e-07, -9.53674e-07)
 scale = Vector2(0.05, 0.05)
 script = ExtResource("2_2dtgu")
 
 [node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
-offset_left = 40.0
-offset_top = -40.0
-offset_right = 60.0
-offset_bottom = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
 position = Vector2(0, -14)
@@ -64,6 +52,7 @@ script = ExtResource("5_lr0o2")
 script = ExtResource("3_6631y")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1.5, 0.25)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
 

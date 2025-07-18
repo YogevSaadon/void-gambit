@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://bi7o4rqo7ytm1"]
+[gd_scene load_steps=14 format=3 uid="uid://bi7o4rqo7ytm1"]
 
 [ext_resource type="PackedScene" uid="uid://cjja0oj0j46qx" path="res://scenes/actors/Player.tscn" id="1_y4wa4"]
 [ext_resource type="PackedScene" uid="uid://1bjia2pnh7mc" path="res://scenes/actors/enemys/Biter.tscn" id="2_avllm"]
@@ -12,41 +12,45 @@
 [ext_resource type="PackedScene" uid="uid://su8mr1d25r3t" path="res://scenes/actors/enemys/Star.tscn" id="10_u5pqb"]
 [ext_resource type="PackedScene" uid="uid://dupmuwwt14ntv" path="res://scenes/actors/enemys/Triangle.tscn" id="11_heyhe"]
 [ext_resource type="PackedScene" uid="uid://d2u2q3yjrb85p" path="res://scenes/actors/enemys/Tank.tscn" id="12_1qew6"]
+[ext_resource type="PackedScene" uid="uid://dmk5jmuglpj6p" path="res://scenes/weapons/spawners/MiniShip.tscn" id="13_o3whb"]
 
 [node name="Playground" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_y4wa4")]
-position = Vector2(407, 348)
+position = Vector2(148, 275)
 
 [node name="EnemyBiter" parent="." instance=ExtResource("2_avllm")]
-position = Vector2(473, 357)
+position = Vector2(221, 276)
 
 [node name="EnemyChildShip" parent="." instance=ExtResource("3_1h3r0")]
-position = Vector2(399, 262)
+position = Vector2(140, 189)
 
 [node name="EnemyDiamond" parent="." instance=ExtResource("4_qm0y2")]
-position = Vector2(404, 519)
+position = Vector2(543, 214)
 
 [node name="EnemyMissle" parent="." instance=ExtResource("5_1hxjo")]
-position = Vector2(461, 262)
+position = Vector2(195, 143)
 
 [node name="EnemyGoldShip" parent="." instance=ExtResource("6_uaomn")]
-position = Vector2(431, 409)
+position = Vector2(140, 362)
 
 [node name="EnemyMiniBiter" parent="." instance=ExtResource("7_sxp2h")]
-position = Vector2(512, 263)
+position = Vector2(197, 188)
 
 [node name="EnemyMotherShip" parent="." instance=ExtResource("8_e64y1")]
-position = Vector2(402, 590)
+position = Vector2(533, 439)
 
 [node name="EnemyRectangle" parent="." instance=ExtResource("9_eevy2")]
-position = Vector2(565, 352)
+position = Vector2(362, 276)
 
 [node name="EnemyStar" parent="." instance=ExtResource("10_u5pqb")]
-position = Vector2(400, 465)
+position = Vector2(244, 466)
 
 [node name="EnemyTriangle" parent="." instance=ExtResource("11_heyhe")]
-position = Vector2(516, 356)
+position = Vector2(288, 276)
 
 [node name="EnemyTank" parent="." instance=ExtResource("12_1qew6")]
-position = Vector2(453, 468)
+position = Vector2(129, 464)
+
+[node name="MiniShip" parent="." instance=ExtResource("13_o3whb")]
+position = Vector2(134, 140)

@@ -2,39 +2,26 @@
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/GoldShip.gd" id="1_g1ar5"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_e1jpp"]
+[ext_resource type="Texture2D" uid="uid://bnc5vdgebsmex" path="res://assets/enemys/EnemyGoldShip.png" id="2_lci7c"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_ef8co"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_ocp6a"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/GoldShipMovement.gd" id="5_5up3k"]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 6.0
+radius = 7.88461
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(23, 12)
+size = Vector2(23.9394, 15.1515)
 
 [node name="EnemyGoldShip" type="Area2D"]
+scale = Vector2(3.3, 3.3)
 script = ExtResource("1_g1ar5")
 
 [node name="Sprite2D2" type="Sprite2D" parent="."]
-modulate = Color(0.818323, 0.817964, 1.15514e-06, 1)
 position = Vector2(1.41143, -0.00261868)
-rotation = 3.14159
-scale = Vector2(20.2135, -11.9857)
-texture = SubResource("CanvasTexture_h5rir")
-
-[node name="Sprite2D3" type="Sprite2D" parent="."]
-modulate = Color(0.818323, 0.817964, 1.15514e-06, 1)
-position = Vector2(-10.8477, 3.99512)
-scale = Vector2(4.30469, 3.99024)
-texture = SubResource("CanvasTexture_h5rir")
-
-[node name="Sprite2D4" type="Sprite2D" parent="."]
-modulate = Color(0.818323, 0.817964, 1.15514e-06, 1)
-position = Vector2(-10.4238, -4)
-scale = Vector2(5.15235, 3.99024)
-texture = SubResource("CanvasTexture_h5rir")
+rotation = 1.5708
+scale = Vector2(0.03, 0.03)
+texture = ExtResource("2_lci7c")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
 position = Vector2(-4.76837e-07, -9.53674e-07)
@@ -44,8 +31,8 @@ script = ExtResource("2_e1jpp")
 [node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
 offset_left = -60.0
 offset_top = -60.0
-offset_right = 60.0
-offset_bottom = 60.0
+offset_right = -6.0
+offset_bottom = -12.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
 position = Vector2(0, -14)
@@ -66,6 +53,6 @@ script = ExtResource("5_5up3k")
 script = ExtResource("3_ef8co")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-0.5, 0)
+position = Vector2(1.9697, 0)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)

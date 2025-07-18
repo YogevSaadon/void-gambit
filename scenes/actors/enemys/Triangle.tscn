@@ -2,31 +2,29 @@
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/Triangle.gd" id="1_a4oki"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_pihkp"]
+[ext_resource type="Texture2D" uid="uid://sb7g62ohn87b" path="res://assets/enemys/EnemyTriangle.png" id="2_xaumh"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_03wne"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_el0hc"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/TriangleMovement.gd" id="5_dto34"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/attacks/TriangleAttack.gd" id="6_6lrpy"]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_h5rir"]
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 5.0
+radius = 7.66667
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(12, 12)
+size = Vector2(14, 12)
 
 [sub_resource type="CanvasTexture" id="CanvasTexture_4dtwf"]
 
 [node name="EnemyTriangle" type="Area2D"]
+scale = Vector2(3, 3)
 script = ExtResource("1_a4oki")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.164706, 0.882353, 0.941176, 1)
-position = Vector2(-0.204537, 5.96046e-07)
-rotation = -0.6353
-scale = Vector2(8.40907, 13.985)
-skew = -0.476475
-texture = SubResource("CanvasTexture_h5rir")
+position = Vector2(1, 0)
+rotation = 4.71239
+scale = Vector2(0.02, 0.02)
+texture = ExtResource("2_xaumh")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
 position = Vector2(-4.76837e-07, -9.53674e-07)
@@ -34,10 +32,9 @@ scale = Vector2(0.05, 0.05)
 script = ExtResource("2_pihkp")
 
 [node name="ColorRect" type="ColorRect" parent="PowerIndicator"]
-offset_left = -60.0
-offset_top = -60.0
+offset_top = -40.0
 offset_right = 60.0
-offset_bottom = 60.0
+offset_bottom = 20.0
 
 [node name="DamageAnchor" type="Marker2D" parent="."]
 position = Vector2(0, -14)

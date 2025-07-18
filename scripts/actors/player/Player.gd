@@ -7,7 +7,7 @@ class_name Player
 @export var health: int = 100
 @export var max_shield: int = 0
 @export var shield: int = 0
-@export var speed: float = 200.0
+@export var speed: float = 220.0
 @export var shield_recharge_rate: float = 5.0
 
 # ───── Dependencies (injected) ─────

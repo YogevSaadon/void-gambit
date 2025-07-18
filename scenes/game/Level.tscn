@@ -3,16 +3,16 @@
 [ext_resource type="Script" path="res://scripts/game/Level.gd" id="1_obx4w"]
 [ext_resource type="PackedScene" uid="uid://cjja0oj0j46qx" path="res://scenes/actors/Player.tscn" id="2_3rjn1"]
 [ext_resource type="Script" path="res://scripts/game/managers/WaveManager.gd" id="2_8hdw5"]
+[ext_resource type="Texture2D" uid="uid://dfxdaty77aonu" path="res://assets/backrounds/space2.png" id="2_dgl01"]
 [ext_resource type="PackedScene" uid="uid://bydtgr2motkkk" path="res://scenes/game/LevelUI.tscn" id="2_nbm43"]
-[ext_resource type="Texture2D" uid="uid://ck3dudbd0ap2l" path="res://assets/backrounds/space.png" id="2_rov6w"]
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_obx4w")
 
 [node name="Backround" type="Sprite2D" parent="."]
-position = Vector2(518, 286)
-scale = Vector2(1.50195, 1.06055)
-texture = ExtResource("2_rov6w")
+position = Vector2(566, 311)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
 
 [node name="LevelUI" parent="." instance=ExtResource("2_nbm43")]
 

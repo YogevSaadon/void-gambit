@@ -6,7 +6,7 @@ func _enter_tree() -> void:
 	enemy_type = "gold_ship"
 	
 	# ── Base stats at power-level 1 ─────
-	max_health = 150            # Tanky to survive being hunted
+	max_health = 80            # Tanky to survive being hunted
 	max_shield = 0
 	speed = 120                 # Bit faster than Triangle (100)
 	shield_recharge_rate = 0

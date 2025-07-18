@@ -1,33 +1,25 @@
 [gd_scene load_steps=9 format=3 uid="uid://p1nen8xpc52g"]
 
 [ext_resource type="Script" path="res://scripts/actors/enemys/enemy-scripts/EnemyMissle.gd" id="1_xfaql"]
+[ext_resource type="Texture2D" uid="uid://dvahpg1ir0k40" path="res://assets/enemys/EnemyMissle.png" id="2_i57na"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/PowerIndicator.gd" id="2_qmtgr"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/ContactDamage.gd" id="3_8biic"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/base-enemy/StatusComponent.gd" id="4_0qxbu"]
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/EnemyMissleMovment.gd" id="5_j6g51"]
 
-[sub_resource type="CanvasTexture" id="CanvasTexture_rqsws"]
-
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 3.0
+radius = 4.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
-size = Vector2(16, 4)
+size = Vector2(24, 12)
 
 [node name="EnemyMissle" type="Area2D"]
 script = ExtResource("1_xfaql")
 
-[node name="Sprite2D2" type="Sprite2D" parent="."]
-modulate = Color(0.654519, 0.615779, 0.577237, 1)
-position = Vector2(7, 0.0743246)
-scale = Vector2(-2, 2.36484)
-texture = SubResource("CanvasTexture_rqsws")
-
-[node name="Sprite2D3" type="Sprite2D" parent="."]
-modulate = Color(0.654519, 0.615779, 0.577237, 1)
-position = Vector2(-1.42584, 0.209401)
-scale = Vector2(-14.9868, 3.72984)
-texture = SubResource("CanvasTexture_rqsws")
+[node name="Sprite2D" type="Sprite2D" parent="."]
+rotation = 1.5708
+scale = Vector2(0.03, 0.03)
+texture = ExtResource("2_i57na")
 
 [node name="PowerIndicator" type="Node2D" parent="."]
 position = Vector2(-4.76837e-07, -9.53674e-07)
@@ -47,7 +39,7 @@ position = Vector2(0, -14)
 script = ExtResource("3_8biic")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="DamageZone"]
-position = Vector2(6, 0)
+position = Vector2(9, 0)
 shape = SubResource("CircleShape2D_05gwj")
 
 [node name="StatusComponent" type="Node" parent="."]
@@ -60,6 +52,6 @@ script = ExtResource("5_j6g51")
 script = ExtResource("3_8biic")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1, 0)
+position = Vector2(1, 0)
 shape = SubResource("RectangleShape2D_n7gft")
 debug_color = Color(0.713726, 0.0156863, 0, 0.419608)
