@@ -5,7 +5,7 @@ class_name PlayerBullet
 # ====== Player-specific configuration ======
 func _ready() -> void:
 	# Configure for player bullets
-	speed = 1000.0
+	speed = 1800.0
 	max_lifetime = 2.0
 	target_group = "Enemies"
 	bullet_collision_layer = 4  # Player bullets on layer 4

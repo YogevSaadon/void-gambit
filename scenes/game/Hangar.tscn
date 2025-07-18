@@ -5,8 +5,8 @@
 [ext_resource type="Script" path="res://scripts/game/hangar/StatPanel.gd" id="2_nkioq"]
 [ext_resource type="Script" path="res://scripts/game/hangar/StoreItem.gd" id="2_pxfni"]
 [ext_resource type="Script" path="res://scripts/game/hangar/SlotMachinePanel.gd" id="5_0uvjc"]
-[ext_resource type="Texture2D" uid="uid://v76toocjr0f4" path="res://assets/store-people.png" id="5_2t4po"]
-[ext_resource type="Texture2D" uid="uid://bxc4isbbfj30" path="res://assets/Slot-people.png" id="6_jgd4m"]
+[ext_resource type="Texture2D" uid="uid://v76toocjr0f4" path="res://assets/backrounds/store-people.png" id="5_2t4po"]
+[ext_resource type="Texture2D" uid="uid://bxc4isbbfj30" path="res://assets/backrounds/Slot-people.png" id="6_jgd4m"]
 
 [node name="Hangar" type="Control"]
 layout_mode = 3

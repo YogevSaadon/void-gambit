@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://v76toocjr0f4"
-path="res://.godot/imported/store-people.png-0c81c32f987c4b3f749bbf1961693831.ctex"
+uid="uid://bxc4isbbfj30"
+path="res://.godot/imported/Slot-people.png-87a9c518cbf61909d2246a154ef1a9ca.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/store-people.png"
-dest_files=["res://.godot/imported/store-people.png-0c81c32f987c4b3f749bbf1961693831.ctex"]
+source_file="res://assets/backrounds/Slot-people.png"
+dest_files=["res://.godot/imported/Slot-people.png-87a9c518cbf61909d2246a154ef1a9ca.ctex"]
 
 [params]
 

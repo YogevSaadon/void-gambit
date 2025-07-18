@@ -2,7 +2,7 @@
 # =========================
 # For enemies that orbit through player for contact damage (like spinning sawblades)
 # Inherits speed variation and performance optimizations from BaseChaseMovement
-# Adds: cloud formations, orbital sawblade behavior
+# Adds: cloud formations, orbital sawblade behavior + CONSTANT SPINNING
 
 extends BaseChaseMovement
 class_name SawbladeMovement
@@ -13,6 +13,12 @@ class_name SawbladeMovement
 @export var orbit_radius: float = 15.0       # SAWBLADE SIZE: How close enemies orbit (contact damage circle)
 @export var orbit_switch_chance: float = 0.02 # How often orbital enemies change direction (chaos level)
 
+# ===== NEW: SPINNING CONFIGURATION =====
+@export var base_spin_speed: float = 3.0     # Base rotation speed (radians per second)
+@export var speed_spin_multiplier: float = 0.003  # How much movement speed affects spin
+@export var proximity_spin_boost: float = 2.0     # Extra spin when close to player
+@export var proximity_trigger_distance: float = 60.0  # Distance to trigger proximity boost
+
 # ===== SAWBLADE STATE VARIABLES =====
 var overshoot_offset: Vector2 = Vector2.ZERO  # Where enemy targets past player (creates circulation)
 var approach_angle: float = 0.0               # Direction of approach/circulation
@@ -21,6 +27,10 @@ var approach_angle: float = 0.0               # Direction of approach/circulatio
 var orbit_direction: float = 1.0     # 1.0 = clockwise, -1.0 = counterclockwise
 var orbit_angle: float = 0.0         # Current position in circular orbit
 var in_orbit_mode: bool = false      # TRUE = sawblade mode, FALSE = approach mode
+
+# ===== NEW: SPINNING STATE =====
+var current_spin_speed: float = 0.0  # Current rotation speed
+var cumulative_rotation: float = 0.0 # Total rotation for smooth spinning
 
 # ===== SAWBLADE PERFORMANCE TIMERS =====
 var direction_switch_timer: float = 0.0      # Timer for random direction changes
@@ -42,6 +52,9 @@ func _on_movement_ready() -> void:
 	orbit_direction = 1.0 if randf() > 0.5 else -1.0  # Random orbit direction
 	orbit_angle = randf() * TAU                        # Random starting orbit position
 	approach_angle = randf() * TAU                     # Random approach direction
+	
+	# NEW: Random initial rotation
+	cumulative_rotation = randf() * TAU
 	
 	_update_overshoot_offset()
 	
@@ -69,6 +82,9 @@ func _update_overshoot_offset() -> void:
 
 # OVERRIDE: Calculate target position based on sawblade behavior
 func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
+	# ===== NEW: UPDATE SPINNING ROTATION =====
+	_update_spinning_rotation(delta)
+	
 	# FIX: STAGGERED MODE SWITCHING - Prevents mass mode changes causing FPS spikes
 	mode_switch_timer -= delta
 	if mode_switch_timer <= 0.0:
@@ -86,6 +102,32 @@ func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
 		return _calculate_orbital_target(player, delta)
 	else:
 		return _calculate_approach_target(player, delta)
+
+# ===== NEW: SPINNING ROTATION SYSTEM =====
+func _update_spinning_rotation(delta: float) -> void:
+	"""Update the constant spinning rotation of the sawblade"""
+	# Calculate current spin speed based on movement and proximity
+	var movement_speed = enemy.velocity.length()
+	var distance_to_player = get_cached_distance_to_player()
+	
+	# Base spin speed
+	current_spin_speed = base_spin_speed
+	
+	# Add speed-based spinning (faster movement = faster spin)
+	current_spin_speed += movement_speed * speed_spin_multiplier
+	
+	# Add proximity boost when close to player (especially in orbit mode)
+	if distance_to_player < proximity_trigger_distance:
+		var proximity_factor = 1.0 - (distance_to_player / proximity_trigger_distance)
+		current_spin_speed += proximity_spin_boost * proximity_factor
+	
+	# Apply rotation to enemy
+	cumulative_rotation += current_spin_speed * delta
+	enemy.rotation = cumulative_rotation
+	
+	# Keep rotation in reasonable range to prevent float overflow
+	if cumulative_rotation > TAU * 10:
+		cumulative_rotation -= TAU * 10
 
 func _calculate_orbital_target(player: Node2D, delta: float) -> Vector2:
 	# SAWBLADE ORBITAL MODE: Enemies orbit THROUGH player for contact damage

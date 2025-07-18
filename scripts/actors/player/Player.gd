@@ -3,8 +3,8 @@ extends CharacterBody2D
 class_name Player
 
 # ───── We need Actor's properties but Player extends CharacterBody2D ─────
-@export var max_health: int = 10
-@export var health: int = 10
+@export var max_health: int = 100
+@export var health: int = 100
 @export var max_shield: int = 0
 @export var shield: int = 0
 @export var speed: float = 200.0

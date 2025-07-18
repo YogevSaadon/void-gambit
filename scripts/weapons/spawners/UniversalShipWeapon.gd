@@ -14,7 +14,7 @@ var weapon_type: WeaponType = WeaponType.BULLET
 @export var laser_beam_scene: PackedScene = preload("res://scenes/weapons/laser/ChainLaserBeamController.tscn")
 
 # ===== WEAPON-SPECIFIC STATS =====
-@export var bullet_speed: float = 1000.0
+@export var bullet_speed: float = 1800.0
 @export var rocket_explosion_radius: float = 64.0
 @export var bio_dps: float = 15.0
 @export var bio_duration: float = 3.0

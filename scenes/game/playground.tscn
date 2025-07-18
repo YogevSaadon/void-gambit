@@ -1,0 +1,52 @@
+[gd_scene load_steps=13 format=3 uid="uid://bi7o4rqo7ytm1"]
+
+[ext_resource type="PackedScene" uid="uid://cjja0oj0j46qx" path="res://scenes/actors/Player.tscn" id="1_y4wa4"]
+[ext_resource type="PackedScene" uid="uid://1bjia2pnh7mc" path="res://scenes/actors/enemys/Biter.tscn" id="2_avllm"]
+[ext_resource type="PackedScene" uid="uid://nxextnsggmol" path="res://scenes/actors/enemys/ChildShip.tscn" id="3_1h3r0"]
+[ext_resource type="PackedScene" uid="uid://d0lfvfccwo6wb" path="res://scenes/actors/enemys/Diamond.tscn" id="4_qm0y2"]
+[ext_resource type="PackedScene" uid="uid://p1nen8xpc52g" path="res://scenes/actors/enemys/EnemyMissle.tscn" id="5_1hxjo"]
+[ext_resource type="PackedScene" uid="uid://b538wo80rn086" path="res://scenes/actors/enemys/GoldShip.tscn" id="6_uaomn"]
+[ext_resource type="PackedScene" uid="uid://dgyo5arjefndc" path="res://scenes/actors/enemys/MiniBiter.tscn" id="7_sxp2h"]
+[ext_resource type="PackedScene" uid="uid://dm1yq2sxacv8t" path="res://scenes/actors/enemys/MotherShip.tscn" id="8_e64y1"]
+[ext_resource type="PackedScene" uid="uid://biragxwph6ecj" path="res://scenes/actors/enemys/Rectangle.tscn" id="9_eevy2"]
+[ext_resource type="PackedScene" uid="uid://su8mr1d25r3t" path="res://scenes/actors/enemys/Star.tscn" id="10_u5pqb"]
+[ext_resource type="PackedScene" uid="uid://dupmuwwt14ntv" path="res://scenes/actors/enemys/Triangle.tscn" id="11_heyhe"]
+[ext_resource type="PackedScene" uid="uid://d2u2q3yjrb85p" path="res://scenes/actors/enemys/Tank.tscn" id="12_1qew6"]
+
+[node name="Playground" type="Node2D"]
+
+[node name="Player" parent="." instance=ExtResource("1_y4wa4")]
+position = Vector2(407, 348)
+
+[node name="EnemyBiter" parent="." instance=ExtResource("2_avllm")]
+position = Vector2(473, 357)
+
+[node name="EnemyChildShip" parent="." instance=ExtResource("3_1h3r0")]
+position = Vector2(399, 262)
+
+[node name="EnemyDiamond" parent="." instance=ExtResource("4_qm0y2")]
+position = Vector2(404, 519)
+
+[node name="EnemyMissle" parent="." instance=ExtResource("5_1hxjo")]
+position = Vector2(461, 262)
+
+[node name="EnemyGoldShip" parent="." instance=ExtResource("6_uaomn")]
+position = Vector2(431, 409)
+
+[node name="EnemyMiniBiter" parent="." instance=ExtResource("7_sxp2h")]
+position = Vector2(512, 263)
+
+[node name="EnemyMotherShip" parent="." instance=ExtResource("8_e64y1")]
+position = Vector2(402, 590)
+
+[node name="EnemyRectangle" parent="." instance=ExtResource("9_eevy2")]
+position = Vector2(565, 352)
+
+[node name="EnemyStar" parent="." instance=ExtResource("10_u5pqb")]
+position = Vector2(400, 465)
+
+[node name="EnemyTriangle" parent="." instance=ExtResource("11_heyhe")]
+position = Vector2(516, 356)
+
+[node name="EnemyTank" parent="." instance=ExtResource("12_1qew6")]
+position = Vector2(453, 468)
