@@ -13,7 +13,7 @@ signal died
 @export var shield_recharge_rate: float = 0.0
 
 # ───── Universal Spaceship Movement ─────
-@export var rotation_speed: float = 3.0  # How fast enemies rotate to face movement direction
+@export var rotation_speed: float = 3.0
 
 # ───── Enemy metadata ─────
 @export var power_level: int = 1
@@ -23,8 +23,6 @@ signal died
 @export var enemy_type: String = "default"
 
 # ───── Performance optimization ─────
-# Set to true for teleporting enemies (bosses, blinkers) to bypass spatial hash optimization
-# Teleporting enemies use expensive O(n) targeting but this is only for special cases
 @export var bypass_spatial_hash: bool = false
 
 # ───── Contact damage ─────
@@ -40,6 +38,7 @@ var _base_sh: int
 var _base_spd: float
 var _base_reg: float
 var _base_dmg: int
+var _original_power_level: int
 
 # ───── Components ─────
 var _move_logic: Node = null
@@ -55,6 +54,7 @@ var _damage_display: DamageDisplay = null
 # ───── Lifecycle ─────
 func _enter_tree() -> void:
 	_cache_base_stats()
+	_original_power_level = power_level
 	_apply_power_scale()
 
 func _ready() -> void:
@@ -83,15 +83,17 @@ func _apply_power_scale() -> void:
 	shield_recharge_rate = _base_reg * power_level
 	damage = _base_dmg * power_level
 
+func get_budget_power_level() -> int:
+	"""Returns original power level for spawn budget calculations"""
+	return _original_power_level
+
 func _setup_collision() -> void:
-	# The enemy itself is the hitbox
-	collision_layer = 1 << 2  # Enemy layer
-	collision_mask = 0        # Don't detect anything
-	monitoring = false        # We don't monitor
-	monitorable = true        # But we can be detected by bullets
+	collision_layer = 1 << 2
+	collision_mask = 0
+	monitoring = false
+	monitorable = true
 
 func _setup_components() -> void:
-	# Drop handler
 	if not has_node("DropHandler"):
 		_drop_handler = preload("res://scripts/actors/enemys/base-enemy/DropHandler.gd").new()
 		_drop_handler.name = "DropHandler"
@@ -99,7 +101,6 @@ func _setup_components() -> void:
 	else:
 		_drop_handler = $DropHandler
 	
-	# Damage display
 	if not has_node("DamageDisplay"):
 		_damage_display = preload("res://scripts/actors/enemys/base-enemy/DamageDisplay.gd").new()
 		_damage_display.name = "DamageDisplay"
@@ -131,14 +132,13 @@ func _physics_process(delta: float) -> void:
 	recharge_shield(delta)
 	
 	# ───── UNIVERSAL SPACESHIP MOVEMENT ─────
-	if velocity.length() > 10.0:  # Only rotate when actually moving
+	if velocity.length() > 10.0:
 		var target_angle = velocity.angle()
 		rotation = lerp_angle(rotation, target_angle, rotation_speed * delta)
 	
-	# ===== FIX: KEEP DAMAGE ANCHOR UPRIGHT =====
+	# Keep damage anchor upright
 	var damage_anchor = get_node_or_null("DamageAnchor")
 	if damage_anchor:
-		# Counter-rotate the anchor so it always points "up"
 		damage_anchor.rotation = -rotation
 
 # ───── Core mechanics ─────
@@ -193,7 +193,6 @@ func _spread_infection() -> void:
 	if _status == null or _pd == null:
 		return
 	
-	# Check if status component has infection properly
 	if not _status.has_method("apply_infection") or not _status.get("infection"):
 		return
 	
@@ -203,7 +202,6 @@ func _spread_infection() -> void:
 	
 	var radius: float = _pd.get_stat("weapon_range") * 0.4
 	
-	# Spatial query returns max 32 nearby enemies
 	var space_state = get_world_2d().direct_space_state
 	var params = PhysicsShapeQueryParameters2D.new()
 	
@@ -212,13 +210,12 @@ func _spread_infection() -> void:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = 1 << 2  # Enemy layer
+	params.collision_mask = 1 << 2
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
 	var results = space_state.intersect_shape(params, 32)
 	
-	# Find closest in small result set (O(32), not O(all_enemies))
 	var best: Node = null
 	var best_d: float = radius
 	
@@ -231,14 +228,12 @@ func _spread_infection() -> void:
 			best_d = d
 			best = enemy
 	
-	# Apply infection to closest enemy
 	if best and best.has_node("StatusComponent"):
 		var target_status = best.get_node("StatusComponent")
 		if target_status and target_status.has_method("apply_infection"):
 			target_status.apply_infection(infection.dps, infection.remaining_time)
 
-# ───── MEMORY LEAK FIX ─────
+# ───── Memory cleanup ─────
 func _exit_tree() -> void:
-	# Cleanup damage display
 	if _damage_display:
 		_damage_display.detach_active()
