@@ -10,17 +10,14 @@ enum WeaponType { BULLET, LASER, ROCKET, BIO }
 @export var mini_ship_scene: PackedScene = preload("res://scenes/weapons/spawners/MiniShip.tscn")
 @export var ship_weapon_scene: PackedScene = preload("res://scenes/weapons/spawners/UniversalShipWeapon.tscn")
 @export var spawn_interval: float = 2.0      # Time between ship spawns
-@export var respawn_delay: float = 5.0       # Time to respawn dead ships
 
 # ===== SHIP MANAGEMENT =====
 var active_ships: Array[MiniShip] = []
 var max_ships: int = 1                       # Will be set from player stats
 var spawn_timer: float = 0.0
-# owner_player already exists in BaseWeapon - don't redeclare
 
 # ===== REFERENCES =====
 @onready var player_data: PlayerData = get_tree().root.get_node("PlayerData")
-# REMOVED: @onready var spawn_point: Node2D = $SpawnPoint  # ← FIXED: Removed unused spawn point reference
 
 # ===== LIFECYCLE =====
 func _ready() -> void:
@@ -66,17 +63,15 @@ func _setup_spawner_visuals() -> void:
 # ===== SHIP STAT CALCULATION =====
 func _calculate_ship_weapon_stats(pd: PlayerData) -> Dictionary:
 	"""Calculate weapon stats for spawned ships"""
-	var base_damage = final_damage  # From BaseWeapon (includes global damage bonus)
+	var base_damage = round(final_damage * 0.33)  # Ships do 33% damage, rounded clean
 	var fire_rate = final_fire_rate # From BaseWeapon (includes scaling if applicable)
 	var crit_chance = final_crit
 	
-	# ===== FIXED FIRE RATE SCALING =====
-	# Apply weapon-type specific fire rate scaling
+	# ===== FIRE RATE SCALING (50% of player bonuses) =====
 	match weapon_type:
 		WeaponType.BULLET:
-			# Bullet ships get 50% of player's bullet attack speed bonus
-			var bullet_bonus = pd.get_stat("bullet_attack_speed") - 1.0  # Get just the bonus part
-			fire_rate *= (1.0 + bullet_bonus * 0.5)  # Apply 50% of the bonus
+			# Bullet ships get 50% bullet attack speed scaling
+			fire_rate *= (1.0 + (pd.get_stat("bullet_attack_speed") - 1.0) * 0.5)
 		# Laser/Rocket/Bio get no additional scaling (keep base fire_rate)
 	
 	# Add weapon-specific damage bonuses
@@ -93,18 +88,17 @@ func _calculate_ship_weapon_stats(pd: PlayerData) -> Dictionary:
 	# Add ship-specific bonuses
 	base_damage *= (1.0 + pd.get_stat("ship_damage_percent"))
 	
-	# Weapon-specific stats
+	# Weapon-specific stats (50% of player bonuses)
 	var weapon_stats = {
 		"damage": base_damage,
 		"fire_rate": fire_rate,
 		"crit_chance": crit_chance,
 		"weapon_range": pd.get_stat("weapon_range") * pd.get_stat("ship_range"),
 		
-		# Weapon-specific traits
-		"bullet_speed": 1000.0 * pd.get_stat("bullet_attack_speed"),
-		"laser_reflects": int(pd.get_stat("laser_reflects")),
-		"explosion_radius": 64.0 * (1.0 + pd.get_stat("explosion_radius_bonus")),
-		"bio_spread_chance": pd.get_stat("bio_spread_chance"),
+		# Weapon-specific traits (50% of player bonuses)
+		"laser_reflects": round(pd.get_stat("laser_reflects") * 0.5),
+		"explosion_radius": 64.0 * (1.0 + pd.get_stat("explosion_radius_bonus") * 0.5),
+		"bio_spread_chance": pd.get_stat("bio_spread_chance") * 0.5,
 	}
 	
 	return weapon_stats
@@ -150,8 +144,8 @@ func _spawn_ship() -> void:
 	# Attach weapon to ship
 	ship.setup_weapon(ship_weapon)
 	
-	# ===== SPAWN AT SPAWNER CENTER (no spawn point needed) =====
-	ship.global_position = global_position  # ← Simple and clean spawning
+	# Spawn at spawner center
+	ship.global_position = global_position
 	
 	# Add to scene and track
 	get_tree().current_scene.add_child(ship)
