@@ -23,7 +23,7 @@ var base_stats: Dictionary = {
 	"rerolls_per_wave": 1,
 	"luck": 0.0,
 	"gold_drop_rate": 1.0,
-	"ship_count": 10,
+	"ship_count": 1,
 	"ship_range": 300.0,
 	"bullet_attack_speed": 1.0,
 	"laser_reflects": 10,
