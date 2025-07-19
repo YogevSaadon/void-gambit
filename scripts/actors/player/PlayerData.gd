@@ -8,7 +8,7 @@ var base_stats: Dictionary = {
 	"max_hp": 10000,
 	"max_shield": 250,
 	"speed": 150.0,
-	"shield_recharge_rate": 200.0,
+	"shield_recharge_rate": 0.0,
 	"weapon_range": 300.0,
 	"crit_chance": 0.05,
 	"crit_damage": 1.5,

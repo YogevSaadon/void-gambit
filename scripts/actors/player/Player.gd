@@ -1,14 +1,17 @@
-# scripts/actors/player/Player.gd
+# scripts/actors/player/Player.gd - ACCUMULATOR SOLUTION
 extends CharacterBody2D
 class_name Player
 
-# ───── We need Actor's properties but Player extends CharacterBody2D ─────
+# ───── Actor properties ─────
 @export var max_health: int = 100
 @export var health: int = 100
 @export var max_shield: int = 0
 @export var shield: int = 0
 @export var speed: float = 220.0
 @export var shield_recharge_rate: float = 5.0
+
+# ───── Shield recharge accumulator ─────
+var shield_recharge_accumulator: float = 0.0
 
 # ───── Dependencies (injected) ─────
 var player_data: PlayerData = null
@@ -40,6 +43,9 @@ func initialize(p_data: PlayerData) -> void:
 	shield_recharge_rate = player_data.get_stat("shield_recharge_rate")
 	speed = player_data.get_stat("speed")
 
+	# Reset accumulator
+	shield_recharge_accumulator = 0.0
+
 	if not blink_system:
 		push_error("Player: BlinkSystem component missing")
 		return
@@ -61,11 +67,25 @@ func _physics_process(delta: float) -> void:
 	weapon_system.auto_fire(delta)
 	recharge_shield(delta)
 
-# ───── Actor-like methods ─────
+# ───── Shield recharge with accumulator ─────
 func recharge_shield(delta: float) -> void:
-	if shield < max_shield:
-		shield = min(shield + shield_recharge_rate * delta, max_shield)
+	if shield >= max_shield:
+		shield_recharge_accumulator = 0.0
+		return
+	
+	# Accumulate fractional shield progress
+	shield_recharge_accumulator += shield_recharge_rate * delta
+	
+	# Extract whole shield points
+	var shield_to_add = int(shield_recharge_accumulator)
+	if shield_to_add > 0:
+		shield = min(shield + shield_to_add, max_shield)
+		shield_recharge_accumulator -= float(shield_to_add)
+		
+		if shield >= max_shield:
+			shield_recharge_accumulator = 0.0
 
+# ───── Damage handling ─────
 func take_damage(amount: int) -> void:
 	# Apply armor damage reduction
 	var effective_damage = amount
@@ -74,7 +94,6 @@ func take_damage(amount: int) -> void:
 		var damage_multiplier = _calculate_damage_multiplier(armor_value)
 		effective_damage = int(amount * damage_multiplier)
 		
-		# Debug armor effectiveness
 		if armor_value > 0:
 			var reduction_percent = (1.0 - damage_multiplier) * 100.0
 			print("Armor: %.0f → %.0f%% damage reduction (%.0f → %.0f damage)" % [
@@ -85,16 +104,18 @@ func take_damage(amount: int) -> void:
 	if shield > 0:
 		shield -= effective_damage
 		if shield < 0:
-			health += shield  # shield is negative, subtracts from health
+			health += shield
 			shield = 0
 	else:
 		health -= effective_damage
+
+	# Reset recharge accumulator when taking damage
+	shield_recharge_accumulator = 0.0
 
 	if health <= 0:
 		destroy()
 
 func _calculate_damage_multiplier(armor_value: float) -> float:
-	"""League of Legends / Brotato style armor formula"""
 	if armor_value <= 0:
 		return 1.0
 	
@@ -102,7 +123,7 @@ func _calculate_damage_multiplier(armor_value: float) -> float:
 	return 1.0 - reduction
 
 func destroy() -> void:
-	queue_free()  # TODO: hook GameManager death flow
+	queue_free()
 
 # ───── Damage intake ─────
 func receive_damage(amount: int) -> void:
@@ -128,8 +149,9 @@ func clear_all_weapons() -> void:
 func equip_weapon(s: PackedScene, i: int) -> void: 
 	weapon_system.equip(s, i)
 
-# ───── Per-level reset ─────
+# ───── Level reset ─────
 func reset_per_level() -> void:
 	health = int(player_data.get_stat("max_hp"))
 	shield = int(player_data.get_stat("max_shield"))
+	shield_recharge_accumulator = 0.0
 	blink_system.initialize(self, player_data)
