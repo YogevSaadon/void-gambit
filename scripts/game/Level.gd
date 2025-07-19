@@ -100,14 +100,55 @@ func _on_level_completed(level_number: int) -> void:
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
 # ====== Utility ======
+
 func _get_random_spawn_position() -> Vector2:
 	var screen_size = get_viewport_rect().size
-	match randi() % SCREEN_SIDES:
-		0: return Vector2(randf_range(0.0, screen_size.x), 0.0)
-		1: return Vector2(randf_range(0.0, screen_size.x), screen_size.y)
-		2: return Vector2(0.0, randf_range(0.0, screen_size.y))
-		3: return Vector2(screen_size.x, randf_range(0.0, screen_size.y))
-	return Vector2.ZERO
+	var spawn_margin = 120.0  # Distance outside screen
+	var corner_margin = 80.0   # Extra margin for corners
+	
+	# Get player position to avoid spawning too close
+	var player_pos = player.global_position if player else Vector2(screen_size.x/2, screen_size.y/2)
+	
+	var attempts = 0
+	var max_attempts = 10
+	var spawn_pos: Vector2
+	
+	while attempts < max_attempts:
+		attempts += 1
+		
+		# Choose spawn side
+		var side = randi() % 4
+		
+		match side:
+			0: # Top
+				spawn_pos = Vector2(
+					randf_range(-spawn_margin, screen_size.x + spawn_margin),
+					-spawn_margin
+				)
+			1: # Bottom
+				spawn_pos = Vector2(
+					randf_range(-spawn_margin, screen_size.x + spawn_margin),
+					screen_size.y + spawn_margin
+				)
+			2: # Left  
+				spawn_pos = Vector2(
+					-spawn_margin,
+					randf_range(-spawn_margin, screen_size.y + spawn_margin)
+				)
+			3: # Right
+				spawn_pos = Vector2(
+					screen_size.x + spawn_margin,
+					randf_range(-spawn_margin, screen_size.y + spawn_margin)
+				)
+		
+		# Check if spawn position is far enough from player
+		var distance_to_player = spawn_pos.distance_to(player_pos)
+		if distance_to_player > 200.0:  # Minimum safe distance
+			return spawn_pos
+	
+	# Fallback if all attempts failed - force spawn far from player
+	return player_pos + Vector2(400, 0).rotated(randf() * TAU)
+
 
 # ====== MEMORY LEAK FIX ======
 func _exit_tree() -> void:
