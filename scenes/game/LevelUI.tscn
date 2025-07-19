@@ -10,17 +10,6 @@ offset_left = 4.0
 offset_right = 40.0
 offset_bottom = 66.0
 
-[node name="ShieldBarContainer" type="VBoxContainer" parent="Bars"]
-layout_mode = 2
-
-[node name="ShieldBar" type="ProgressBar" parent="Bars/ShieldBarContainer"]
-modulate = Color(0.0235294, 0.0352941, 1, 1)
-layout_mode = 2
-show_percentage = false
-
-[node name="ShieldText" type="Label" parent="Bars/ShieldBarContainer"]
-layout_mode = 2
-
 [node name="HPBarContainer" type="VBoxContainer" parent="Bars"]
 layout_mode = 2
 
@@ -33,9 +22,37 @@ show_percentage = false
 [node name="HPText" type="Label" parent="Bars/HPBarContainer"]
 layout_mode = 2
 
+[node name="ShieldBarContainer" type="VBoxContainer" parent="Bars"]
+layout_mode = 2
+
+[node name="ShieldBar" type="ProgressBar" parent="Bars/ShieldBarContainer"]
+modulate = Color(0.0235294, 0.0352941, 1, 1)
+layout_mode = 2
+show_percentage = false
+
+[node name="ShieldText" type="Label" parent="Bars/ShieldBarContainer"]
+layout_mode = 2
+
+[node name="BlinkBarContainer" type="VBoxContainer" parent="Bars"]
+layout_mode = 2
+
+[node name="BlinkBar" type="ProgressBar" parent="Bars/BlinkBarContainer"]
+layout_mode = 2
+show_percentage = false
+
+[node name="BlinkText" type="Label" parent="Bars/BlinkBarContainer"]
+layout_mode = 2
+
 [node name="LevelLabel" type="Label" parent="."]
 offset_left = 572.0
 offset_top = 1.0
 offset_right = 612.0
 offset_bottom = 24.0
 text = "level x"
+
+[node name="tIMER" type="Label" parent="."]
+offset_left = 575.0
+offset_top = 27.0
+offset_right = 622.0
+offset_bottom = 50.0
+text = "TIME"
