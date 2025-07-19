@@ -43,11 +43,29 @@ static func get_tier_multiplier(level: int) -> int:
 
 static func get_tier_name(level: int) -> String:
 	"""Get tier name for debugging/UI"""
-	if level < 5: return "White"
-	elif level < 10: return "Green"
-	elif level < 15: return "Blue" 
-	elif level < 20: return "Purple"
-	else: return "Orange"
+	if level < 5: 
+		return "White"
+	elif level < 10: 
+		return "Green"
+	elif level < 15: 
+		return "Blue" 
+	elif level < 20: 
+		return "Purple"
+	else: 
+		return "Orange"
+
+static func get_tier_color(level: int) -> Color:
+	"""Get tier color for visual effects"""
+	if level < 5:
+		return Color.WHITE
+	elif level < 10:
+		return Color.GREEN
+	elif level < 15:
+		return Color.CYAN
+	elif level < 20:
+		return Color.MAGENTA
+	else:
+		return Color.ORANGE
 
 # ===== WAVE DURATION CALCULATION =====
 static func get_wave_duration(level: int) -> float:
@@ -88,6 +106,7 @@ static func get_level_info(level: int) -> Dictionary:
 	var power_budget = get_power_budget(level)
 	var tier_multiplier = get_tier_multiplier(level)
 	var tier_name = get_tier_name(level)
+	var tier_color = get_tier_color(level)
 	var wave_duration = get_wave_duration(level)
 	
 	return {
@@ -95,6 +114,7 @@ static func get_level_info(level: int) -> Dictionary:
 		"power_budget": power_budget,
 		"tier_multiplier": tier_multiplier,
 		"tier_name": tier_name,
+		"tier_color": tier_color,
 		"wave_duration": wave_duration
 	}
 

@@ -11,7 +11,7 @@ const GOLDEN_SHIP_SCENE = preload("res://scenes/actors/enemys/GoldShip.tscn")
 # ===== SPAWN TRACKING =====
 var current_level: int = 1
 var ships_to_spawn: int = 0
-var spawn_list: Array[PackedScene] = []
+var ships_spawned_this_level: int = 0
 
 # ===== MAIN SPAWNING METHOD =====
 func generate_golden_ships(level: int, player_data: PlayerData) -> Array[PackedScene]:
@@ -20,20 +20,27 @@ func generate_golden_ships(level: int, player_data: PlayerData) -> Array[PackedS
 	Golden Ships spawn independently of power budget
 	"""
 	current_level = level
-	spawn_list.clear()
+	ships_to_spawn = int(player_data.get_stat("golden_ship_count"))
 	
-	# Get player's golden ship count
-	ships_to_spawn = int(player_data.golden_ship_count if "golden_ship_count" in player_data else player_data.get_stat("golden_ship_count"))
+	var spawn_list: Array[PackedScene] = []
 	
-	if ships_to_spawn <= 0:
+	# Check if we've already spawned enough ships this level
+	if ships_spawned_this_level >= ships_to_spawn:
 		return spawn_list
 	
-	# Add Golden Ships to spawn list
-	for i in ships_to_spawn:
+	# Add one Golden Ship to spawn list if we haven't reached the limit
+	if ships_to_spawn > 0:
 		spawn_list.append(GOLDEN_SHIP_SCENE)
+		ships_spawned_this_level += 1
+		_print_golden_ship_summary()
 	
-	_print_golden_ship_summary()
 	return spawn_list
+
+# ===== LEVEL RESET =====
+func reset_level_counter() -> void:
+	"""Reset the counter when starting a new level"""
+	ships_spawned_this_level = 0
+	print("GoldenShipSpawner: Reset level counter for new level")
 
 # ===== GOLDEN SHIP CONFIGURATION =====
 func _print_golden_ship_summary() -> void:
@@ -46,7 +53,7 @@ func _print_golden_ship_summary() -> void:
 	var total_value = get_total_golden_ship_value(current_level)
 	
 	print("=== GOLDEN SHIPS Level %d ===" % current_level)
-	print("Count: %d ships" % ships_to_spawn)
+	print("Count: %d/%d ships (spawned/total)" % [ships_spawned_this_level, ships_to_spawn])
 	print("Tier: %s (%dx multiplier)" % [tier_name, tier_multiplier])
 	print("Total Value: %d power" % total_value)
 	print("============================")
@@ -79,8 +86,8 @@ func get_golden_ship_count() -> int:
 	return ships_to_spawn
 
 func should_spawn_golden_ships() -> bool:
-	"""Check if any Golden Ships should spawn"""
-	return ships_to_spawn > 0
+	"""Check if any Golden Ships should spawn this tick"""
+	return ships_spawned_this_level < ships_to_spawn
 
 func get_total_golden_ship_value(level: int) -> int:
 	"""Get total 'value' of Golden Ships (for balancing)"""
@@ -123,25 +130,20 @@ func get_golden_ship_spawn_times(wave_duration: float) -> Array[float]:
 	spawn_times.sort()  # Ensure chronological order
 	return spawn_times
 
-# ===== GOLDEN SHIP SPECIAL BEHAVIOR =====
-func configure_golden_ship_stats(golden_ship: Node, level: int) -> void:
-	"""
-	Configure Golden Ship with special stats
-	Golden Ships are tankier and faster than normal enemies
-	"""
-	if not golden_ship:
-		return
-	
-	# Apply tier scaling first
-	apply_tier_scaling_to_golden_ship(golden_ship, level)
-	
-	# Golden Ship special properties (already defined in GoldShip.gd)
-	# - Drops coins instead of credits
-	# - Higher HP and speed than Triangle
-	# - Special roaming movement pattern
-	
-	print("GoldenShip: Configured for level %d" % level)
+# ===== STATISTICS =====
+func get_spawner_statistics() -> Dictionary:
+	"""Get detailed statistics about Golden Ship spawning"""
+	return {
+		"level": current_level,
+		"ships_to_spawn": ships_to_spawn,
+		"ships_spawned": ships_spawned_this_level,
+		"ships_remaining": ships_to_spawn - ships_spawned_this_level,
+		"total_value": get_total_golden_ship_value(current_level),
+		"tier_multiplier": PowerBudgetCalculator.get_tier_multiplier(current_level),
+		"tier_name": PowerBudgetCalculator.get_tier_name(current_level)
+	}
 
+# ===== DEBUG METHODS =====
 func print_spawn_schedule(wave_duration: float) -> void:
 	"""Print Golden Ship spawn schedule for debugging"""
 	var spawn_times = get_golden_ship_spawn_times(wave_duration)
@@ -154,15 +156,3 @@ func print_spawn_schedule(wave_duration: float) -> void:
 	for i in spawn_times.size():
 		print("Ship %d: %.1fs" % [i + 1, spawn_times[i]])
 	print("============================")
-
-# ===== STATISTICS =====
-func get_spawner_statistics() -> Dictionary:
-	"""Get detailed statistics about Golden Ship spawning"""
-	return {
-		"level": current_level,
-		"ships_to_spawn": ships_to_spawn,
-		"spawn_count": spawn_list.size(),
-		"total_value": get_total_golden_ship_value(current_level),
-		"tier_multiplier": PowerBudgetCalculator.get_tier_multiplier(current_level),
-		"tier_name": PowerBudgetCalculator.get_tier_name(current_level)
-	}
