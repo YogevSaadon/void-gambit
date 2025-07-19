@@ -28,8 +28,7 @@ func try_blink(target_position: Vector2) -> void:
 		return
 
 	current_blinks -= 1
-	blink_timer = 0.0
-
+	
 	player.global_position = target_position
 	player.velocity = Vector2.ZERO
 
@@ -42,4 +41,4 @@ func _recharge(delta: float) -> void:
 	blink_timer += delta
 	if blink_timer >= cooldown:
 		current_blinks += 1
-		blink_timer = 0.0
+		blink_timer = 0.0  # Only reset when we actually gain a blink charge
