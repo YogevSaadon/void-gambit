@@ -9,7 +9,7 @@ enum WeaponType { BULLET, LASER, ROCKET, BIO }
 # ===== SPAWNER CONFIGURATION =====
 @export var mini_ship_scene: PackedScene = preload("res://scenes/weapons/spawners/MiniShip.tscn")
 @export var ship_weapon_scene: PackedScene = preload("res://scenes/weapons/spawners/UniversalShipWeapon.tscn")
-@export var spawn_interval: float = 2.0      # Time between ship spawns
+@export var spawn_interval: float = 0.3      # Time between ship spawns
 
 # ===== SHIP MANAGEMENT =====
 var active_ships: Array[MiniShip] = []
