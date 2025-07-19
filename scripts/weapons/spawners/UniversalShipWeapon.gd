@@ -18,16 +18,38 @@ var weapon_type: WeaponType = WeaponType.BULLET
 @export var rocket_explosion_radius: float = 64.0
 @export var bio_dps: float = 15.0
 @export var bio_duration: float = 3.0
-@export var laser_reflects: int = 1
+
+# ===== WEAPON-SPECIFIC UNIQUE STATS (Consolidated) =====
+var laser_reflects: int = 1
+var explosion_radius_bonus: float = 0.0
+var bio_spread_chance: float = 0.0
+var bullet_attack_speed: float = 1.0  # ← FIXED: Moved here with other unique stats
 
 # ===== LASER SYSTEM =====
 var laser_beam_instance: Node = null
 
 # ===== MAIN CONFIGURATION METHOD (Called by spawner) =====
-func configure_weapon_with_type(damage: float, fire_rate: float, crit_chance: float, type: WeaponType) -> void:
-	"""Configure weapon with specific type - THIS IS THE METHOD THE SPAWNER CALLS"""
+func configure_weapon_with_type(damage: float, fire_rate: float, crit_chance: float, type: WeaponType, weapon_stats: Dictionary = {}) -> void:
+	"""Configure weapon with specific type and all weapon-specific stats"""
 	weapon_type = type
 	configure_weapon(damage, fire_rate, crit_chance)  # Call parent method
+	
+	# ===== APPLY ALL WEAPON-SPECIFIC STATS IN ONE PLACE =====
+	laser_reflects = weapon_stats.get("laser_reflects", 1)
+	explosion_radius_bonus = weapon_stats.get("explosion_radius_bonus", 0.0)
+	bio_spread_chance = weapon_stats.get("bio_spread_chance", 0.0)
+	bullet_attack_speed = weapon_stats.get("bullet_attack_speed", 1.0)  # ← FIXED: Applied here
+	
+	# ===== APPLY BULLET FIRE RATE SCALING =====
+	if weapon_type == WeaponType.BULLET:
+		final_fire_rate *= bullet_attack_speed  # ← FIXED: Applied to final fire rate
+		print("Ship Bullet Weapon: fire_rate=%.2f, bullet_attack_speed=%.2f, final=%.2f" % [
+			fire_rate, bullet_attack_speed, final_fire_rate
+		])
+	
+	# Update explosion radius
+	rocket_explosion_radius = 64.0 * (1.0 + explosion_radius_bonus)
+	
 	_setup_weapon_visuals()
 
 func _setup_weapon_visuals() -> void:
@@ -77,7 +99,7 @@ func _update_weapon(delta: float) -> void:
 	# Fire if ready
 	if cooldown_timer <= 0.0:
 		_fire_at_target(forced_target)
-		cooldown_timer = 1.0 / final_fire_rate
+		cooldown_timer = 1.0 / final_fire_rate  # ← Uses final_fire_rate (now includes bullet scaling)
 
 # ===== FIRING IMPLEMENTATION =====
 func _fire_at_target(target: Node) -> void:
@@ -138,7 +160,7 @@ func _fire_laser(target: Node) -> void:
 	if laser_beam_instance and laser_beam_instance.has_method("set_beam_stats"):
 		laser_beam_instance.set_beam_stats(
 			muzzle, target, final_damage, final_crit_chance,
-			400.0, laser_reflects
+			400.0, laser_reflects  # ← Uses weapon-specific laser_reflects
 		)
 
 # ===== ROCKET WEAPON =====
@@ -152,9 +174,9 @@ func _fire_rocket(target: Node) -> void:
 	rocket.global_position = get_muzzle_position()
 	rocket.target_position = target.global_position
 	
-	# Configure rocket stats
+	# Configure rocket stats (uses modified explosion radius)
 	rocket.damage = final_damage
-	rocket.radius = rocket_explosion_radius
+	rocket.radius = rocket_explosion_radius  # ← Uses modified radius with bonus
 	rocket.crit_chance = final_crit_chance
 	
 	get_tree().current_scene.add_child(rocket)
@@ -169,6 +191,33 @@ func _fire_bio(target: Node) -> void:
 	if status_component and status_component.has_method("apply_infection"):
 		var bio_damage = final_damage * bio_dps / 10.0  # Convert burst damage to DPS
 		status_component.apply_infection(bio_damage, bio_duration)
+		
+		# ===== BIO SPREAD CHANCE =====
+		if bio_spread_chance > 0.0 and randf() < bio_spread_chance:
+			_attempt_bio_spread(target, bio_damage)
+
+func _attempt_bio_spread(source_enemy: Node, spread_damage: float) -> void:
+	"""Attempt to spread bio infection to nearby enemies"""
+	var space_state = get_world_2d().direct_space_state
+	var params = PhysicsShapeQueryParameters2D.new()
+	
+	var circle = CircleShape2D.new()
+	circle.radius = 100.0  # Spread radius
+	
+	params.shape = circle
+	params.transform = Transform2D(0, source_enemy.global_position)
+	params.collision_mask = 1 << 2  # Enemy layer
+	params.collide_with_areas = true
+	params.collide_with_bodies = false
+	
+	var results = space_state.intersect_shape(params, 5)  # Max 5 spread targets
+	
+	for result in results:
+		var enemy = result.collider
+		if enemy != source_enemy and enemy.has_node("StatusComponent"):
+			var status = enemy.get_node("StatusComponent")
+			if status.has_method("apply_infection"):
+				status.apply_infection(spread_damage * 0.5, bio_duration * 0.8)  # Weaker spread
 
 # ===== UTILITY METHODS =====
 func _setup_projectile_collision(projectile: Node) -> void:
@@ -215,4 +264,13 @@ func get_weapon_debug_info() -> Dictionary:
 	var base_info = super.get_weapon_debug_info()
 	base_info["weapon_type"] = WeaponType.keys()[weapon_type]
 	base_info["has_laser"] = laser_beam_instance != null
+	
+	# ===== SHOW ALL WEAPON-SPECIFIC STATS =====
+	base_info["unique_stats"] = {
+		"bullet_attack_speed": "%.2fx" % bullet_attack_speed,
+		"laser_reflects": laser_reflects,
+		"explosion_radius": "%.0fpx" % rocket_explosion_radius,
+		"bio_spread_chance": "%.1f%%" % (bio_spread_chance * 100.0)
+	}
+	
 	return base_info

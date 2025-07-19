@@ -67,13 +67,6 @@ func _calculate_ship_weapon_stats(pd: PlayerData) -> Dictionary:
 	var fire_rate = final_fire_rate # From BaseWeapon (includes scaling if applicable)
 	var crit_chance = final_crit
 	
-	# ===== FIRE RATE SCALING (50% of player bonuses) =====
-	match weapon_type:
-		WeaponType.BULLET:
-			# Bullet ships get 50% bullet attack speed scaling
-			fire_rate *= (1.0 + (pd.get_stat("bullet_attack_speed") - 1.0) * 0.5)
-		# Laser/Rocket/Bio get no additional scaling (keep base fire_rate)
-	
 	# Add weapon-specific damage bonuses
 	match weapon_type:
 		WeaponType.BULLET:
@@ -88,17 +81,18 @@ func _calculate_ship_weapon_stats(pd: PlayerData) -> Dictionary:
 	# Add ship-specific bonuses
 	base_damage *= (1.0 + pd.get_stat("ship_damage_percent"))
 	
-	# Weapon-specific stats (50% of player bonuses)
+	# ===== FIXED: CALCULATE ALL WEAPON-SPECIFIC STATS =====
 	var weapon_stats = {
 		"damage": base_damage,
 		"fire_rate": fire_rate,
 		"crit_chance": crit_chance,
 		"weapon_range": pd.get_stat("weapon_range") * pd.get_stat("ship_range"),
 		
-		# Weapon-specific traits (50% of player bonuses)
+		# ===== ALL WEAPON-SPECIFIC TRAITS (50% of player bonuses) =====
 		"laser_reflects": round(pd.get_stat("laser_reflects") * 0.5),
-		"explosion_radius": 64.0 * (1.0 + pd.get_stat("explosion_radius_bonus") * 0.5),
+		"explosion_radius_bonus": pd.get_stat("explosion_radius_bonus") * 0.5,
 		"bio_spread_chance": pd.get_stat("bio_spread_chance") * 0.5,
+		"bullet_attack_speed": 1.0 + (pd.get_stat("bullet_attack_speed") - 1.0) * 0.5  # ← FIXED: Calculated here
 	}
 	
 	return weapon_stats
@@ -134,11 +128,13 @@ func _spawn_ship() -> void:
 	var ship_weapon = ship_weapon_scene.instantiate()
 	var weapon_stats = _calculate_ship_weapon_stats(player_data)
 	
+	# ===== FIXED: PASS ALL WEAPON STATS TO WEAPON =====
 	ship_weapon.configure_weapon_with_type(
 		weapon_stats.damage,
 		weapon_stats.fire_rate,
 		weapon_stats.crit_chance,
-		weapon_type
+		weapon_type,
+		weapon_stats  # ← FIXED: Pass all weapon stats
 	)
 	
 	# Attach weapon to ship
@@ -151,7 +147,12 @@ func _spawn_ship() -> void:
 	get_tree().current_scene.add_child(ship)
 	active_ships.append(ship)
 	
-	print("Spawned %s ship (%d/%d)" % [WeaponType.keys()[weapon_type], active_ships.size(), max_ships])
+	print("Spawned %s ship (%d/%d) - Stats: %s" % [
+		WeaponType.keys()[weapon_type], 
+		active_ships.size(), 
+		max_ships,
+		weapon_stats
+	])
 
 # ===== SPAWNER AUTO-FIRE (Required by BaseWeapon) =====
 func auto_fire(_delta: float) -> void:
