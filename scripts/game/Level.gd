@@ -2,156 +2,149 @@
 extends Node2D
 class_name Level
 
-# ====== Exports (REMOVED - No longer needed) ======
-# @export var enemy_scene: PackedScene                          # ← REMOVED
-# @export var secondary_enemy_scene: PackedScene                # ← REMOVED
+"""
+Main gameplay scene: initialises the player, drives the wave system,
+and spawns enemies just outside the camera view (Vampire Survivors style).
+Compatible with all Godot 4.x versions (no get_visible_rect needed).
+"""
 
-# ====== Nodes ======
-var player: Player = null
-@onready var level_ui     = $LevelUI
-@onready var wave_manager = $WaveManager
+# ====== EDITOR‑TUNABLE SPAWN SETTINGS ======
+@export_range(0.0, 500.0, 10.0)
+var DISTANCE_VARIANCE : float = 100.0          # ± randomness for natural feel
 
-@onready var game_manager = get_tree().root.get_node("GameManager")
-@onready var player_data  = get_tree().root.get_node("PlayerData")
-@onready var pem          = get_tree().root.get_node("PassiveEffectManager")
+@export_range(0.0, 256.0, 4.0)
+var SPAWN_MARGIN      : float = 64.0           # Extra pixels beyond screen edge
 
-# ====== Constants ======
-const SCREEN_SIDES := 4
+@export var DEBUG_SPAWNS : bool = false        # Toggle verbose spawn logs
 
-# ====== Built-in Methods ======
+# ====== NODES ======
+@onready var player        : Player      = $Player
+@onready var level_ui      : LevelUI     = $LevelUI
+@onready var wave_manager  : WaveManager = $WaveManager
+
+# ====== AUTOLOAD SINGLETONS ======
+@onready var game_manager  : GameManager          = get_node("/root/GameManager")
+@onready var player_data   : PlayerData           = get_node("/root/PlayerData")
+@onready var pem           : PassiveEffectManager = get_node("/root/PassiveEffectManager")
+
+# ====== BUILT‑IN METHODS ======
 func _ready() -> void:
-	player = $Player
+	_initialise_player()
+	_initialise_managers()
+	_start_level()
+
+func _exit_tree() -> void:
+	# MEMORY LEAK FIX: remove stray damage numbers left in tree when scene changes
+	for dn in get_tree().get_nodes_in_group("DamageNumbers"):
+		if is_instance_valid(dn):
+			dn.queue_free()
+
+# ====== INITIALISATION ======
+func _initialise_player() -> void:
 	player.player_data = player_data
 	player.initialize(player_data)
 
+	_equip_player_weapons()
+
+	level_ui.set_player(player)
 	pem.register_player(player)
 	pem.initialize_from_player_data(player_data)
 
-	# ===== REMOVED: No longer need to set enemy scenes =====
-	# _set_wave_enemy_scene()  # ← REMOVED
-
-	level_ui.set_player(player)
-	_connect_wave_signals()
-	_equip_player_weapons()
-	_start_level()
-
-# ===== REMOVED: Enemy scene setup no longer needed =====
-# func _set_wave_enemy_scene() -> void:
-# 	# This entire function is removed - WaveManager now handles enemy selection
-
-func _connect_wave_signals() -> void:
+func _initialise_managers() -> void:
 	wave_manager.wave_started.connect(_on_wave_started)
 	wave_manager.enemy_spawned.connect(_on_enemy_spawned)
 	wave_manager.wave_completed.connect(_on_wave_completed)
 	wave_manager.level_completed.connect(_on_level_completed)
 
 func _equip_player_weapons() -> void:
-	"""Load weapons from PlayerData with proper null handling"""
+	"""Load weapons from PlayerData, ensuring at least a basic default."""
 	player.clear_all_weapons()
-	
-	var weapon_scenes = player_data.get_equipped_weapon_scenes()
-	print("Loading %d weapon slots from PlayerData" % weapon_scenes.size())
-	
-	for i in range(weapon_scenes.size()):
-		var weapon_scene = weapon_scenes[i]
-		if weapon_scene != null:
-			player.equip_weapon(weapon_scene, i)
-			print("Equipped weapon in slot %d: %s" % [i, weapon_scene.resource_path])
-		else:
-			print("No weapon equipped in slot %d" % i)
-	
-	# Verify default weapon is equipped
-	var equipped_weapons = player_data.equipped_weapons
-	if equipped_weapons.is_empty() or equipped_weapons[0] == "":
-		push_warning("Level: No default weapon found, setting basic_bullet_weapon")
-		player_data.equipped_weapons.resize(player_data.MAX_WEAPON_SLOTS)
-		player_data.equipped_weapons[0] = "basic_bullet_weapon"
-		_equip_player_weapons()  # Retry
 
+	var weapon_scenes : Array[PackedScene] = player_data.get_equipped_weapon_scenes()
+	for i in range(weapon_scenes.size()):
+		var scene := weapon_scenes[i]
+		if scene:
+			player.equip_weapon(scene, i)
+
+	# Guarantee slot 0 holds *something*
+	if weapon_scenes.is_empty() or not weapon_scenes[0]:
+		player_data.ensure_default_weapon()
+		_equip_player_weapons()   # one safe recursion pass
+
+# ====== LEVEL FLOW ======
 func _start_level() -> void:
 	wave_manager.set_level(game_manager.level_number)
 	wave_manager.start_level()
-	
-	# ===== NEW: Print level info for debugging =====
-	print("=== STARTING LEVEL %d ===" % game_manager.level_number)
-	var level_info = PowerBudgetCalculator.get_level_info(game_manager.level_number)
-	print("Power Budget: %d" % level_info.power_budget)
-	print("Tier: %s (%dx multiplier)" % [level_info.tier_name, level_info.tier_multiplier])
-	print("Wave Duration: %.0fs" % level_info.wave_duration)
-	print("========================")
 
-# ====== Wave Signal Handlers ======
+	if DEBUG_SPAWNS:
+		var info = PowerBudgetCalculator.get_level_info(game_manager.level_number)
+		print("\n=== LEVEL %d ===" % game_manager.level_number)
+		print("Power Budget : %d"  % info.power_budget)
+		print("Tier         : %s (×%.1f)" % [info.tier_name, info.tier_multiplier])
+		print("Wave Duration: %.0fs" % info.wave_duration)
+		print("Spawn Method : Camera‑aware Ring")
+		print("========================\n")
+
+# ====== WAVE SIGNAL HANDLERS ======
 func _on_wave_started(wave_number: int) -> void:
-	print("Wave %d started!" % wave_number)
 	player.reset_per_level()
 	player.blink_system.initialize(player, player_data)
 
 func _on_enemy_spawned(enemy: Node) -> void:
+	enemy.global_position = _get_spawn_position_outside_camera()
 	add_child(enemy)
-	enemy.global_position = _get_random_spawn_position()
 
-func _on_wave_completed(wave_number: int) -> void:
-	print("Wave %d complete!" % wave_number)
+func _on_wave_completed(_wave_number: int) -> void:
+	pass  # placeholder for rewards / UI
 
-func _on_level_completed(level_number: int) -> void:
-	print("Level %d finished!" % level_number)
-
+func _on_level_completed(_level_number: int) -> void:
 	player_data.sync_from_player(player)
 	get_tree().change_scene_to_file("res://scenes/game/Hangar.tscn")
 
-# ====== Utility ======
+# ====== PLAYER‑RELATIVE SPAWN SYSTEM (CAMERA‑AWARE RING) ======
+func _get_spawn_position_outside_camera() -> Vector2:
+	"""
+	Enemies spawn at a distance equal to the half‑diagonal of the camera’s
+	visible rect plus SPAWN_MARGIN, with ± variance. Works on any resolution
+	or zoom level without using get_visible_rect().
+	"""
+	if not is_instance_valid(player):
+		push_warning("Level: Player missing – using fallback spawn.")
+		return _get_fallback_spawn_position()
 
-func _get_random_spawn_position() -> Vector2:
-	var screen_size = get_viewport_rect().size
-	var spawn_margin = 120.0  # Distance outside screen
-	var corner_margin = 80.0   # Extra margin for corners
-	
-	# Get player position to avoid spawning too close
-	var player_pos = player.global_position if player else Vector2(screen_size.x/2, screen_size.y/2)
-	
-	var attempts = 0
-	var max_attempts = 10
-	var spawn_pos: Vector2
-	
-	while attempts < max_attempts:
-		attempts += 1
-		
-		# Choose spawn side
-		var side = randi() % 4
-		
-		match side:
-			0: # Top
-				spawn_pos = Vector2(
-					randf_range(-spawn_margin, screen_size.x + spawn_margin),
-					-spawn_margin
-				)
-			1: # Bottom
-				spawn_pos = Vector2(
-					randf_range(-spawn_margin, screen_size.x + spawn_margin),
-					screen_size.y + spawn_margin
-				)
-			2: # Left  
-				spawn_pos = Vector2(
-					-spawn_margin,
-					randf_range(-spawn_margin, screen_size.y + spawn_margin)
-				)
-			3: # Right
-				spawn_pos = Vector2(
-					screen_size.x + spawn_margin,
-					randf_range(-spawn_margin, screen_size.y + spawn_margin)
-				)
-		
-		# Check if spawn position is far enough from player
-		var distance_to_player = spawn_pos.distance_to(player_pos)
-		if distance_to_player > 200.0:  # Minimum safe distance
-			return spawn_pos
-	
-	# Fallback if all attempts failed - force spawn far from player
-	return player_pos + Vector2(400, 0).rotated(randf() * TAU)
+	var cam : Camera2D = get_viewport().get_camera_2d()
+	if cam == null:
+		push_warning("Level: No active Camera2D – using fallback spawn.")
+		return _get_fallback_spawn_position()
 
+	# 1) Viewport pixel size
+	var vp_size : Vector2 = get_viewport_rect().size
 
-# ====== MEMORY LEAK FIX ======
-func _exit_tree() -> void:
-	for dn in get_tree().get_nodes_in_group("DamageNumbers"):
-		if is_instance_valid(dn):
-			dn.queue_free()
+	# 2) Convert to world units via camera zoom (assumes no rotation / uniform scale)
+	var world_size : Vector2 = vp_size * cam.zoom
+
+	# 3) Half‑diagonal = furthest visible distance from centre
+	var half_diag : float = world_size.length() * 0.5
+
+	# 4) Final spawn distance with margin & variance
+	var distance : float = half_diag + SPAWN_MARGIN \
+						   + randf_range(-DISTANCE_VARIANCE, DISTANCE_VARIANCE)
+
+	# 5) Random angle (full 360° around player)
+	var angle : float = randf() * TAU
+
+	# 6) Compute position
+	var dir : Vector2 = Vector2.RIGHT.rotated(angle)
+	var pos : Vector2 = player.global_position + dir * distance
+
+	if DEBUG_SPAWNS:
+		print("Spawn @ %.0f px / %.0f° (half‑diag %.0f, zoom %s)"
+			  % [distance, rad_to_deg(angle), half_diag, cam.zoom])
+
+	return pos
+
+func _get_fallback_spawn_position() -> Vector2:
+	"""Used if player or camera reference is invalid (should be rare)."""
+	var centre : Vector2 = get_viewport_rect().size * 0.5
+	var angle  : float   = randf() * TAU
+	return centre + Vector2.RIGHT.rotated(angle) * (512.0 + SPAWN_MARGIN)

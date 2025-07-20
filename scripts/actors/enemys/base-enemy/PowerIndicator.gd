@@ -5,22 +5,22 @@ class_name PowerIndicator
 @onready var rect := $ColorRect
 
 func apply_power_level(tier_level: int) -> void:
-	var color: Color
-	match tier_level:
-		1:
-			color = Color.WHITE
-		2:
-			color = Color.GREEN
-		4:
-			color = Color.CYAN
-		8:
-			color = Color.MAGENTA
-		_:
-			color = Color.ORANGE
+	"""
+	FIXED: Use actual game level to determine tier color, not enemy power level
+	This ensures all enemies show the correct tier color regardless of their individual power
+	"""
+	# Get the current game level to determine tier
+	var gm = get_tree().root.get_node_or_null("GameManager")
+	var game_level = gm.level_number if gm else 1
 	
+	# Use the level-based tier system instead of individual enemy power
+	var color: Color = PowerBudgetCalculator.get_tier_color(game_level)
+	
+	# Apply the color
 	rect.color = color
 	
-	if tier_level >= 4:
+	# Add glow effect for higher tiers (level 11+)
+	if game_level >= 11:
 		_add_glow_effect(color)
 
 func _add_glow_effect(glow_color: Color) -> void:
