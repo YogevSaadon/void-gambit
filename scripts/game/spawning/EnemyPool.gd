@@ -19,27 +19,38 @@ func _init():
 	_load_all_enemies()
 
 func _load_all_enemies() -> void:
-	"""Load all enemy scenes and create EnemyData for each"""
+	"""Load all enemy scenes and create EnemyData with balanced power levels"""
 	
-	# Main spawnable enemies (normal power budget system)
+	# Early game enemies (affordable for small budgets)
 	_add_enemy("res://scenes/actors/enemys/Biter.tscn", 1, 1, 25, "biter")
 	_add_enemy("res://scenes/actors/enemys/Triangle.tscn", 2, 1, 25, "smart_ship") 
 	_add_enemy("res://scenes/actors/enemys/Rectangle.tscn", 3, 2, 25, "smart_ship")
-	_add_enemy("res://scenes/actors/enemys/Tank.tscn", 5, 4, 25, "tank")
-	_add_enemy("res://scenes/actors/enemys/Star.tscn", 5, 3, 25, "star") 
-	_add_enemy("res://scenes/actors/enemys/Diamond.tscn", 10, 6, 25, "diamond")
-	_add_enemy("res://scenes/actors/enemys/MotherShip.tscn", 15, 8, 25, "mother_ship")
-	_add_enemy("res://scenes/actors/enemys/Swarm.tscn", 10, 3, 25, "swarm")
 	
-	# Special enemies (separate spawning logic)
+	# Mid-tier enemies (balanced progression)
+	_add_enemy("res://scenes/actors/enemys/Tank.tscn", 4, 3, 25, "tank")
+	_add_enemy("res://scenes/actors/enemys/Star.tscn", 4, 3, 25, "star")
+	
+	# Late game enemies (occasional high-value spawns)
+	_add_enemy("res://scenes/actors/enemys/Diamond.tscn", 6, 5, 25, "diamond")
+	_add_enemy("res://scenes/actors/enemys/Swarm.tscn", 5, 3, 25, "swarm")
+	_add_enemy("res://scenes/actors/enemys/MotherShip.tscn", 8, 6, 25, "mother_ship")
+	
+	# Special spawning enemies
 	_add_special_enemy("res://scenes/actors/enemys/GoldShip.tscn", 1, 1, 25, "gold_ship")
-	
-	# Spawned-only enemies (never spawn directly)
-	# EnemyMissile, ChildShip, MiniBiter - excluded entirely
 	
 	print("EnemyPool: Loaded %d spawnable enemies, %d special enemies" % [
 		all_enemies.size(), special_enemies.size()
 	])
+	_print_power_distribution()
+
+func _print_power_distribution() -> void:
+	"""Debug output showing power distribution across enemies"""
+	print("=== ENEMY POWER DISTRIBUTION ===")
+	for enemy in all_enemies:
+		print("  %s: %d power (levels %d-%d)" % [
+			enemy.get_scene_name(), enemy.base_power_level, enemy.min_level, enemy.max_level
+		])
+	print("===============================")
 
 func _add_enemy(path: String, base_power: int, min_lvl: int, max_lvl: int, type: String) -> void:
 	"""Add a normal spawnable enemy"""
@@ -52,7 +63,7 @@ func _add_enemy(path: String, base_power: int, min_lvl: int, max_lvl: int, type:
 	all_enemies.append(enemy_data)
 
 func _add_special_enemy(path: String, base_power: int, min_lvl: int, max_lvl: int, type: String) -> void:
-	"""Add a special enemy (Golden Ship, etc.)"""
+	"""Add a special enemy with separate spawning logic"""
 	var scene = load(path)
 	if not scene:
 		push_error("EnemyPool: Failed to load special enemy scene: " + path)
@@ -102,13 +113,11 @@ func apply_tier_scaling_to_all(tier_multiplier: int) -> void:
 func get_random_enemy_within_budget(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
 	"""Get random enemy that fits in remaining budget"""
 	
-	# Filter enemies that fit in budget
 	var valid_enemies: Array[EnemyData] = []
 	for enemy in available_enemies:
 		if enemy.fits_in_budget(remaining_budget):
 			valid_enemies.append(enemy)
 	
-	# Return random valid enemy, or null if none fit
 	if valid_enemies.is_empty():
 		return null
 	
