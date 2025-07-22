@@ -39,6 +39,8 @@ func _ready() -> void:
 	_connect_signals()
 	_refresh_ui()
 	_show_store()
+	
+	CheatAssistant.add_cheat_button_to(self, gm)
 
 # ====== UI ======
 func _connect_signals() -> void:

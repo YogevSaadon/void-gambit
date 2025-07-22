@@ -19,7 +19,7 @@ var base_stats: Dictionary = {
 	"bio_damage_percent": 0.0,
 	"ship_damage_percent": 0.0,
 	"blink_cooldown": 8.0,
-	"blinks": 10,
+	"blinks": 1,
 	"rerolls_per_wave": 1,
 	"luck": 0.0,
 	"gold_drop_rate": 1.0,

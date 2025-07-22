@@ -7,9 +7,9 @@ func configure_movement() -> void:
 	# Gold Ship: Roams at extreme distance, less responsive than Triangle
 	
 	# ===== RANGES (Extreme distance - farthest ship) =====
-	config_inner_range = 1200.0      # Much farther than Mother Ship (910)
-	config_outer_range = 1300.0      # Extreme distance - off screen
-	config_chase_range = 1500.0      # Rarely gets close at all
+	config_inner_range = 1000.0      # Much farther than Mother Ship (910)
+	config_outer_range = 1200.0      # Extreme distance - off screen
+	config_chase_range = 1200.0      # Rarely gets close at all
 	
 	# ===== TIMING (Less responsive than Triangle) =====
 	config_master_interval = 5.0     # Changes patterns every 5 seconds (vs Triangle's 3)

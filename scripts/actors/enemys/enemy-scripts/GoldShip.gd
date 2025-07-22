@@ -7,7 +7,7 @@ func _enter_tree() -> void:
 	
 	max_health = 40
 	max_shield = 0
-	speed = 120
+	speed = 90
 	shield_recharge_rate = 0
 	
 	damage = 20

@@ -15,11 +15,6 @@ func _enter_tree() -> void:
 	damage = 15              # Between Biter (12) and its toughness  
 	damage_interval = 1.0    # Standard contact damage timing
 	
-	# ── Metadata ─────
-	power_level = 2
-	rarity = "common"
-	min_level = 2
-	max_level = 10           # Can appear in higher levels
 	
 	# Call parent's _enter_tree to apply power scaling
 	super._enter_tree()
