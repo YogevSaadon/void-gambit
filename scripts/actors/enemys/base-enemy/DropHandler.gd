@@ -3,7 +3,7 @@ extends Node
 class_name DropHandler
 
 @export var drop_scene: PackedScene = preload("res://scenes/drops/CreditDrop.tscn")
-@export var drop_value_multiplier: float = 1.0
+@export var drop_value_multiplier: float = 4.0
 
 var enemy: BaseEnemy
 

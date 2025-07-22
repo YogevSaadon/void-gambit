@@ -15,12 +15,6 @@ func _enter_tree() -> void:
 	damage = 15                 
 	damage_interval = 1.0       
 
-	# ── Metadata ─────
-	power_level = 1             # Will inherit from Mother Ship
-	rarity = "common"
-	min_level = 1               # Can only come from Mother Ship
-	max_level = 20              # Scales with Mother Ship level
-
 	# Call parent's _enter_tree
 	super._enter_tree()
 

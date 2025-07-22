@@ -15,12 +15,6 @@ func _enter_tree() -> void:
 	damage = 12
 	damage_interval = 0.8
 
-	# ── Metadata ─────
-	power_level = 1
-	rarity = "common"
-	min_level = 1
-	max_level = 5
-
 	# ── FIXED: Disable velocity rotation for spinning ─────
 	disable_velocity_rotation = true
 

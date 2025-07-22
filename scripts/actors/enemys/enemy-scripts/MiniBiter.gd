@@ -15,12 +15,6 @@ func _enter_tree() -> void:
 	damage = 6                  # Weaker than Biter (12)
 	damage_interval = 0.7       # Slightly faster than Biter (0.8)
 
-	# ── Metadata ─────
-	power_level = 1             # Will be set by Swarm spawner
-	rarity = "common"
-	min_level = 1
-	max_level = 8
-
 	# ── FIXED: Disable velocity rotation for spinning ─────
 	disable_velocity_rotation = true
 

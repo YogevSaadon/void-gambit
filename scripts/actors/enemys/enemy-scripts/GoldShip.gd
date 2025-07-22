@@ -1,11 +1,11 @@
-# scripts/actors/enemys/goldship/GoldShip.gd
+# scripts/actors/enemys/enemy-scripts/GoldShip.gd
 extends BaseEnemy
 class_name GoldShip
 
 func _enter_tree() -> void:
 	enemy_type = "gold_ship"
 	
-	max_health = 80
+	max_health = 40
 	max_shield = 0
 	speed = 120
 	shield_recharge_rate = 0
@@ -14,9 +14,6 @@ func _enter_tree() -> void:
 	damage_interval = 1.0
 	
 	power_level = 1
-	rarity = "special"
-	min_level = 1
-	max_level = 50
 	
 	super._enter_tree()
 
@@ -26,6 +23,10 @@ func _ready() -> void:
 	if _drop_handler:
 		_drop_handler.queue_free()
 		_drop_handler = null
+
+# FIXED: Add missing method for GoldenShipSpawner
+func get_budget_power_level() -> int:
+	return 1  # Base power level for spawning cost calculations
 
 func on_death() -> void:
 	_drop_gold_coin()

@@ -15,11 +15,6 @@ func _enter_tree() -> void:
 	damage = 25                 # Much higher than Triangle (15)
 	damage_interval = 1.5       # Much slower than Triangle (1.0)
 	
-	# ── Metadata ─────
-	power_level = 5
-	rarity = "uncommon"         # Slightly rarer than basic ships
-	min_level = 5               # Appears from level 3+
-	max_level = 15              # Can appear in very high levels
 
 	# ── FIXED: Disable velocity rotation for spinning ─────
 	disable_velocity_rotation = true

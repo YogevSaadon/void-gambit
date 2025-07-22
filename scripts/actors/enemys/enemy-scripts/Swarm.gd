@@ -5,17 +5,18 @@ class_name Swarm
 @export var mini_biter_scene: PackedScene = preload("res://scenes/actors/enemys/MiniBiter.tscn")
 @export var spawn_radius: float = 80.0
 
+# ===== SPAWNING LOGIC (KEEP) =====
 var power_level: int = 1
-var rarity: String = "common"
-var min_level: int = 6
-var max_level: int = 25
-var enemy_type: String = "swarm"
-
 var base_power_level: int = 10
 
+# ===== RUNTIME STATE (KEEP) =====
 var has_spawned: bool = false
 var final_spawn_count: int = 0
 
+# ===== GAMEPLAY IDENTITY (KEEP) =====
+var enemy_type: String = "swarm"
+
+# ===== SIGNALS (KEEP) =====
 signal swarm_spawned(enemies: Array)
 signal swarm_finished
 
@@ -96,6 +97,7 @@ func _spawn_and_destroy() -> void:
 	_spawn_mini_biters()
 	call_deferred("queue_free")
 
+# ===== PUBLIC INTERFACE (KEEP - used by other systems) =====
 func get_enemy_type() -> String:
 	return enemy_type
 
@@ -107,12 +109,3 @@ func get_power_level() -> int:
 
 func get_budget_power_level() -> int:
 	return base_power_level
-
-func get_min_level() -> int:
-	return min_level
-
-func get_max_level() -> int:
-	return max_level
-
-func get_rarity() -> String:
-	return rarity

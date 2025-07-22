@@ -14,12 +14,7 @@ func _enter_tree() -> void:
 	# ── Contact damage (big ship) ─────
 	damage = 30                 # Higher than Star (25)
 	damage_interval = 2.0       # Much slower than Star (1.5)
-	
-	# ── Metadata ─────
-	power_level = 10
-	rarity = "rare"             # Rarer than Star (uncommon)
-	min_level = 8               # Appears later than Star (level 3)
-	max_level = 18              # High level enemy
+
 	
 	# Call parent's _enter_tree to apply power scaling
 	super._enter_tree()
