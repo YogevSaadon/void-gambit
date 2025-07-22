@@ -53,7 +53,8 @@ func _launch_missile() -> void:
 	missile.power_level = _owner_enemy.power_level
 	
 	get_tree().current_scene.add_child(missile)
-	missile._apply_power_scale()
+	# FIXED: Changed from _apply_power_scale() to _apply_combat_scaling()
+	missile._apply_combat_scaling()
 	_flash()
 
 func _find_parent_enemy() -> BaseEnemy:

@@ -81,6 +81,7 @@ func _spawn_mini_biters() -> void:
 		get_tree().current_scene.add_child(mini_biter)
 		spawned_enemies.append(mini_biter)
 		
+		# FIXED: Changed from _apply_power_scale() to _apply_combat_scaling()
 		mini_biter._apply_combat_scaling()
 	
 	emit_signal("swarm_spawned", spawned_enemies)
@@ -103,6 +104,9 @@ func get_spawn_value() -> int:
 
 func get_power_level() -> int:
 	return power_level
+
+func get_budget_power_level() -> int:
+	return base_power_level
 
 func get_min_level() -> int:
 	return min_level

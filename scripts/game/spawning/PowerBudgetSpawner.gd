@@ -3,7 +3,7 @@ extends RefCounted
 class_name PowerBudgetSpawner
 
 ## Main spawning algorithm that fills power budget with balanced enemy selection
-## Implements variety control to prevent single enemy type domination
+## FIXED: Uses budget power level consistently, separates from tier scaling
 
 # ===== DEPENDENCIES =====
 var enemy_pool: EnemyPool
@@ -29,26 +29,24 @@ func _init():
 func generate_spawn_list(level: int) -> Array[PackedScene]:
 	"""
 	Generate list of enemies to spawn for this level with variety control
-	Returns array of PackedScenes ready for instantiation
+	FIXED: Uses budget power level consistently
 	"""
 	current_level = level
 	current_budget = PowerBudgetCalculator.get_power_budget(level)
-	var tier_multiplier = PowerBudgetCalculator.get_tier_multiplier(level)
 	
 	# Reset tracking
 	spawned_power = 0
 	spawn_list.clear()
 	enemy_type_counts.clear()
 	
-	# Get available enemies and apply tier scaling
+	# Get available enemies (no tier scaling applied here - that's for combat)
 	var available_enemies = enemy_pool.get_spawnable_enemies_for_level(level)
-	enemy_pool.apply_tier_scaling_to_all(tier_multiplier)
 	
 	if available_enemies.is_empty():
 		push_warning("PowerBudgetSpawner: No enemies available for level %d" % level)
 		return spawn_list
 	
-	# Fill power budget with variety-aware selection
+	# Fill power budget using BUDGET power levels only
 	_fill_power_budget_with_variety(available_enemies)
 	
 	# Randomize spawn order
@@ -84,18 +82,19 @@ func _fill_power_budget_with_variety(available_enemies: Array[EnemyData]) -> voi
 		push_warning("PowerBudgetSpawner: Hit max attempts, may have infinite loop")
 
 func _select_enemy_with_variety(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
-	"""Select enemy while encouraging type variety"""
+	"""Select enemy while encouraging type variety - FIXED: Uses budget power level"""
 	
 	var valid_enemies: Array[EnemyData] = []
 	for enemy in available_enemies:
-		if enemy.fits_in_budget(remaining_budget):
+		# FIXED: Use budget power level for budget calculations
+		if enemy.get_budget_power_level() <= remaining_budget:
 			valid_enemies.append(enemy)
 	
 	if valid_enemies.is_empty():
 		return null
 	
 	# Prioritize exact budget fits for efficiency
-	var exact_fit = enemy_pool.get_exact_fit_enemy(valid_enemies, remaining_budget)
+	var exact_fit = _get_exact_fit_enemy(valid_enemies, remaining_budget)
 	if exact_fit:
 		return exact_fit
 	
@@ -107,6 +106,13 @@ func _select_enemy_with_variety(available_enemies: Array[EnemyData], remaining_b
 	
 	# Fallback to random selection
 	return valid_enemies[randi() % valid_enemies.size()]
+
+func _get_exact_fit_enemy(valid_enemies: Array[EnemyData], budget: int) -> EnemyData:
+	"""Get enemy that exactly matches the budget - FIXED: Uses budget power level"""
+	for enemy in valid_enemies:
+		if enemy.get_budget_power_level() == budget:
+			return enemy
+	return null
 
 func _get_variety_preferred_enemies(valid_enemies: Array[EnemyData]) -> Array[EnemyData]:
 	"""Get enemies of underrepresented types for balanced spawning"""
@@ -135,13 +141,13 @@ func _can_overspend(available_enemies: Array[EnemyData], remaining_budget: int) 
 	return remaining_ratio < 0.3 and max_overspend > 0
 
 func _select_overspend_enemy(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
-	"""Select enemy for controlled overspending within tolerance"""
+	"""Select enemy for controlled overspending within tolerance - FIXED: Uses budget power level"""
 	var max_total_power = int(current_budget * budget_tolerance)
 	var max_enemy_power = max_total_power - spawned_power
 	
 	var overspend_candidates: Array[EnemyData] = []
 	for enemy in available_enemies:
-		var enemy_power = enemy.get_scaled_power()
+		var enemy_power = enemy.get_budget_power_level()  # FIXED: Use budget power level
 		if enemy_power > remaining_budget and enemy_power <= max_enemy_power:
 			overspend_candidates.append(enemy)
 	
@@ -151,9 +157,9 @@ func _select_overspend_enemy(available_enemies: Array[EnemyData], remaining_budg
 	return overspend_candidates[randi() % overspend_candidates.size()]
 
 func _add_enemy_to_spawn_list(enemy_data: EnemyData) -> void:
-	"""Add selected enemy to spawn list and update tracking"""
+	"""Add selected enemy to spawn list and update tracking - FIXED: Uses budget power level"""
 	spawn_list.append(enemy_data.scene)
-	spawned_power += enemy_data.get_scaled_power()
+	spawned_power += enemy_data.get_budget_power_level()  # FIXED: Use budget power level
 
 # ===== UTILITY METHODS =====
 func get_spawn_efficiency() -> float:

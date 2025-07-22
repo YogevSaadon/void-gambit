@@ -2,13 +2,13 @@
 extends RefCounted
 class_name EnemyData
 
-## Data wrapper for enemy information with tier scaling
-## Stores enemy scene, power levels, constraints, and handles scaling
+## FIXED: Data wrapper with clear separation between budget power and combat scaling
+## Budget power = spawn cost (never changes)
+## Combat scaling = happens when enemy spawns via _apply_combat_scaling()
 
 # ===== ENEMY METADATA =====
 var scene: PackedScene              # Enemy scene to instantiate
-var base_power_level: int           # Base power before tier scaling  
-var scaled_power_level: int         # Final power after tier scaling
+var budget_power_level: int         # FIXED: Budget power for spawn cost (immutable)
 var min_level: int                  # Minimum level to appear
 var max_level: int                  # Maximum level to appear
 var enemy_type: String              # Type identifier
@@ -18,7 +18,7 @@ var is_special: bool = false        # Special spawning rules (Golden Ship, etc.)
 # ===== INITIALIZATION =====
 func _init(
 	enemy_scene: PackedScene,
-	base_power: int,
+	budget_power: int,              # FIXED: Now clearly named as budget power
 	minimum_level: int = 1,
 	maximum_level: int = 25,
 	type: String = "unknown",
@@ -26,26 +26,25 @@ func _init(
 	special: bool = false
 ):
 	scene = enemy_scene
-	base_power_level = base_power
-	scaled_power_level = base_power  # Will be updated by apply_tier_scaling()
+	budget_power_level = budget_power
 	min_level = minimum_level
 	max_level = maximum_level
 	enemy_type = type
 	rarity = enemy_rarity
 	is_special = special
 
-# ===== TIER SCALING =====
-func apply_tier_scaling(tier_multiplier: int) -> void:
-	"""Apply tier-based power scaling"""
-	scaled_power_level = base_power_level * tier_multiplier
-	
-func get_scaled_power() -> int:
-	"""Get current scaled power level"""
-	return scaled_power_level
+# ===== BUDGET POWER METHODS (For spawn cost calculations) =====
+func get_budget_power_level() -> int:
+	"""Get budget power level for spawn cost calculations"""
+	return budget_power_level
 
-func get_base_power() -> int:
-	"""Get base power level (before scaling)"""
-	return base_power_level
+func fits_in_budget(remaining_budget: int) -> bool:
+	"""Check if this enemy fits in the remaining power budget"""
+	return budget_power_level <= remaining_budget
+
+func is_exact_budget_fit(budget: int) -> bool:
+	"""Check if this enemy exactly matches the budget"""
+	return budget_power_level == budget
 
 # ===== LEVEL CONSTRAINTS =====
 func can_spawn_at_level(level: int) -> bool:
@@ -69,8 +68,8 @@ func get_scene_name() -> String:
 # ===== DEBUG INFO =====
 func to_debug_string() -> String:
 	"""String representation for debugging"""
-	return "%s (base:%d, scaled:%d, min_lvl:%d, type:%s)" % [
-		get_scene_name(), base_power_level, scaled_power_level, min_level, enemy_type
+	return "%s (budget_power:%d, min_lvl:%d, type:%s)" % [
+		get_scene_name(), budget_power_level, min_level, enemy_type
 	]
 
 func get_debug_info() -> Dictionary:
@@ -78,8 +77,7 @@ func get_debug_info() -> Dictionary:
 	return {
 		"scene_name": get_scene_name(),
 		"scene_path": get_scene_path(),
-		"base_power": base_power_level,
-		"scaled_power": scaled_power_level,
+		"budget_power_level": budget_power_level,
 		"min_level": min_level,
 		"max_level": max_level,
 		"enemy_type": enemy_type,
@@ -87,22 +85,19 @@ func get_debug_info() -> Dictionary:
 		"is_special": is_special
 	}
 
-# ===== COMPARISON METHODS =====
-func fits_in_budget(remaining_budget: int) -> bool:
-	"""Check if this enemy fits in the remaining power budget"""
-	return scaled_power_level <= remaining_budget
-
-func is_exact_fit(budget: int) -> bool:
-	"""Check if this enemy exactly matches the budget"""
-	return scaled_power_level == budget
-
 # ===== STATIC FACTORY METHODS =====
 static func create_from_enemy_scene(enemy_scene: PackedScene) -> EnemyData:
 	"""Create EnemyData by reading metadata from enemy scene"""
 	var enemy_instance = enemy_scene.instantiate()
 	
-	# Read enemy metadata (assumes enemy has these properties)
-	var base_power = enemy_instance.power_level if "power_level" in enemy_instance else 1
+	# FIXED: Read budget power level (original power_level before any scaling)
+	var budget_power = 1  # Default
+	if enemy_instance.has_method("get_budget_power_level"):
+		budget_power = enemy_instance.get_budget_power_level()
+	elif "power_level" in enemy_instance:
+		budget_power = enemy_instance.power_level  # Use original power_level as budget
+	
+	# Read other metadata
 	var min_lvl = enemy_instance.min_level if "min_level" in enemy_instance else 1
 	var max_lvl = enemy_instance.max_level if "max_level" in enemy_instance else 25
 	var type = enemy_instance.enemy_type if "enemy_type" in enemy_instance else "unknown"
@@ -114,7 +109,7 @@ static func create_from_enemy_scene(enemy_scene: PackedScene) -> EnemyData:
 	# Clean up the instance
 	enemy_instance.queue_free()
 	
-	return EnemyData.new(enemy_scene, base_power, min_lvl, max_lvl, type, enemy_rarity, special)
+	return EnemyData.new(enemy_scene, budget_power, min_lvl, max_lvl, type, enemy_rarity, special)
 
 static func _is_special_enemy(enemy_type: String) -> bool:
 	"""Determine if enemy type has special spawning rules"""

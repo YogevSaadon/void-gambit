@@ -57,7 +57,8 @@ func _spawn_child_ship() -> void:
 	child_ship.power_level = _owner_enemy.power_level
 	
 	get_tree().current_scene.add_child(child_ship)
-	child_ship._apply_power_scale()
+	# FIXED: Changed from _apply_power_scale() to _apply_combat_scaling()
+	child_ship._apply_combat_scaling()
 	_flash()
 
 func _find_parent_enemy() -> BaseEnemy:
