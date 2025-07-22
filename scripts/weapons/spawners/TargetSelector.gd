@@ -75,7 +75,6 @@ func _switch_to_new_target() -> void:
 	var new_target = _find_best_target(current_target)  # Exclude current target
 	if new_target:
 		current_target = new_target
-		print("TargetSelector: Switched to new target: %s" % new_target.name)
 
 func _find_best_target(exclude_target: Node = null) -> Node:
 	"""Find the best enemy target, optionally excluding one"""

@@ -8,9 +8,52 @@
 
 [node name="Level" type="Node2D"]
 script = ExtResource("1_obx4w")
+DISTANCE_VARIANCE = null
+SPAWN_MARGIN = null
+DEBUG_SPAWNS = null
 
 [node name="Backround" type="Sprite2D" parent="."]
 position = Vector2(566, 311)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround2" type="Sprite2D" parent="."]
+position = Vector2(2811, 304)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround3" type="Sprite2D" parent="."]
+position = Vector2(-1662, 2004)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround4" type="Sprite2D" parent="."]
+position = Vector2(-1672, 312)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround5" type="Sprite2D" parent="."]
+position = Vector2(-1662, -1382)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround6" type="Sprite2D" parent="."]
+position = Vector2(566, -1402)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround7" type="Sprite2D" parent="."]
+position = Vector2(2824, 2014)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround8" type="Sprite2D" parent="."]
+position = Vector2(586, 2004)
+scale = Vector2(2.20312, 1.67383)
+texture = ExtResource("2_dgl01")
+
+[node name="Backround9" type="Sprite2D" parent="."]
+position = Vector2(2811, -1400)
 scale = Vector2(2.20312, 1.67383)
 texture = ExtResource("2_dgl01")
 

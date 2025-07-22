@@ -66,7 +66,6 @@ func setup_weapon(weapon: BaseShipWeapon) -> void:
 	if weapon_slot:
 		weapon_slot.add_child(weapon)
 		weapon.set_owner_ship(self)
-		print("MiniShip: Weapon attached successfully to WeaponSlot")
 	else:
 		push_error("MiniShip: WeaponSlot node not found!")
 

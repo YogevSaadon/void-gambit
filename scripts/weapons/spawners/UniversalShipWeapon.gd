@@ -43,9 +43,6 @@ func configure_weapon_with_type(damage: float, fire_rate: float, crit_chance: fl
 	# ===== APPLY BULLET FIRE RATE SCALING =====
 	if weapon_type == WeaponType.BULLET:
 		final_fire_rate *= bullet_attack_speed  # ← FIXED: Applied to final fire rate
-		print("Ship Bullet Weapon: fire_rate=%.2f, bullet_attack_speed=%.2f, final=%.2f" % [
-			fire_rate, bullet_attack_speed, final_fire_rate
-		])
 	
 	# Update explosion radius
 	rocket_explosion_radius = 64.0 * (1.0 + explosion_radius_bonus)

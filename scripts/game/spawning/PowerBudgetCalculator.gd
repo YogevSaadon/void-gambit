@@ -15,10 +15,6 @@ static func get_power_budget(level: int) -> int:
 	var scaling_factor = 1.0 + (level - 1) * 0.1  # 10% per level
 	var final_budget = int(base_budget * scaling_factor)
 	
-	print("PowerBudget Level %d: base=%d, scaling=%.1fx, final=%d" % [
-		level, base_budget, scaling_factor, final_budget
-	])
-	
 	return final_budget
 
 # ===== TIER SCALING CALCULATION =====
@@ -112,11 +108,5 @@ static func get_level_info(level: int) -> Dictionary:
 
 static func print_level_progression(start_level: int = 1, end_level: int = 25) -> void:
 	"""Print level progression for balancing analysis"""
-	print("=== LEVEL PROGRESSION ===")
 	for level in range(start_level, end_level + 1):
 		var info = get_level_info(level)
-		print("Level %2d: %3d power, %s tier (%dx), %.0fs wave" % [
-			info.level, info.power_budget, info.tier_name, 
-			info.tier_multiplier, info.wave_duration
-		])
-	print("==========================")

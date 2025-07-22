@@ -54,7 +54,6 @@ func generate_spawn_list(level: int) -> Array[PackedScene]:
 	# Randomize spawn order
 	spawn_list.shuffle()
 	
-	_print_spawn_summary()
 	return spawn_list
 
 # ===== BUDGET FILLING ALGORITHM =====
@@ -174,44 +173,6 @@ func is_overspent() -> bool:
 func get_overspend_amount() -> int:
 	"""Get amount overspent (0 if not overspent)"""
 	return max(0, spawned_power - current_budget)
-
-# ===== DEBUG OUTPUT =====
-func _print_spawn_summary() -> void:
-	"""Print comprehensive spawning results including variety metrics"""
-	var efficiency = get_spawn_efficiency()
-	var overspend = get_overspend_amount()
-	
-	print("=== SPAWN SUMMARY Level %d ===" % current_level)
-	print("Budget: %d power" % current_budget)
-	print("Spawned: %d power (%d enemies)" % [spawned_power, get_spawn_count()])
-	print("Efficiency: %.1f%%" % (efficiency * 100.0))
-	if overspend > 0:
-		print("Overspend: +%d power (%.1f%%)" % [overspend, (float(overspend) / current_budget) * 100.0])
-	
-	# Variety breakdown
-	print("Enemy variety:")
-	for enemy_type in enemy_type_counts:
-		var count = enemy_type_counts[enemy_type]
-		var percentage = (count / float(get_spawn_count())) * 100.0
-		print("  %s: %d (%.1f%%)" % [enemy_type, count, percentage])
-	print("============================")
-
-func print_detailed_spawn_list() -> void:
-	"""Print detailed breakdown of spawned enemies by scene"""
-	if spawn_list.is_empty():
-		print("No enemies in spawn list")
-		return
-	
-	print("=== DETAILED SPAWN LIST ===")
-	var enemy_counts: Dictionary = {}
-	
-	for scene in spawn_list:
-		var scene_name = scene.resource_path.get_file().get_basename()
-		enemy_counts[scene_name] = enemy_counts.get(scene_name, 0) + 1
-	
-	for enemy_name in enemy_counts:
-		print("  %s: %d" % [enemy_name, enemy_counts[enemy_name]])
-	print("===========================")
 
 # ===== CONFIGURATION =====
 func set_budget_tolerance(tolerance: float) -> void:

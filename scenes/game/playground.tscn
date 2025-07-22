@@ -15,6 +15,7 @@
 [ext_resource type="PackedScene" uid="uid://dmk5jmuglpj6p" path="res://scenes/weapons/spawners/MiniShip.tscn" id="13_o3whb"]
 
 [node name="Playground" type="Node2D"]
+position = Vector2(0, 1)
 
 [node name="Player" parent="." instance=ExtResource("1_y4wa4")]
 position = Vector2(148, 275)

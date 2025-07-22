@@ -85,15 +85,12 @@ func _populate_items() -> void:
 			_apply_rarity_styling(store_items[i], selected_items[i])
 		else:
 			store_items[i].visible = false
-	
-	# Debug output
-	_print_rarity_debug_info(current_level)
 
 # Progression milestone notifications
 func _show_progression_milestones(level: int) -> void:
 	var milestones = rarity_system.get_progression_milestones(level)
 	for milestone in milestones:
-		print("STORE MILESTONE: " + milestone)
+		pass # Removed debug print
 
 # Visual rarity styling
 func _apply_rarity_styling(button: StoreItem, item) -> void:
@@ -123,23 +120,6 @@ func _add_pulse_animation(button: Button) -> void:
 func _set_button_modulate(button: Button, color: Color) -> void:
 	if is_instance_valid(button):
 		button.modulate = color
-
-# Debug information
-func _print_rarity_debug_info(level: int) -> void:
-	var breakdown = rarity_system.get_level_breakdown(level)
-	print("STORE Level %d Rarity Odds: " % level)
-	for rarity in breakdown:
-		if breakdown[rarity] > 0:
-			print("  %s: %.1f%%" % [rarity.capitalize(), breakdown[rarity]])
-	
-	var pity_info = []
-	for rarity in rarity_system.rarity_pity_counters:
-		var count = rarity_system.rarity_pity_counters[rarity]
-		if count > 0:
-			pity_info.append("%s: %d visits" % [rarity, count])
-	
-	if not pity_info.is_empty():
-		print("  Pity Status: " + ", ".join(pity_info))
 
 # Button event handlers
 func _on_reroll_pressed() -> void:

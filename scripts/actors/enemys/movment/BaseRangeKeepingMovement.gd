@@ -27,6 +27,18 @@ var config_stop_and_go_chance: float = 0.15
 var config_stop_duration: float = 0.8
 var config_acceleration_duration: float = 1.2
 
+# ===== FIXED: DISCRETE RADIUS ZONES =====
+enum RadiusZone { CLOSE, MEDIUM, FAR }
+var current_radius_zone: RadiusZone = RadiusZone.MEDIUM
+var zone_hysteresis: float = 0.2  # 20% buffer to prevent oscillation
+
+# Zone-based radius targets (no more micro-adjustments)
+var zone_radius_targets = {
+	RadiusZone.CLOSE: 0.7,   # Stay closer
+	RadiusZone.MEDIUM: 1.0,  # Default range
+	RadiusZone.FAR: 1.25     # Stay farther
+}
+
 # ===== RUNTIME VARIABLES (Don't change these) =====
 var strafe_direction: float = 1.0
 var current_mode: String = "CHASE"
@@ -55,8 +67,6 @@ var player_in_retreat_range: bool = false
 
 # ===== CONSTANTS =====
 const MODE_CHECK_INTERVAL: float = 0.1
-const RADIUS_MIN_MULTIPLIER: float = 0.4
-const RADIUS_MAX_MULTIPLIER: float = 1.3
 const RADIUS_SMOOTHING: float = 1.5
 const TARGET_SMOOTHING: float = 5.0
 
@@ -70,7 +80,7 @@ func _on_movement_ready() -> void:
 	configure_movement()
 	
 	# Then initialize with configured values
-	_randomize_radius_target()
+	_initialize_radius_zone()
 	individual_radius_multiplier = target_radius_multiplier
 	retreat_reaction_time = randf_range(config_retreat_reaction_min, config_retreat_reaction_max)
 	position_update_interval = randf_range(config_position_update_min, config_position_update_max)
@@ -104,6 +114,9 @@ func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
 	# Handle active speed modifiers
 	_update_speed_modifiers(delta)
 	
+	# FIXED: Update radius zones instead of continuous adjustments
+	_update_radius_zones()
+	
 	# Smooth radius changes
 	individual_radius_multiplier = lerp(individual_radius_multiplier, target_radius_multiplier, RADIUS_SMOOTHING * delta)
 	
@@ -113,6 +126,41 @@ func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
 	# Smooth the target position
 	smooth_target_position = smooth_target_position.lerp(calculated_target, TARGET_SMOOTHING * delta)
 	return smooth_target_position
+
+# ===== FIXED: DISCRETE ZONE SYSTEM =====
+func _initialize_radius_zone() -> void:
+	"""Initialize starting radius zone"""
+	current_radius_zone = RadiusZone.MEDIUM
+	target_radius_multiplier = zone_radius_targets[current_radius_zone]
+
+func _update_radius_zones() -> void:
+	"""Update radius zones with hysteresis to prevent jitter"""
+	var distance = get_cached_distance_to_player()
+	var inner_threshold = config_inner_range * individual_radius_multiplier
+	var outer_threshold = config_outer_range * individual_radius_multiplier
+	
+	# Zone transitions with hysteresis buffers
+	match current_radius_zone:
+		RadiusZone.CLOSE:
+			# Need significant distance before switching to MEDIUM
+			if distance > inner_threshold * (1.0 + zone_hysteresis):
+				current_radius_zone = RadiusZone.MEDIUM
+				target_radius_multiplier = zone_radius_targets[RadiusZone.MEDIUM]
+		
+		RadiusZone.MEDIUM:
+			# Check for transitions to either CLOSE or FAR
+			if distance < inner_threshold * (1.0 - zone_hysteresis):
+				current_radius_zone = RadiusZone.CLOSE
+				target_radius_multiplier = zone_radius_targets[RadiusZone.CLOSE]
+			elif distance > outer_threshold * (1.0 + zone_hysteresis):
+				current_radius_zone = RadiusZone.FAR
+				target_radius_multiplier = zone_radius_targets[RadiusZone.FAR]
+		
+		RadiusZone.FAR:
+			# Need to get significantly closer before switching to MEDIUM
+			if distance < outer_threshold * (1.0 - zone_hysteresis):
+				current_radius_zone = RadiusZone.MEDIUM
+				target_radius_multiplier = zone_radius_targets[RadiusZone.MEDIUM]
 
 func _execute_random_actions() -> void:
 	# Roll dice for each possible action
@@ -128,10 +176,7 @@ func _execute_random_actions() -> void:
 	if current_mode == "MANEUVER" and roll < config_strafe_change_chance and not direction_change_active and not stop_and_go_active:
 		_start_direction_change()
 	
-	# Radius change
-	roll = randf()
-	if roll < config_radius_change_chance:
-		_randomize_radius_target()
+	# REMOVED: No more random radius changes - zones handle this automatically
 
 func _start_stop_and_go() -> void:
 	stop_and_go_active = true
@@ -249,12 +294,6 @@ func _calculate_retreat_target() -> Vector2:
 	var retreat_point = enemy.global_position + away_from_player * retreat_distance
 	return retreat_point + strafe_offset
 
-func _randomize_radius_target() -> void:
-	if randf() < 0.6:
-		target_radius_multiplier = randf_range(0.85, RADIUS_MAX_MULTIPLIER)
-	else:
-		target_radius_multiplier = randf_range(RADIUS_MIN_MULTIPLIER, 0.85)
-
 func _get_speed_multiplier() -> float:
 	return current_speed_modifier
 
@@ -264,3 +303,11 @@ func get_current_mode() -> String:
 
 func get_current_speed_multiplier() -> float:
 	return current_speed_modifier
+
+func get_current_radius_zone() -> String:
+	"""NEW: Get current radius zone for debugging"""
+	match current_radius_zone:
+		RadiusZone.CLOSE: return "CLOSE"
+		RadiusZone.MEDIUM: return "MEDIUM"
+		RadiusZone.FAR: return "FAR"
+		_: return "UNKNOWN"

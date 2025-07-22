@@ -50,9 +50,23 @@ offset_right = 612.0
 offset_bottom = 24.0
 text = "level x"
 
-[node name="tIMER" type="Label" parent="."]
+[node name="Timer" type="Label" parent="."]
 offset_left = 575.0
 offset_top = 27.0
 offset_right = 622.0
 offset_bottom = 50.0
 text = "TIME"
+
+[node name="CreditLabel" type="Label" parent="."]
+offset_left = 1039.0
+offset_top = 3.0
+offset_right = 1084.0
+offset_bottom = 26.0
+text = "credit"
+
+[node name="GoldLabel" type="Label" parent="."]
+offset_left = 1044.0
+offset_top = 27.0
+offset_right = 1084.0
+offset_bottom = 50.0
+text = "gold"

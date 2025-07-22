@@ -35,16 +35,11 @@ var _golden_ships_required: int = 0
 func _ready() -> void:
 	power_spawner = PowerBudgetSpawner.new()
 	golden_spawner = GoldenShipSpawner.new()
-	print("WaveManager: Continuous spawning system initialized")
 
 func set_level(level: int) -> void:
 	current_level = level
 	power_budget_per_batch = PowerBudgetCalculator.get_power_budget(level)
 	level_duration = PowerBudgetCalculator.get_wave_duration(level)
-	
-	print("WaveManager: Level %d, %d power per batch, %.0fs total duration" % [
-		level, power_budget_per_batch, level_duration
-	])
 
 func start_level() -> void:
 	_level_timer = level_duration
@@ -61,9 +56,6 @@ func start_level() -> void:
 		_golden_ship_timer = _golden_ship_interval
 	else:
 		_golden_ship_timer = 999999.0
-	
-	print("=== STARTING LEVEL %d ===" % current_level)
-	print("Golden Ships: %d required, interval: %.1fs" % [_golden_ships_required, _golden_ship_interval])
 	
 	emit_signal("wave_started", 1)
 
@@ -92,14 +84,12 @@ func _physics_process(delta: float) -> void:
 
 func _spawn_new_batch() -> void:
 	_batch_count += 1
-	print("=== SPAWNING BATCH %d (Level %d) ===" % [_batch_count, current_level])
 	
 	var new_enemies = power_spawner.generate_spawn_list(current_level)
 	
 	for enemy_scene in new_enemies:
 		_enemy_spawn_queue.append(enemy_scene)
 	
-	print("Batch %d: Added %d enemies to queue" % [_batch_count, new_enemies.size()])
 	_enemy_spawn_queue.shuffle()
 
 func _spawn_golden_ship() -> void:
@@ -109,7 +99,6 @@ func _spawn_golden_ship() -> void:
 		var golden_ship = golden_scene.instantiate()
 		golden_spawner.apply_tier_scaling_to_golden_ship(golden_ship, current_level)
 		emit_signal("enemy_spawned", golden_ship)
-		print("Spawned Golden Ship %d/%d" % [_golden_ships_spawned + 1, _golden_ships_required])
 
 func _spawn_from_queue(delta: float) -> void:
 	if _enemy_spawn_queue.is_empty():
@@ -151,9 +140,6 @@ func _apply_tier_scaling_to_enemy(enemy: Node, level: int) -> void:
 
 func _finish_level() -> void:
 	_level_running = false
-	
-	print("=== LEVEL %d COMPLETED ===" % current_level)
-	print("Golden Ships spawned: %d/%d" % [_golden_ships_spawned, _golden_ships_required])
 	
 	emit_signal("wave_completed", _batch_count)
 	

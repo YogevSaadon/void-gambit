@@ -146,13 +146,6 @@ func _spawn_ship() -> void:
 	# Add to scene and track
 	get_tree().current_scene.add_child(ship)
 	active_ships.append(ship)
-	
-	print("Spawned %s ship (%d/%d) - Stats: %s" % [
-		WeaponType.keys()[weapon_type], 
-		active_ships.size(), 
-		max_ships,
-		weapon_stats
-	])
 
 # ===== SPAWNER AUTO-FIRE (Required by BaseWeapon) =====
 func auto_fire(_delta: float) -> void:

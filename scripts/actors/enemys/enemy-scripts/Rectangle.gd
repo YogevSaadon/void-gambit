@@ -6,7 +6,7 @@ func _enter_tree() -> void:
 	enemy_type = "smart_ship"
 	
 	# ── Base stats at power-level 1 ─────
-	max_health = 80          # Tougher than Biter (20)
+	max_health = 60          # Tougher than Biter (20)
 	max_shield = 0
 	speed = 70              # Slightly slower than Biter (120) - more tactical
 	shield_recharge_rate = 0

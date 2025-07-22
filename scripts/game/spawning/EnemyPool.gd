@@ -37,20 +37,6 @@ func _load_all_enemies() -> void:
 	
 	# Special spawning enemies
 	_add_special_enemy("res://scenes/actors/enemys/GoldShip.tscn", 1, 1, 25, "gold_ship")
-	
-	print("EnemyPool: Loaded %d spawnable enemies, %d special enemies" % [
-		all_enemies.size(), special_enemies.size()
-	])
-	_print_power_distribution()
-
-func _print_power_distribution() -> void:
-	"""Debug output showing power distribution across enemies"""
-	print("=== ENEMY POWER DISTRIBUTION ===")
-	for enemy in all_enemies:
-		print("  %s: %d power (levels %d-%d)" % [
-			enemy.get_scene_name(), enemy.base_power_level, enemy.min_level, enemy.max_level
-		])
-	print("===============================")
 
 func _add_enemy(path: String, base_power: int, min_lvl: int, max_lvl: int, type: String) -> void:
 	"""Add a normal spawnable enemy"""
@@ -88,7 +74,6 @@ func get_spawnable_enemies_for_level(level: int) -> Array[EnemyData]:
 	
 	cached_level = level
 	
-	print("EnemyPool: Level %d has %d available enemies" % [level, spawnable_enemies.size()])
 	return spawnable_enemies
 
 func apply_tier_scaling_to_all(tier_multiplier: int) -> void:
@@ -106,8 +91,6 @@ func apply_tier_scaling_to_all(tier_multiplier: int) -> void:
 		enemy.apply_tier_scaling(tier_multiplier)
 	
 	cached_tier_multiplier = tier_multiplier
-	
-	print("EnemyPool: Applied %dx tier scaling to all enemies" % tier_multiplier)
 
 # ===== ENEMY SELECTION =====
 func get_random_enemy_within_budget(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
@@ -157,15 +140,6 @@ func get_special_enemies_for_level(level: int) -> Array[EnemyData]:
 	return available_specials
 
 # ===== DEBUG INFO =====
-func print_available_enemies(level: int) -> void:
-	"""Print all available enemies for debugging"""
-	var available = get_spawnable_enemies_for_level(level)
-	
-	print("=== AVAILABLE ENEMIES Level %d ===" % level)
-	for enemy in available:
-		print("  %s" % enemy.to_debug_string())
-	print("================================")
-
 func get_pool_statistics() -> Dictionary:
 	"""Get statistics about the enemy pool"""
 	return {

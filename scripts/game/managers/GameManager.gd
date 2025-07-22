@@ -14,7 +14,7 @@ func _ready() -> void:
 func reset_run() -> void:
 	credits = 1000
 	coins = 100
-	level_number = 1
+	level_number = 15
 	# Weapon reset now handled by PlayerData.reset()
 
 func next_level() -> void:
