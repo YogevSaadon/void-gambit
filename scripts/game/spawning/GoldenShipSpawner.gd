@@ -21,10 +21,10 @@ func apply_tier_scaling_to_golden_ship(golden_ship: Node, level: int) -> void:
 	if golden_ship.has_method("apply_tier_scaling"):
 		golden_ship.apply_tier_scaling(level)
 	else:
-		var base_power = golden_ship.base_power_level if "base_power_level" in golden_ship else 1
+		var base_power = golden_ship.get_budget_power_level() if golden_ship.has_method("get_budget_power_level") else 1
 		golden_ship.power_level = base_power * tier_multiplier
-		if golden_ship.has_method("_apply_power_scale"):
-			golden_ship._apply_power_scale()
+		if golden_ship.has_method("_apply_combat_scaling"):
+			golden_ship._apply_combat_scaling()
 
 func get_total_golden_ship_value(level: int) -> int:
 	var tier_multiplier = PowerBudgetCalculator.get_tier_multiplier(level)

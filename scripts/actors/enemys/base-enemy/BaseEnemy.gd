@@ -55,7 +55,7 @@ var _damage_display: DamageDisplay = null
 func _enter_tree() -> void:
 	_cache_base_stats()
 	_original_power_level = power_level
-	_apply_power_scale()
+	_apply_combat_scaling()
 
 func _ready() -> void:
 	_setup_collision()
@@ -74,17 +74,17 @@ func _cache_base_stats() -> void:
 	_base_reg = shield_recharge_rate
 	_base_dmg = damage
 
-func _apply_power_scale() -> void:
+func _apply_combat_scaling() -> void:
 	max_health = _base_hp * power_level
 	health = max_health
 	max_shield = _base_sh * power_level
 	shield = max_shield
-	speed = _base_spd * power_level
-	shield_recharge_rate = _base_reg * power_level
 	damage = _base_dmg * power_level
+	
+	speed = _base_spd
+	shield_recharge_rate = _base_reg
 
 func get_budget_power_level() -> int:
-	"""Returns original power level for spawn budget calculations"""
 	return _original_power_level
 
 func _setup_collision() -> void:
@@ -109,7 +109,6 @@ func _setup_components() -> void:
 		_damage_display = $DamageDisplay
 
 func _discover_behaviors() -> void:
-	"""Auto-discover behavior components via duck typing"""
 	for c in get_children():
 		if _move_logic == null and c.has_method("tick_movement"):
 			_move_logic = c

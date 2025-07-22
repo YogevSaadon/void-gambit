@@ -128,15 +128,15 @@ func _apply_tier_scaling_to_enemy(enemy: Node, level: int) -> void:
 		enemy.apply_tier_scaling(level)
 	else:
 		var base_power = 1
-		if "base_power_level" in enemy:
-			base_power = enemy.base_power_level
+		if enemy.has_method("get_budget_power_level"):
+			base_power = enemy.get_budget_power_level()
 		elif "power_level" in enemy:
 			base_power = enemy.power_level
 		
 		enemy.power_level = base_power * tier_multiplier
 		
-		if enemy.has_method("_apply_power_scale"):
-			enemy._apply_power_scale()
+		if enemy.has_method("_apply_combat_scaling"):
+			enemy._apply_combat_scaling()
 
 func _finish_level() -> void:
 	_level_running = false
