@@ -1,4 +1,4 @@
-# scripts/game/hangar/StorePanel.gd
+# scripts/game/hangar/StorePanel.gd - AUTO-REROLL AFTER PURCHASE
 extends Node
 class_name StorePanel
 
@@ -132,12 +132,51 @@ func _on_reroll_pressed() -> void:
 		_update_ui()
 		_populate_items()
 
+# ===== UPDATED: Auto-reroll after purchase =====
 func _on_store_item_pressed(button: Button) -> void:
 	if not button is StoreItem:
 		return
+	
 	if button.purchase_item(pd, gm, pem):
+		# Update UI and stats first
 		_update_ui()
 		stat_panel.update_stats()
+		
+		# Hide all items after purchase
 		for slot in store_items:
-			if slot != button:
-				slot.visible = false
+			slot.visible = false
+		
+		# AUTO-REROLL: Try to reroll if player has rerolls available
+		if pd.current_rerolls > 0:
+			print("Auto-rerolling after purchase...")
+			
+			# Use a brief delay for better UX (let player see what they bought)
+			await get_tree().create_timer(0.3).timeout
+			
+			# Trigger reroll
+			pd.current_rerolls -= 1
+			store_visit_count += 1
+			
+			# Re-enable all slots and refresh store
+			for slot in store_items:
+				slot.disabled = false
+			
+			_update_ui()
+			_populate_items()
+		else:
+			print("No rerolls available for auto-reroll")
+
+# ===== HELPER: Manual reroll function for other uses =====
+func try_auto_reroll() -> bool:
+	"""Try to perform an auto-reroll. Returns true if successful."""
+	if pd.current_rerolls > 0:
+		pd.current_rerolls -= 1
+		store_visit_count += 1
+		
+		for slot in store_items:
+			slot.disabled = false
+		_update_ui()
+		_populate_items()
+		return true
+	
+	return false

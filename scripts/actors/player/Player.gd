@@ -1,4 +1,4 @@
-# scripts/actors/player/Player.gd - ACCUMULATOR SOLUTION
+# scripts/actors/player/Player.gd - INSTANT DEATH HANDLING
 extends CharacterBody2D
 class_name Player
 
@@ -24,6 +24,9 @@ var player_data: PlayerData = null
 # ─────  i-frame state ─────
 var invuln_timer: float = 0.0
 const INVULN_TIME := 0.3
+
+# ───── DEATH STATE ─────
+var is_dead: bool = false  # Prevent multiple death calls
 
 # ───── Init ─────
 func initialize(p_data: PlayerData) -> void:
@@ -62,6 +65,10 @@ func initialize(p_data: PlayerData) -> void:
 
 # ───── Physics loop ─────
 func _physics_process(delta: float) -> void:
+	# STOP ALL PROCESSING IF DEAD
+	if is_dead:
+		return
+		
 	invuln_timer = max(invuln_timer - delta, 0.0)
 	movement_system.physics_step(delta)
 	weapon_system.auto_fire(delta)
@@ -87,6 +94,10 @@ func recharge_shield(delta: float) -> void:
 
 # ───── Damage handling ─────
 func take_damage(amount: int) -> void:
+	# IGNORE DAMAGE IF ALREADY DEAD
+	if is_dead:
+		return
+		
 	# Apply armor damage reduction
 	var effective_damage = amount
 	if player_data:
@@ -122,12 +133,53 @@ func _calculate_damage_multiplier(armor_value: float) -> float:
 	var reduction = armor_value / (armor_value + 100.0)
 	return 1.0 - reduction
 
+# ───── FIXED: Instant death handling ─────
 func destroy() -> void:
-	queue_free()
+	# Prevent multiple death calls
+	if is_dead:
+		return
+	is_dead = true
+	
+	print("Player died! Returning to main menu...")
+	
+	# INSTANT: Stop all player functions immediately
+	set_physics_process(false)
+	set_process(false)
+	
+	# INSTANT: Make player invisible and disable collision
+	visible = false
+	collision_layer = 0
+	collision_mask = 0
+	
+	# INSTANT: Stop all movement
+	velocity = Vector2.ZERO
+	if movement_system:
+		movement_system._stop_movement_immediately()
+	
+	# INSTANT: Remove from player group so enemies stop targeting
+	remove_from_group("Player")
+	
+	# VERY SHORT delay for visual feedback, then menu
+	var timer = Timer.new()
+	timer.wait_time = 0.2  # Much shorter - just 0.2 seconds
+	timer.one_shot = true
+	add_child(timer)
+	timer.timeout.connect(_return_to_main_menu)
+	timer.start()
+
+func _return_to_main_menu() -> void:
+	# Clean up any active effects
+	var pem = get_tree().root.get_node_or_null("PassiveEffectManager")
+	if pem:
+		pem.reset()
+	
+	# Change to main menu scene
+	get_tree().change_scene_to_file("res://scenes/game/MainMenu.tscn")
 
 # ───── Damage intake ─────
 func receive_damage(amount: int) -> void:
-	if invuln_timer > 0.0:
+	# IGNORE DAMAGE IF ALREADY DEAD
+	if is_dead or invuln_timer > 0.0:
 		return          
 
 	take_damage(amount)   
@@ -135,6 +187,8 @@ func receive_damage(amount: int) -> void:
 	_flash_invuln()
 
 func _flash_invuln() -> void:
+	if is_dead:
+		return
 	var tw := create_tween()
 	tw.tween_property(self, "modulate:a", 0.2, 0.05)
 	tw.tween_property(self, "modulate:a", 1.0, 0.05)
