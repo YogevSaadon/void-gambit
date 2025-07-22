@@ -26,17 +26,17 @@ func _load_all_enemies() -> void:
 	
 	# Early game enemies (affordable for small budgets)
 	_add_enemy("res://scenes/actors/enemys/Biter.tscn", 1, 1, 25, "biter")
-	_add_enemy("res://scenes/actors/enemys/Triangle.tscn", 2, 1, 25, "smart_ship") 
-	_add_enemy("res://scenes/actors/enemys/Rectangle.tscn", 3, 2, 25, "smart_ship")
+	_add_enemy("res://scenes/actors/enemys/Triangle.tscn", 2, 2, 25, "smart_ship") 
+	_add_enemy("res://scenes/actors/enemys/Rectangle.tscn", 3, 3, 25, "smart_ship")
 	
 	# Mid-tier enemies (balanced progression)
-	_add_enemy("res://scenes/actors/enemys/Tank.tscn", 4, 3, 25, "tank")
-	_add_enemy("res://scenes/actors/enemys/Star.tscn", 4, 3, 25, "star")
+	_add_enemy("res://scenes/actors/enemys/Tank.tscn", 4, 4, 25, "tank")
+	_add_enemy("res://scenes/actors/enemys/Star.tscn", 4, 5, 25, "star")
 	
 	# Late game enemies (occasional high-value spawns)
-	_add_enemy("res://scenes/actors/enemys/Diamond.tscn", 6, 5, 25, "diamond")
-	_add_enemy("res://scenes/actors/enemys/Swarm.tscn", 5, 3, 25, "swarm")
-	_add_enemy("res://scenes/actors/enemys/MotherShip.tscn", 8, 6, 25, "mother_ship")
+	_add_enemy("res://scenes/actors/enemys/Diamond.tscn", 6, 7, 25, "diamond")
+	_add_enemy("res://scenes/actors/enemys/Swarm.tscn", 5, 6, 25, "swarm")
+	_add_enemy("res://scenes/actors/enemys/MotherShip.tscn", 8, 10, 25, "mother_ship")
 	
 	# Special spawning enemies
 	_add_special_enemy("res://scenes/actors/enemys/GoldShip.tscn", 1, 1, 25, "gold_ship")
