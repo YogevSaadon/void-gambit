@@ -5,7 +5,7 @@ signal item_added(item: PassiveItem)
 
 # Base player stats (unchanging after run starts)
 var base_stats: Dictionary = {
-	"max_hp": 10,
+	"max_hp": 50,
 	"max_shield": 0,
 	"speed": 150.0,
 	"shield_recharge_rate": 0.0,
@@ -19,7 +19,7 @@ var base_stats: Dictionary = {
 	"bio_damage_percent": 0.0,
 	"ship_damage_percent": 0.0,
 	"blink_cooldown": 8.0,
-	"blinks": 1,
+	"blinks": 10,
 	"rerolls_per_wave": 1,
 	"luck": 0.0,
 	"gold_drop_rate": 1.0,

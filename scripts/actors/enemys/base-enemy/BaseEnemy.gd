@@ -240,3 +240,11 @@ func _spread_infection() -> void:
 func _exit_tree() -> void:
 	if _damage_display:
 		_damage_display.detach_active()
+# ───── Post‑spawn tier scaling (called once per enemy) ─────
+func _post_spawn_setup(level: int) -> void:
+	# Uses the original (un‑scaled) power level cached in _original_power_level
+	var tier_mult := PowerBudgetCalculator.get_tier_multiplier(level)
+	power_level = _original_power_level * tier_mult
+	
+	# Re‑apply combat scaling now that base stats are cached
+	_apply_combat_scaling()

@@ -8,7 +8,7 @@
 [ext_resource type="Script" path="res://scripts/actors/enemys/movment/ChargeMovment.gd" id="5_mngkw"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_05gwj"]
-radius = 70.0
+radius = 55.0091
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n7gft"]
 size = Vector2(80.5, 73.5)

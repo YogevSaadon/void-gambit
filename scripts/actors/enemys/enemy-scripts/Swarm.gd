@@ -7,7 +7,7 @@ class_name Swarm
 
 var power_level: int = 1
 var rarity: String = "common"
-var min_level: int = 3
+var min_level: int = 6
 var max_level: int = 25
 var enemy_type: String = "swarm"
 

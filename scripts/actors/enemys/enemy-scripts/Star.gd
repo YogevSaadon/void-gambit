@@ -18,7 +18,7 @@ func _enter_tree() -> void:
 	# ── Metadata ─────
 	power_level = 5
 	rarity = "uncommon"         # Slightly rarer than basic ships
-	min_level = 3               # Appears from level 3+
+	min_level = 5               # Appears from level 3+
 	max_level = 15              # Can appear in very high levels
 
 	# ── FIXED: Disable velocity rotation for spinning ─────
