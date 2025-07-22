@@ -16,7 +16,7 @@ func _enter_tree() -> void:
 	enemy_type = "missile"
 	max_health = 30
 	max_shield = 0
-	speed = 110
+	speed = 200
 	shield_recharge_rate = 0
 	damage = 0  # No contact damage - explosion only
 	damage_interval = 0.0

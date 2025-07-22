@@ -8,7 +8,7 @@ func _enter_tree() -> void:
 	# ── Base stats at power-level 1 ─────
 	max_health = 80             # Much tankier than Biter (20)
 	max_shield = 0
-	speed = 70                  # Much slower than Biter (120)
+	speed = 85                  # Much slower than Biter (120)
 	shield_recharge_rate = 0
 
 	# Contact-damage numbers (strong contact damage)

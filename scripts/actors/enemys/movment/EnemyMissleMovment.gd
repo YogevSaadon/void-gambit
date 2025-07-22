@@ -3,10 +3,10 @@ extends BaseChaseMovement
 class_name EnemyMissileMovement
 
 # ===== MISSILE MOVEMENT CONFIGURATION =====
-@export var turn_speed: float = 2.0           # How fast missile can turn (lower = rougher)
-@export var acceleration: float = 300.0       # How fast missile speeds up
+@export var turn_speed: float = 8.0           # FIXED: Much higher for sharp turns (was 2.0)
+@export var acceleration: float = 300.0       # How fast it speeds up
 @export var max_speed_multiplier: float = 2.5 # Max speed = base_speed * this
-@export var update_interval: float = 0.15     # How often to update direction (rougher = higher)
+@export var update_interval: float = 0.05     # FIXED: More frequent updates (was 0.15)
 
 # ===== MISSILE STATE =====
 var current_speed: float = 0.0
@@ -21,7 +21,7 @@ func _on_movement_ready() -> void:
 	target_direction = Vector2.RIGHT.rotated(randf_range(-PI/4, PI/4))
 
 func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
-	# Update targeting direction periodically (not every frame = rougher)
+	# FIXED: Update targeting direction more frequently
 	last_update_time += delta
 	if last_update_time >= update_interval:
 		last_update_time = 0.0
@@ -34,7 +34,7 @@ func _calculate_target_position(player: Node2D, delta: float) -> Vector2:
 	# Get current movement direction
 	var current_direction = enemy.velocity.normalized() if enemy.velocity.length() > 0 else Vector2.RIGHT
 	
-	# Slowly turn toward target (rougher turning)
+	# FIXED: Much sharper turning with higher turn_speed
 	var new_direction = current_direction.lerp(target_direction, turn_speed * delta).normalized()
 	
 	# Set velocity directly (missiles don't use target position)
@@ -52,5 +52,6 @@ func get_missile_info() -> Dictionary:
 	return {
 		"current_speed": current_speed,
 		"target_direction": target_direction,
-		"max_speed": enemy.speed * max_speed_multiplier
+		"max_speed": enemy.speed * max_speed_multiplier,
+		"turn_sharpness": turn_speed
 	}

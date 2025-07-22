@@ -14,7 +14,7 @@ signal died
 
 # ───── Universal Spaceship Movement ─────
 @export var rotation_speed: float = 3.0
-@export var disable_velocity_rotation: bool = false  # ←← NEW: Disable for spinning enemies
+@export var disable_velocity_rotation: bool = false
 
 # ───── Enemy metadata ─────
 @export var power_level: int = 1
@@ -54,11 +54,14 @@ var _damage_display: DamageDisplay = null
 
 # ───── Lifecycle ─────
 func _enter_tree() -> void:
+	# Don't cache power_level yet - child classes haven't set it
 	_cache_base_stats()
-	_original_power_level = power_level
-	_apply_combat_scaling()
 
 func _ready() -> void:
+	# FIXED: Cache original power level AFTER child _enter_tree() has run
+	_original_power_level = power_level
+	_apply_combat_scaling()
+	
 	_setup_collision()
 	_setup_components()
 	_discover_behaviors()

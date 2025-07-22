@@ -3,7 +3,7 @@ extends BaseChaseMovement
 class_name ChargeMovement
 
 # ===== CHARGE CONFIGURATION =====
-@export var charge_range: float = 150.0        # How close to trigger charge
+@export var charge_range: float = 250.0        # How close to trigger charge
 @export var charge_distance_multiplier: float = 4.0  # How far past player to charge (was 2.5)
 @export var charge_acceleration: float = 800.0 # How fast to accelerate during charge
 @export var max_charge_speed: float = 400.0    # Max speed during charge

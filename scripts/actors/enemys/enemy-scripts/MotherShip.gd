@@ -8,7 +8,7 @@ func _enter_tree() -> void:
 	# ── Base stats at power-level 1 ─────
 	max_health = 400            # Much tankier than Diamond (250)
 	max_shield = 0
-	speed = 25                  # Much slower than Diamond (45)
+	speed = 45                  # Much slower than Diamond (45)
 	shield_recharge_rate = 0
 	
 	# ── Contact damage (huge ship) ─────

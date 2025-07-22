@@ -8,7 +8,7 @@ func _enter_tree() -> void:
 	# ── Base stats at power-level 1 ─────
 	max_health = 200            # Much tankier than Triangle (40)
 	max_shield = 0
-	speed = 35                  # Much slower than Triangle (100)
+	speed = 80                  # Much slower than Triangle (100)
 	shield_recharge_rate = 0
 	
 	# ── Contact damage (fortress ship) ─────
