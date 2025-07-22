@@ -14,6 +14,7 @@ signal died
 
 # ───── Universal Spaceship Movement ─────
 @export var rotation_speed: float = 3.0
+@export var disable_velocity_rotation: bool = false  # ←← NEW: Disable for spinning enemies
 
 # ───── Enemy metadata ─────
 @export var power_level: int = 1
@@ -130,8 +131,8 @@ func _physics_process(delta: float) -> void:
 	move(delta)
 	recharge_shield(delta)
 	
-	# ───── UNIVERSAL SPACESHIP MOVEMENT ─────
-	if velocity.length() > 10.0:
+	# ───── FIXED: CONDITIONAL VELOCITY ROTATION ─────
+	if not disable_velocity_rotation and velocity.length() > 10.0:
 		var target_angle = velocity.angle()
 		rotation = lerp_angle(rotation, target_angle, rotation_speed * delta)
 	

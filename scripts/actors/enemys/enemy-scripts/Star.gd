@@ -1,4 +1,4 @@
-# scripts/actors/enemys/star/Star.gd
+# scripts/actors/enemys/enemy-scripts/Star.gd
 extends BaseEnemy
 class_name Star
 
@@ -20,6 +20,9 @@ func _enter_tree() -> void:
 	rarity = "uncommon"         # Slightly rarer than basic ships
 	min_level = 3               # Appears from level 3+
 	max_level = 15              # Can appear in very high levels
+
+	# ── FIXED: Disable velocity rotation for spinning ─────
+	disable_velocity_rotation = true
 	
 	# Call parent's _enter_tree to apply power scaling
 	super._enter_tree()

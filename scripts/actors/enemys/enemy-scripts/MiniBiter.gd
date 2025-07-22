@@ -1,4 +1,4 @@
-# scripts/actors/enemys/swarm/MiniBiter.gd
+# scripts/actors/enemys/enemy-scripts/MiniBiter.gd
 extends BaseEnemy
 class_name MiniBiter
 
@@ -20,6 +20,9 @@ func _enter_tree() -> void:
 	rarity = "common"
 	min_level = 1
 	max_level = 8
+
+	# ── FIXED: Disable velocity rotation for spinning ─────
+	disable_velocity_rotation = true
 
 	# Call parent's _enter_tree
 	super._enter_tree()
