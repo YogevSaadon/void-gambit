@@ -1,432 +1,215 @@
-# scripts/tools/ConstantSystemBuilder.gd
 @tool
+# scripts/tools/SmartCollisionMigration.gd
 extends EditorScript
 
+var total_replacements: int = 0
+var files_checked: int = 0
+
 func _run() -> void:
-	print("=== Building Constants System ===")
+	print("\n=== SMART COLLISION LAYER MIGRATION ===")
+	print("This will find and replace collision layer magic numbers\n")
 	
-	# Create directory structure
-	_create_directories()
+	# Step 1: Create CollisionLayers.gd
+	_create_collision_layers_script()
 	
-	# Create constant files with documentation
-	_create_collision_layers()
-	_create_combat_constants()
-	_create_movement_constants()
-	_create_enemy_constants()
-	_create_weapon_constants()
-	_create_ui_constants()
-	_create_spawning_constants()
-	_create_drop_constants()
-	_create_status_constants()
-	_create_performance_constants()
+	# Step 2: Find and replace in all relevant files
+	_find_and_replace_collision_layers()
 	
-	# Create JSON data files
-	_create_balance_config()
-	_create_enemy_stats()
-	_create_weapon_stats()
-	_create_rarity_tables()
-	_create_wave_progression()
+	# Step 3: Summary
+	print("\n=== MIGRATION COMPLETE ===")
+	print("Files checked: %d" % files_checked)
+	print("Total replacements: %d" % total_replacements)
 	
-	print("=== Constants System Built Successfully! ===")
-	print("Check scripts/constants/ folder")
+	if total_replacements == 0:
+		print("\n⚠️ NO CHANGES MADE - Possible reasons:")
+		print("- Files already migrated")
+		print("- Line patterns don't match exactly")
+		print("- Files not found at expected paths")
 
-func _create_directories() -> void:
+func _create_collision_layers_script() -> void:
+	var content = """class_name CollisionLayers
+extends RefCounted
+
+# ===== COLLISION LAYERS =====
+# Layer numbers as they appear in code (bit positions)
+const LAYER_PLAYER = 1              # Bit 1 = Layer 2 in inspector
+const LAYER_ENEMIES = 2             # Bit 2 = Layer 3 in inspector
+const LAYER_PLAYER_PROJECTILES = 4  # Bit 4 = Layer 5 in inspector
+const LAYER_ENEMY_PROJECTILES = 5   # Bit 5 = Layer 6 in inspector
+
+# ===== COLLISION MASKS =====
+const MASK_PLAYER = 0                      # Player detects nothing
+const MASK_ENEMIES = 0                     # Enemies detect nothing
+const MASK_PLAYER_PROJECTILES = 1 << 2     # Detect enemies (bit 2)
+const MASK_ENEMY_PROJECTILES = 1 << 1      # Detect player (bit 1)
+"""
+	
+	# Ensure directory exists
 	var dir = DirAccess.open("res://")
-	dir.make_dir_recursive("scripts/constants")
-	dir.make_dir_recursive("scripts/constants/data")
-	print("✓ Created directory structure")
+	if not dir.dir_exists("scripts/constants"):
+		dir.make_dir_recursive("scripts/constants")
+	
+	# Write file
+	var file = FileAccess.open("res://scripts/constants/CollisionLayers.gd", FileAccess.WRITE)
+	if file:
+		file.store_string(content)
+		file.flush()
+		file = null  # This closes the file in Godot 4
+		print("✓ Created CollisionLayers.gd")
+	else:
+		print("❌ Failed to create CollisionLayers.gd")
 
-func _create_collision_layers() -> void:
-	var content = """# scripts/constants/CollisionLayers.gd
-class_name CollisionLayers
-extends RefCounted
+func _find_and_replace_collision_layers() -> void:
+	# Define search and replace patterns
+	var replacements = [
+		# Player collision
+		{
+			"files": ["scripts/actors/player/Player.gd"],
+			"patterns": [
+				{"find": "collision_layer = 1 << 1", "replace": "collision_layer = 1 << CollisionLayers.LAYER_PLAYER"},
+				{"find": "collision_mask = 0", "replace": "collision_mask = CollisionLayers.MASK_PLAYER"}
+			]
+		},
+		
+		# BaseEnemy collision
+		{
+			"files": ["scripts/actors/enemys/base-enemy/BaseEnemy.gd"],
+			"patterns": [
+				{"find": "collision_layer = 1 << 2", "replace": "collision_layer = 1 << CollisionLayers.LAYER_ENEMIES"},
+				{"find": "collision_mask = 0", "replace": "collision_mask = CollisionLayers.MASK_ENEMIES"}
+			]
+		},
+		
+		# Player bullets
+		{
+			"files": ["scripts/projectiles/player_projectiles/PlayerBullet.gd"],
+			"patterns": [
+				{"find": "bullet_collision_layer = 4", "replace": "bullet_collision_layer = CollisionLayers.LAYER_PLAYER_PROJECTILES"},
+				{"find": "bullet_collision_mask = 2", "replace": "bullet_collision_mask = CollisionLayers.MASK_PLAYER_PROJECTILES"}
+			]
+		},
+		
+		# Enemy bullets
+		{
+			"files": ["scripts/projectiles/enemy_projectiles/EnemyBullet.gd"],
+			"patterns": [
+				{"find": "bullet_collision_layer = 5", "replace": "bullet_collision_layer = CollisionLayers.LAYER_ENEMY_PROJECTILES"},
+				{"find": "bullet_collision_mask = 1", "replace": "bullet_collision_mask = CollisionLayers.MASK_ENEMY_PROJECTILES"}
+			]
+		},
+		
+		# Explosions
+		{
+			"files": ["scripts/projectiles/player_projectiles/PlayerExplosion.gd"],
+			"patterns": [
+				{"find": "explosion_collision_layer = 4", "replace": "explosion_collision_layer = CollisionLayers.LAYER_PLAYER_PROJECTILES"},
+				{"find": "explosion_collision_mask = 2", "replace": "explosion_collision_mask = CollisionLayers.MASK_PLAYER_PROJECTILES"}
+			]
+		},
+		
+		{
+			"files": ["scripts/projectiles/enemy_projectiles/EnemyExplosion.gd"],
+			"patterns": [
+				{"find": "explosion_collision_layer = 5", "replace": "explosion_collision_layer = CollisionLayers.LAYER_ENEMY_PROJECTILES"},
+				{"find": "explosion_collision_mask = 1", "replace": "explosion_collision_mask = CollisionLayers.MASK_ENEMY_PROJECTILES"}
+			]
+		},
+		
+		# Contact damage
+		{
+			"files": ["scripts/actors/enemys/base-enemy/ContactDamage.gd"],
+			"patterns": [
+				{"find": "zone.collision_mask = 1 << 1", "replace": "zone.collision_mask = 1 << CollisionLayers.LAYER_PLAYER"}
+			]
+		},
+		
+		# Missile
+		{
+			"files": ["scripts/projectiles/player_projectiles/PlayerMissile.gd"],
+			"patterns": [
+				{"find": "collision_layer = 1 << 4", "replace": "collision_layer = 1 << CollisionLayers.LAYER_PLAYER_PROJECTILES"},
+				{"find": "collision_mask  = 1 << 2", "replace": "collision_mask = 1 << CollisionLayers.LAYER_ENEMIES"}
+			]
+		},
+		
+		# Spatial queries in various files
+		{
+			"files": [
+				"scripts/weapons/ShooterWeapon.gd",
+				"scripts/weapons/laser/ChainLaserBeamController.gd",
+				"scripts/weapons/spawners/TargetSelector.gd",
+				"scripts/weapons/spawners/UniversalShipWeapon.gd",
+				"scripts/actors/enemys/movment/BaseRangeKeepingMovement.gd"
+			],
+			"patterns": [
+				{"find": "params.collision_mask = 1 << 2", "replace": "params.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES"}
+			]
+		}
+	]
+	
+	# Process each file group
+	for group in replacements:
+		for file_path in group.files:
+			_process_file(file_path, group.patterns)
 
-# ===== WHAT THIS AFFECTS =====
-# - Player.gd (collision setup)
-# - BaseEnemy.gd (collision setup)
-# - All projectile scripts (bullets, explosions, missiles)
-# - Contact damage systems
-# - Weapon targeting systems
+func _process_file(file_path: String, patterns: Array) -> void:
+	var full_path = "res://" + file_path
+	files_checked += 1
+	
+	# Check if file exists
+	if not FileAccess.file_exists(full_path):
+		print("⚠️ File not found: %s" % file_path)
+		return
+	
+	# Read file content
+	var file = FileAccess.open(full_path, FileAccess.READ)
+	if not file:
+		print("❌ Cannot read: %s" % file_path)
+		return
+	
+	var content = file.get_as_text()
+	file = null  # Close file
+	
+	# Track changes
+	var original_content = content
+	var changes_made = 0
+	
+	# Apply each pattern
+	for pattern in patterns:
+		var find_text = pattern.find
+		var replace_text = pattern.replace
+		
+		# Count occurrences
+		var occurrences = content.count(find_text)
+		if occurrences > 0:
+			content = content.replace(find_text, replace_text)
+			changes_made += occurrences
+			total_replacements += occurrences
+			print("  ✓ Replaced '%s' → '%s' (%d times)" % [find_text, replace_text, occurrences])
+	
+	# Write back if changes were made
+	if changes_made > 0:
+		file = FileAccess.open(full_path, FileAccess.WRITE)
+		if file:
+			file.store_string(content)
+			file.flush()
+			file = null  # Close file
+			print("✓ Updated %s (%d replacements)" % [file_path.get_file(), changes_made])
+		else:
+			print("❌ Cannot write to: %s" % file_path)
+	else:
+		print("  No changes needed in: %s" % file_path.get_file())
 
-# ===== IMPLEMENTATION STEPS =====
-# 1. Search for: collision_layer = 1 << [number]
-# 2. Search for: collision_mask = 1 << [number]
-# 3. Search for: collision_mask = [number]
-# 4. Replace magic numbers with these constants
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Define layer numbers (currently using magic numbers 1,2,4,5)
-# const LAYER_PLAYER = ?
-# const LAYER_ENEMIES = ?
-# const LAYER_PLAYER_PROJECTILES = ?
-# const LAYER_ENEMY_PROJECTILES = ?
-
-# ===== TESTING CHECKLIST =====
-# [ ] Player takes damage from enemies
-# [ ] Enemies take damage from player
-# [ ] Projectiles hit correct targets
-# [ ] No friendly fire
-# [ ] Contact damage works
-# [ ] Explosions affect correct targets
-"""
-	_save_file("scripts/constants/CollisionLayers.gd", content)
-
-func _create_combat_constants() -> void:
-	var content = """# scripts/constants/CombatConstants.gd
-class_name CombatConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - All damage calculations
-# - Critical hit system
-# - Armor damage reduction
-# - Status effect damage (infection, burn)
-# - Damage number display
-# - Player invulnerability frames
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Search for damage multipliers (0.33, 1.5, 0.05)
-# 2. Search for crit-related values
-# 3. Search for armor formula (100.0)
-# 4. Search for status tick rates
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Extract from weapon scripts (0.33 for ships, 1.5 for explosions)
-# TODO: Extract from DamageNumber.gd (hold/fade times)
-# TODO: Extract from Player.gd (invuln time)
-# TODO: Extract from StatusComponent.gd (tick intervals)
-
-# ===== TESTING CHECKLIST =====
-# [ ] Damage values match original
-# [ ] Crits work correctly
-# [ ] Armor reduces damage properly
-# [ ] Status effects tick at right rate
-# [ ] Damage numbers display correctly
-"""
-	_save_file("scripts/constants/CombatConstants.gd", content)
-
-func _create_movement_constants() -> void:
-	var content = """# scripts/constants/MovementConstants.gd
-class_name MovementConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Player movement (acceleration, rotation)
-# - Enemy movement patterns (chase, strafe, orbit)
-# - Ship movement behaviors
-# - Projectile speeds and lifetimes
-# - Blink system
-# - Drop pickup magnetism
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Search in PlayerMovement.gd for timing values
-# 2. Search in enemy movement scripts for ranges/speeds
-# 3. Search for rotation speeds
-# 4. Search for distance thresholds
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Player movement (0.25, 0.30, 8.0, 12.0)
-# TODO: Enemy ranges (250.0, 300.0, 600.0)
-# TODO: Sawblade patterns (15.0, 3.0)
-# TODO: Charge behaviors (800.0, 400.0)
-
-# ===== TESTING CHECKLIST =====
-# [ ] Player movement feels the same
-# [ ] Enemy patterns unchanged
-# [ ] Ships orbit correctly
-# [ ] Charge attacks work
-# [ ] Sawblades spin properly
-"""
-	_save_file("scripts/constants/MovementConstants.gd", content)
-
-func _create_enemy_constants() -> void:
-	var content = """# scripts/constants/EnemyConstants.gd
-class_name EnemyConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - All enemy base stats (health, speed, damage)
-# - Enemy-specific behaviors
-# - Contact damage values
-# - Power level scaling
-# - Enemy spawn requirements
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract base stats from each enemy script
-# 2. Create methods to get stats by enemy type
-# 3. Link to enemy_stats.json for designer tweaking
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Move all base stats from enemy scripts
-# TODO: Define which stats should be in JSON vs code
-# TODO: Create stat getter methods
-
-# ===== DATA FILE =====
-# See: scripts/constants/data/enemy_stats.json
-
-# ===== TESTING CHECKLIST =====
-# [ ] Each enemy has correct health
-# [ ] Movement speeds match original
-# [ ] Contact damage works
-# [ ] Power scaling applies correctly
-"""
-	_save_file("scripts/constants/EnemyConstants.gd", content)
-
-func _create_weapon_constants() -> void:
-	var content = """# scripts/constants/WeaponConstants.gd
-class_name WeaponConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - All weapon damage values
-# - Fire rates and cooldowns
-# - Projectile speeds and lifetimes
-# - Special weapon properties (laser reflects, explosion radius)
-# - Weapon-specific multipliers
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract base damage/fire rate from weapon scripts
-# 2. Find all projectile speeds (1800, 400, 450)
-# 3. Extract special multipliers (0.05 for laser, 1.5 for explosion)
-# 4. Link to weapon_stats.json
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Base weapon stats
-# TODO: Projectile properties
-# TODO: Special ability values
-# TODO: Ship weapon reductions (0.33)
-
-# ===== DATA FILE =====
-# See: scripts/constants/data/weapon_stats.json
-
-# ===== TESTING CHECKLIST =====
-# [ ] Bullet damage correct
-# [ ] Laser tick damage correct
-# [ ] Explosion radius correct
-# [ ] Fire rates unchanged
-# [ ] Ship weapons do 33% damage
-"""
-	_save_file("scripts/constants/WeaponConstants.gd", content)
-
-func _create_ui_constants() -> void:
-	var content = """# scripts/constants/UIConstants.gd
-class_name UIConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Damage number display
-# - Health/shield bar sizing
-# - UI animations and transitions
-# - Color schemes for rarities
-# - Text formatting
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract from DamageNumber.gd (timing, speed)
-# 2. Find rarity colors in PassiveItem.gd
-# 3. Extract UI animation durations
-# 4. Find text size constants
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Damage number behavior (0.08, 0.40, 30.0)
-# TODO: Rarity colors
-# TODO: UI transition times
-# TODO: Bar sizes and offsets
-
-# ===== TESTING CHECKLIST =====
-# [ ] Damage numbers float correctly
-# [ ] Rarity colors match
-# [ ] UI animations smooth
-# [ ] Text readable
-"""
-	_save_file("scripts/constants/UIConstants.gd", content)
-
-func _create_spawning_constants() -> void:
-	var content = """# scripts/constants/SpawningConstants.gd
-class_name SpawningConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Power budget calculations
-# - Spawn intervals and batch sizes
-# - Wave duration and progression
-# - Enemy tier multipliers
-# - Golden ship spawning
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract from PowerBudgetCalculator.gd
-# 2. Find spawn timing in WaveManager.gd
-# 3. Extract tier breakpoints and multipliers
-# 4. Link to wave_progression.json
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Power budget formula values
-# TODO: Spawn intervals (10.0, 0.3)
-# TODO: Tier breakpoints (6, 12, 18, 24)
-# TODO: Duration scaling (30.0 to 60.0)
-
-# ===== DATA FILE =====
-# See: scripts/constants/data/wave_progression.json
-
-# ===== TESTING CHECKLIST =====
-# [ ] Wave difficulty scales correctly
-# [ ] Spawn timing feels right
-# [ ] Golden ships appear on schedule
-# [ ] Power budgets balanced
-"""
-	_save_file("scripts/constants/SpawningConstants.gd", content)
-
-func _create_drop_constants() -> void:
-	var content = """# scripts/constants/DropConstants.gd
-class_name DropConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Credit/coin drop values
-# - Pickup magnetism behavior
-# - Drop movement physics
-# - Collection thresholds
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract from DropPickup.gd
-# 2. Find drop value multipliers
-# 3. Extract movement parameters
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Pickup ranges (120.0, 15.0)
-# TODO: Movement speeds (200.0, 2000.0)
-# TODO: Acceleration curves (3.0, 2.5)
-# TODO: Drop value multipliers
-
-# ===== TESTING CHECKLIST =====
-# [ ] Drops magnetize at right distance
-# [ ] Collection feels smooth
-# [ ] Values match original
-"""
-	_save_file("scripts/constants/DropConstants.gd", content)
-
-func _create_status_constants() -> void:
-	var content = """# scripts/constants/StatusConstants.gd
-class_name StatusConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Infection/bio damage behavior
-# - Status effect durations
-# - Tick intervals and damage
-# - Spread mechanics
-# - Stack limits
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract from StatusComponent.gd
-# 2. Find bio weapon values
-# 3. Extract spread chances
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Tick intervals (0.5)
-# TODO: Max stacks (3)
-# TODO: Damage multipliers per stack (0.33)
-# TODO: Spread radius and chance
-
-# ===== TESTING CHECKLIST =====
-# [ ] Infection damage correct
-# [ ] Spreading works
-# [ ] Stacking applies properly
-# [ ] Duration correct
-"""
-	_save_file("scripts/constants/StatusConstants.gd", content)
-
-func _create_performance_constants() -> void:
-	var content = """# scripts/constants/PerformanceConstants.gd
-class_name PerformanceConstants
-extends RefCounted
-
-# ===== WHAT THIS AFFECTS =====
-# - Update intervals for expensive operations
-# - Spatial query limits
-# - Cache durations
-# - Maximum entity counts
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Find all timer intervals (0.1, 0.2)
-# 2. Find spatial query limits (32)
-# 3. Extract cache timings
-
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Distance check intervals
-# TODO: Target update frequencies
-# TODO: Maximum query results
-# TODO: Validation timings
-
-# ===== TESTING CHECKLIST =====
-# [ ] No performance regression
-# [ ] Queries return enough results
-# [ ] Updates frequent enough
-"""
-	_save_file("scripts/constants/PerformanceConstants.gd", content)
-
-# JSON Data Files
-
-func _create_balance_config() -> void:
-	var content = """{
-  "combat": {
-	"damage_numbers": {
-	  "hold_time": 0.08,
-	  "fade_time": 0.40,
-	  "float_speed": 30.0,
-	  "count_speed": 60.0
-	},
-	"player": {
-	  "invuln_time": 0.3,
-	  "death_delay": 0.2
-	}
-  },
-  "economy": {
-	"credit_drop_multiplier": 4.0,
-	"golden_coin_value": 1.0
-  }
-}"""
-	_save_file("scripts/constants/data/balance_config.json", content)
-
-func _create_enemy_stats() -> void:
-	var content = """{
-  "_instructions": "Extract all base enemy stats here for easy balancing",
-  "biter": {
-	"base_health": 20,
-	"base_speed": 120,
-	"contact_damage": 12
-  }
-}"""
-	_save_file("scripts/constants/data/enemy_stats.json", content)
-
-func _create_weapon_stats() -> void:
-	var content = """{
-  "_instructions": "Base weapon stats for balancing",
-  "bullet": {
-	"base_damage": 20,
-	"fire_rate": 1.0,
-	"projectile_speed": 1800
-  }
-}"""
-	_save_file("scripts/constants/data/weapon_stats.json", content)
-
-func _create_rarity_tables() -> void:
-	var content = """{
-  "_instructions": "Store and slot machine rarity tables",
-  "level_rarity_table": {},
-  "luck_scaling": {}
-}"""
-	_save_file("scripts/constants/data/rarity_tables.json", content)
-
-func _create_wave_progression() -> void:
-	var content = """{
-  "_instructions": "Wave timing and power progression",
-  "power_budget_scaling": {},
-  "tier_breakpoints": {}
-}"""
-	_save_file("scripts/constants/data/wave_progression.json", content)
-
-func _save_file(path: String, content: String) -> void:
-	var file = FileAccess.open("res://" + path, FileAccess.WRITE)
-	file.store_string(content)
-	file.close()
-	print("✓ Created: " + path)
+# Helper function to check what's actually in a file
+func debug_file_content(file_path: String, search_term: String) -> void:
+	var full_path = "res://" + file_path
+	if FileAccess.file_exists(full_path):
+		var file = FileAccess.open(full_path, FileAccess.READ)
+		if file:
+			var line_num = 1
+			while not file.eof_reached():
+				var line = file.get_line()
+				if search_term in line:
+					print("Line %d: %s" % [line_num, line.strip_edges()])
+				line_num += 1
+			file = null
