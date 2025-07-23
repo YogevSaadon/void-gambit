@@ -1,0 +1,8 @@
+{
+  "_instructions": "Base weapon stats for balancing",
+  "bullet": {
+	"base_damage": 20,
+	"fire_rate": 1.0,
+	"projectile_speed": 1800
+  }
+}

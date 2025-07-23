@@ -1,0 +1,18 @@
+{
+  "combat": {
+	"damage_numbers": {
+	  "hold_time": 0.08,
+	  "fade_time": 0.40,
+	  "float_speed": 30.0,
+	  "count_speed": 60.0
+	},
+	"player": {
+	  "invuln_time": 0.3,
+	  "death_delay": 0.2
+	}
+  },
+  "economy": {
+	"credit_drop_multiplier": 4.0,
+	"golden_coin_value": 1.0
+  }
+}
