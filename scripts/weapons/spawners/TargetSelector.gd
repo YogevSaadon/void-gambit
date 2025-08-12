@@ -86,7 +86,7 @@ func _find_best_target(exclude_target: Node = null) -> Node:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, owner_ship.global_position)
-	params.collision_mask = 1 << 2  # Enemy layer
+	params.collision_mask = CollisionLayers.get_enemy_layer()
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	

@@ -36,8 +36,8 @@ func initialize(p_data: PlayerData) -> void:
 		
 	player_data = p_data
 	add_to_group("Player")
-	collision_layer = 1 << 1
-	collision_mask = 0
+	collision_layer = CollisionLayers.get_player_layer()
+	collision_mask = CollisionLayers.MASK_PLAYER
 
 	max_health = int(player_data.get_stat("max_hp"))
 	health = int(player_data.hp)

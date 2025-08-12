@@ -35,7 +35,7 @@ func _find_target_in_range() -> Node:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = 1 << 2
+	params.collision_mask = CollisionLayers.get_enemy_layer()
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	

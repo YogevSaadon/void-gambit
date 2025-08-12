@@ -128,7 +128,7 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, origin)
-	params.collision_mask = 1 << 2  # Enemy layer
+	params.collision_mask = CollisionLayers.get_enemy_layer()
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	

@@ -55,9 +55,9 @@ const MASK_ENEMY_PROJECTILES = 1 << 1      # Detect player (bit 1)
 		file.store_string(content)
 		file.flush()
 		file = null  # This closes the file in Godot 4
-		print("✓ Created CollisionLayers.gd")
+		print("Created CollisionLayers.gd")
 	else:
-		print("❌ Failed to create CollisionLayers.gd")
+		print("Failed to create CollisionLayers.gd")
 
 func _find_and_replace_collision_layers() -> void:
 	# Define search and replace patterns

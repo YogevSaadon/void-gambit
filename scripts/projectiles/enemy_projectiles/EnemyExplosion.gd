@@ -6,8 +6,8 @@ class_name EnemyExplosion
 func _ready() -> void:
 	# Configure for enemy explosions (red/orange, targets player)
 	target_group = "Player"                    # Target the player
-	explosion_collision_layer = 5              # Enemy explosions on layer 5
-	explosion_collision_mask = 1               # Detect player on layer 1 (CharacterBody2D layer)
+	explosion_collision_layer = CollisionLayers.LAYER_ENEMY_PROJECTILES            
+	explosion_collision_mask = CollisionLayers.LAYER_PLAYER              
 	initial_color = Color(1, 0.3, 0.1, 0.8)   # Red/orange color
 	
 	# Call parent _ready to set up collision and visuals

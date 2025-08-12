@@ -92,8 +92,8 @@ func get_budget_power_level() -> int:
 	return _original_power_level
 
 func _setup_collision() -> void:
-	collision_layer = 1 << 2
-	collision_mask = 0
+	collision_layer = CollisionLayers.get_enemy_layer()
+	collision_mask = CollisionLayers.MASK_ENEMIES
 	monitoring = false
 	monitorable = true
 
@@ -213,7 +213,7 @@ func _spread_infection() -> void:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = 1 << 2
+	params.collision_mask = CollisionLayers.get_enemy_layer()
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
