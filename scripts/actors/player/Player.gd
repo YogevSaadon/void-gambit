@@ -148,8 +148,8 @@ func destroy() -> void:
 	
 	# INSTANT: Make player invisible and disable collision
 	visible = false
-	collision_layer = 0
-	collision_mask = 0
+	collision_layer = CollisionLayers.get_player_layer()
+	collision_mask = CollisionLayers.MASK_PLAYER
 	
 	# INSTANT: Stop all movement
 	velocity = Vector2.ZERO

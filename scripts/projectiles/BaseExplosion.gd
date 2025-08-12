@@ -7,8 +7,8 @@ class_name BaseExplosion
 @export var crit_chance: float = 0.0
 @export var radius: float = 64.0
 @export var target_group: String = "Enemies"  # Override in children
-@export var explosion_collision_layer: int = 4   # Override in children
-@export var explosion_collision_mask: int = 2    # Override in children
+@export var explosion_collision_layer: int = CollisionLayers.LAYER_PLAYER_PROJECTILES   # Override in children
+@export var explosion_collision_mask: int = CollisionLayers.LAYER_ENEMIES   # Override in children
 @export var fade_duration: float = 0.15
 @export var initial_color: Color = Color(1, 1, 1, 0.8)
 
