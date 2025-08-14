@@ -13,7 +13,7 @@ var simple_spawner: SimpleEnemySpawner
 var golden_spawner: GoldenShipSpawner
 
 # ───── Tunables ─────
-@export var spawn_batch_interval: float = 10.0   # Time between spawn cycles
+@export var spawn_batch_interval: float = 1.0   # Time between spawn cycles
 @export var enemy_spawn_interval: float  = 0.3   # Interval inside a batch
 @export var level_duration: float        = 60.0  # Wave duration
 

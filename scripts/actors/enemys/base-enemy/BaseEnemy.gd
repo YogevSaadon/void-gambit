@@ -54,7 +54,6 @@ var _damage_display: DamageDisplay = null
 
 # ───── Lifecycle ─────
 func _enter_tree() -> void:
-	# Don't cache power_level yet - child classes haven't set it
 	_cache_base_stats()
 
 func _ready() -> void:
@@ -88,7 +87,9 @@ func _apply_combat_scaling() -> void:
 	speed = _base_spd
 	shield_recharge_rate = _base_reg
 
+# ===== NEW: Method for spawn cost calculations =====
 func get_budget_power_level() -> int:
+	"""Return the original power level for spawn cost calculations"""
 	return _original_power_level
 
 func _setup_collision() -> void:
@@ -134,7 +135,7 @@ func _physics_process(delta: float) -> void:
 	move(delta)
 	recharge_shield(delta)
 	
-	# ───── FIXED: CONDITIONAL VELOCITY ROTATION ─────
+	# ───── VELOCITY ROTATION (Fixed conditional) ─────
 	if not disable_velocity_rotation and velocity.length() > 10.0:
 		var target_angle = velocity.angle()
 		rotation = lerp_angle(rotation, target_angle, rotation_speed * delta)
@@ -236,15 +237,29 @@ func _spread_infection() -> void:
 		if target_status and target_status.has_method("apply_infection"):
 			target_status.apply_infection(infection.dps, infection.remaining_time)
 
+# ===== NEW: Post‑spawn tier scaling for new spawning system =====
+func _post_spawn_setup(level: int) -> void:
+	"""
+	Called after enemy is spawned to apply tier scaling.
+	
+	This method handles the tier-based power scaling for the new fixed spawning system.
+	It uses the original power level (cached in _original_power_level) and applies
+	tier multipliers based on the current game level.
+	"""
+	# Get tier multiplier for current level
+	var tier_mult := PowerBudgetCalculator.get_tier_multiplier(level)
+	
+	# Apply tier scaling to power level
+	power_level = _original_power_level * tier_mult
+	
+	# Re-apply combat scaling with new power level
+	_apply_combat_scaling()
+	
+	# Update power indicator if present
+	if _power_ind and _power_ind.has_method("apply_power_level"):
+		_power_ind.apply_power_level(power_level)
+
 # ───── Memory cleanup ─────
 func _exit_tree() -> void:
 	if _damage_display:
 		_damage_display.detach_active()
-# ───── Post‑spawn tier scaling (called once per enemy) ─────
-func _post_spawn_setup(level: int) -> void:
-	# Uses the original (un‑scaled) power level cached in _original_power_level
-	var tier_mult := PowerBudgetCalculator.get_tier_multiplier(level)
-	power_level = _original_power_level * tier_mult
-	
-	# Re‑apply combat scaling now that base stats are cached
-	_apply_combat_scaling()
