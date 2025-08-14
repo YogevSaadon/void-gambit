@@ -2,151 +2,147 @@
 extends RefCounted
 class_name EnemyPool
 
-## FIXED: Manages collection of available enemies with separated budget vs combat scaling
-## Budget power level = for spawn cost calculations (never changes)
-## Combat scaling = applied when enemy spawns (via _apply_combat_scaling)
+# ===== SIMPLIFIED FOR NEW SPAWNING SYSTEM =====
+# This class is now much simpler since we don't need power budget calculations
+# We only need to track which enemies can spawn at which levels
 
-# ===== ENEMY COLLECTION =====
-var all_enemies: Array[EnemyData] = []
-var spawnable_enemies: Array[EnemyData] = []  # Cached filtered list
-var special_enemies: Array[EnemyData] = []    # Golden Ship, etc.
+# ===== ENEMY DEFINITIONS =====
+var normal_enemies = [
+	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1, "enemy_type": "biter"},
+	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2, "enemy_type": "smart_ship"},
+	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3, "enemy_type": "smart_ship"},
+	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4, "enemy_type": "tank"},
+	{"scene": "res://scenes/actors/enemys/Star.tscn", "min_level": 5, "enemy_type": "star"},
+	{"scene": "res://scenes/actors/enemys/Diamond.tscn", "min_level": 7, "enemy_type": "diamond"},
+	{"scene": "res://scenes/actors/enemys/MotherShip.tscn", "min_level": 10, "enemy_type": "mother_ship"},
+]
 
-# ===== CACHING =====
-var cached_level: int = -1                    # Last level we filtered for
+var special_enemies = [
+	{"scene": "res://scenes/actors/enemys/GoldShip.tscn", "min_level": 1, "enemy_type": "gold_ship"},
+]
+
+# Enemies NOT in pools (spawned by other means):
+# - Swarm: Removed from game
+# - MiniBiter: Spawned by Swarm (removed)
+# - EnemyMissile: Spawned by Diamond attacks
+# - ChildShip: Spawned by MotherShip attacks
+
+var _loaded_normal_scenes: Array[PackedScene] = []
+var _loaded_special_scenes: Array[PackedScene] = []
 
 # ===== INITIALIZATION =====
 func _init():
-	_load_all_enemies()
+	_load_all_scenes()
 
-func _load_all_enemies() -> void:
-	"""Load all enemy scenes and create EnemyData with BUDGET power levels"""
+func _load_all_scenes() -> void:
+	"""Load all enemy scenes"""
+	print("EnemyPool: Loading enemy scenes for simplified spawning...")
 	
-	# FIXED: These are BUDGET power levels, used for spawn cost only
-	# Combat scaling happens separately when enemy actually spawns
+	# Load normal enemies
+	for enemy_def in normal_enemies:
+		var scene = load(enemy_def.scene)
+		if scene:
+			_loaded_normal_scenes.append(scene)
+		else:
+			push_error("EnemyPool: Failed to load normal enemy: " + enemy_def.scene)
 	
-	# Early game enemies (affordable for small budgets)
-	_add_enemy("res://scenes/actors/enemys/Biter.tscn", 1, 1, 25, "biter")
-	_add_enemy("res://scenes/actors/enemys/Triangle.tscn", 2, 2, 25, "smart_ship") 
-	_add_enemy("res://scenes/actors/enemys/Rectangle.tscn", 3, 3, 25, "smart_ship")
+	# Load special enemies  
+	for enemy_def in special_enemies:
+		var scene = load(enemy_def.scene)
+		if scene:
+			_loaded_special_scenes.append(scene)
+		else:
+			push_error("EnemyPool: Failed to load special enemy: " + enemy_def.scene)
 	
-	# Mid-tier enemies (balanced progression)
-	_add_enemy("res://scenes/actors/enemys/Tank.tscn", 4, 4, 25, "tank")
-	_add_enemy("res://scenes/actors/enemys/Star.tscn", 4, 5, 25, "star")
-	
-	# Late game enemies (occasional high-value spawns)
-	_add_enemy("res://scenes/actors/enemys/Diamond.tscn", 6, 7, 25, "diamond")
-	_add_enemy("res://scenes/actors/enemys/Swarm.tscn", 5, 6, 25, "swarm")
-	_add_enemy("res://scenes/actors/enemys/MotherShip.tscn", 8, 10, 25, "mother_ship")
-	
-	# Special spawning enemies
-	_add_special_enemy("res://scenes/actors/enemys/GoldShip.tscn", 1, 1, 25, "gold_ship")
+	print("EnemyPool: Loaded %d normal enemies, %d special enemies" % [
+		_loaded_normal_scenes.size(), _loaded_special_scenes.size()
+	])
 
-func _add_enemy(path: String, budget_power: int, min_lvl: int, max_lvl: int, type: String) -> void:
-	"""Add a normal spawnable enemy with BUDGET power level"""
-	var scene = load(path)
-	if not scene:
-		push_error("EnemyPool: Failed to load enemy scene: " + path)
-		return
+# ===== ENEMY FILTERING (Simplified) =====
+func get_normal_enemies_for_level(level: int) -> Array:
+	"""Get all normal enemies available at this level"""
+	var available = []
 	
-	# FIXED: Store budget power level (for spawn cost calculations)
-	var enemy_data = EnemyData.new(scene, budget_power, min_lvl, max_lvl, type, "common", false)
-	all_enemies.append(enemy_data)
+	for enemy_def in normal_enemies:
+		if level >= enemy_def.min_level:
+			var scene = load(enemy_def.scene)
+			if scene:
+				available.append(scene)
+	
+	return available
 
-func _add_special_enemy(path: String, budget_power: int, min_lvl: int, max_lvl: int, type: String) -> void:
-	"""Add a special enemy with separate spawning logic"""
-	var scene = load(path)
-	if not scene:
-		push_error("EnemyPool: Failed to load special enemy scene: " + path)
-		return
-	
-	# FIXED: Store budget power level (for spawn cost calculations)
-	var enemy_data = EnemyData.new(scene, budget_power, min_lvl, max_lvl, type, "special", true)
-	special_enemies.append(enemy_data)
-
-# ===== ENEMY FILTERING =====
-func get_spawnable_enemies_for_level(level: int) -> Array[EnemyData]:
-	"""Get all enemies that can spawn at the given level"""
-	
-	# Return cached result if same level
-	if level == cached_level and not spawnable_enemies.is_empty():
-		return spawnable_enemies
-	
-	# Filter enemies by level constraints
-	spawnable_enemies.clear()
-	for enemy in all_enemies:
-		if enemy.can_spawn_at_level(level):
-			spawnable_enemies.append(enemy)
-	
-	cached_level = level
-	
-	return spawnable_enemies
-
-# ===== ENEMY SELECTION (FIXED: Uses budget power levels) =====
-func get_random_enemy_within_budget(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
-	"""Get random enemy that fits in remaining budget - FIXED: Uses budget power level"""
-	
-	var valid_enemies: Array[EnemyData] = []
-	for enemy in available_enemies:
-		if enemy.get_budget_power_level() <= remaining_budget:  # FIXED: Use budget power level
-			valid_enemies.append(enemy)
-	
-	if valid_enemies.is_empty():
-		return null
-	
-	return valid_enemies[randi() % valid_enemies.size()]
-
-func get_best_fit_enemy(available_enemies: Array[EnemyData], remaining_budget: int) -> EnemyData:
-	"""Get enemy that best fits the remaining budget - FIXED: Uses budget power level"""
-	
-	var best_enemy: EnemyData = null
-	var best_power: int = 0
-	
-	for enemy in available_enemies:
-		var budget_power = enemy.get_budget_power_level()  # FIXED: Use budget power level
-		if budget_power <= remaining_budget and budget_power > best_power:
-			best_enemy = enemy
-			best_power = budget_power
-	
-	return best_enemy
-
-func get_exact_fit_enemy(available_enemies: Array[EnemyData], budget: int) -> EnemyData:
-	"""Get enemy that exactly matches the budget - FIXED: Uses budget power level"""
-	
-	for enemy in available_enemies:
-		if enemy.get_budget_power_level() == budget:  # FIXED: Use budget power level
-			return enemy
-	
-	return null
-
-# ===== SPECIAL ENEMIES =====
-func get_special_enemies_for_level(level: int) -> Array[EnemyData]:
+func get_special_enemies_for_level(level: int) -> Array:
 	"""Get special enemies (Golden Ship, etc.) for level"""
-	var available_specials: Array[EnemyData] = []
+	var available = []
 	
-	for enemy in special_enemies:
-		if enemy.can_spawn_at_level(level):
-			available_specials.append(enemy)
+	for enemy_def in special_enemies:
+		if level >= enemy_def.min_level:
+			var scene = load(enemy_def.scene)
+			if scene:
+				available.append(scene)
 	
-	return available_specials
+	return available
+
+# ===== LEVEL INFO =====
+func get_enemy_types_for_level(level: int) -> Array[String]:
+	"""Get list of enemy type names available at this level"""
+	var types: Array[String] = []
+	
+	for enemy_def in normal_enemies:
+		if level >= enemy_def.min_level:
+			types.append(enemy_def.enemy_type)
+	
+	return types
+
+func get_enemy_count_for_level(level: int) -> int:
+	"""Get number of different enemy types available at this level"""
+	var count = 0
+	
+	for enemy_def in normal_enemies:
+		if level >= enemy_def.min_level:
+			count += 1
+	
+	return count
 
 # ===== DEBUG INFO =====
 func get_pool_statistics() -> Dictionary:
 	"""Get statistics about the enemy pool"""
 	return {
-		"total_enemies": all_enemies.size(),
-		"special_enemies": special_enemies.size(),
-		"cached_level": cached_level,
-		"cached_spawnable": spawnable_enemies.size()
+		"total_normal_enemies": normal_enemies.size(),
+		"total_special_enemies": special_enemies.size(),
+		"loaded_normal_scenes": _loaded_normal_scenes.size(),
+		"loaded_special_scenes": _loaded_special_scenes.size(),
+		"removed_enemies": ["Swarm", "MiniBiter", "EnemyMissile", "ChildShip"]
 	}
 
-func print_enemy_budget_breakdown() -> void:
-	"""Debug: Print all enemies with their budget power levels"""
-	print("\n=== ENEMY BUDGET BREAKDOWN ===")
-	for enemy in all_enemies:
-		print("%s: Budget Power = %d (Levels %d-%d)" % [
-			enemy.get_scene_name(), 
-			enemy.get_budget_power_level(),
-			enemy.min_level,
-			enemy.max_level
+func print_enemy_breakdown() -> void:
+	"""Print all enemies with their minimum levels"""
+	print("\n=== ENEMY POOL BREAKDOWN ===")
+	print("Normal Enemies:")
+	for enemy_def in normal_enemies:
+		var scene_name = enemy_def.scene.get_file().get_basename()
+		print("  %s: Min Level %d (Type: %s)" % [
+			scene_name, enemy_def.min_level, enemy_def.enemy_type
 		])
-	print("================================\n")
+	
+	print("Special Enemies:")
+	for enemy_def in special_enemies:
+		var scene_name = enemy_def.scene.get_file().get_basename()
+		print("  %s: Min Level %d (Type: %s)" % [
+			scene_name, enemy_def.min_level, enemy_def.enemy_type
+		])
+	
+	print("Removed from Spawning:")
+	var removed = ["Swarm", "MiniBiter", "EnemyMissile", "ChildShip"]
+	for enemy_name in removed:
+		print("  %s: No longer spawns via main system" % enemy_name)
+	
+	print("===============================\n")
+
+func print_level_progression(start_level: int = 1, end_level: int = 15) -> void:
+	"""Print which enemies are available at each level"""
+	print("\n=== LEVEL PROGRESSION ===")
+	for level in range(start_level, end_level + 1):
+		var available_types = get_enemy_types_for_level(level)
+		print("Level %d: %s" % [level, ", ".join(available_types)])
+	print("==========================\n")

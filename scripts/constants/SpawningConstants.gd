@@ -2,6 +2,8 @@
 class_name SpawningConstants
 extends RefCounted
 
+#right now sould be ignored before spawning system is not finished and im still experimenting
+
 # ===== WHAT THIS AFFECTS =====
 # - Power budget calculations
 # - Spawn intervals and batch sizes
