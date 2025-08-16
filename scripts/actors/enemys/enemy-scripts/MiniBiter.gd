@@ -18,5 +18,11 @@ func _enter_tree() -> void:
 	# ── FIXED: Disable velocity rotation for spinning ─────
 	disable_velocity_rotation = true
 
+	# ===== NORMAL ENEMY METADATA =====
+	power_level = 1          
+	rarity = "common"
+	min_level = 1               # Can spawn from level 1
+	max_level = 25              # No max level restriction
+
 	# Call parent's _enter_tree
 	super._enter_tree()

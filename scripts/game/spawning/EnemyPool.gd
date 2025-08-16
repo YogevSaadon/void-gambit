@@ -2,13 +2,10 @@
 extends RefCounted
 class_name EnemyPool
 
-# ===== SIMPLIFIED FOR NEW SPAWNING SYSTEM =====
-# This class is now much simpler since we don't need power budget calculations
-# We only need to track which enemies can spawn at which levels
-
 # ===== ENEMY DEFINITIONS =====
 var normal_enemies = [
 	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1, "enemy_type": "biter"},
+	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": 1, "enemy_type": "mini_biter"},  # ← ADDED
 	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2, "enemy_type": "smart_ship"},
 	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3, "enemy_type": "smart_ship"},
 	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4, "enemy_type": "tank"},
@@ -19,11 +16,10 @@ var normal_enemies = [
 
 var special_enemies = [
 	{"scene": "res://scenes/actors/enemys/GoldShip.tscn", "min_level": 1, "enemy_type": "gold_ship"},
+	{"scene": "res://scenes/actors/enemys/Swarm.tscn", "min_level": 1, "enemy_type": "swarm"},  # ← ADDED for future use
 ]
 
-# Enemies NOT in pools (spawned by other means):
-# - Swarm: Removed from game
-# - MiniBiter: Spawned by Swarm (removed)
+# Enemies NOT in normal pools (spawned by other means):
 # - EnemyMissile: Spawned by Diamond attacks
 # - ChildShip: Spawned by MotherShip attacks
 
@@ -36,9 +32,9 @@ func _init():
 
 func _load_all_scenes() -> void:
 	"""Load all enemy scenes"""
-	print("EnemyPool: Loading enemy scenes for simplified spawning...")
+	print("EnemyPool: Loading enemy scenes...")
 	
-	# Load normal enemies
+	# Load normal enemies (including MiniBiter now)
 	for enemy_def in normal_enemies:
 		var scene = load(enemy_def.scene)
 		if scene:
@@ -58,9 +54,9 @@ func _load_all_scenes() -> void:
 		_loaded_normal_scenes.size(), _loaded_special_scenes.size()
 	])
 
-# ===== ENEMY FILTERING (Simplified) =====
+# ===== ENEMY FILTERING =====
 func get_normal_enemies_for_level(level: int) -> Array:
-	"""Get all normal enemies available at this level"""
+	"""Get all normal enemies available at this level (including MiniBiter)"""
 	var available = []
 	
 	for enemy_def in normal_enemies:
@@ -72,7 +68,7 @@ func get_normal_enemies_for_level(level: int) -> Array:
 	return available
 
 func get_special_enemies_for_level(level: int) -> Array:
-	"""Get special enemies (Golden Ship, etc.) for level"""
+	"""Get special enemies for level (includes Swarm for future use)"""
 	var available = []
 	
 	for enemy_def in special_enemies:
@@ -112,7 +108,7 @@ func get_pool_statistics() -> Dictionary:
 		"total_special_enemies": special_enemies.size(),
 		"loaded_normal_scenes": _loaded_normal_scenes.size(),
 		"loaded_special_scenes": _loaded_special_scenes.size(),
-		"removed_enemies": ["Swarm", "MiniBiter", "EnemyMissile", "ChildShip"]
+		"swarm_available_for_future": true
 	}
 
 func print_enemy_breakdown() -> void:
@@ -125,7 +121,7 @@ func print_enemy_breakdown() -> void:
 			scene_name, enemy_def.min_level, enemy_def.enemy_type
 		])
 	
-	print("Special Enemies:")
+	print("Special Enemies (Not in main spawning):")
 	for enemy_def in special_enemies:
 		var scene_name = enemy_def.scene.get_file().get_basename()
 		print("  %s: Min Level %d (Type: %s)" % [
@@ -133,7 +129,7 @@ func print_enemy_breakdown() -> void:
 		])
 	
 	print("Removed from Spawning:")
-	var removed = ["Swarm", "MiniBiter", "EnemyMissile", "ChildShip"]
+	var removed = ["EnemyMissile", "ChildShip"]
 	for enemy_name in removed:
 		print("  %s: No longer spawns via main system" % enemy_name)
 	

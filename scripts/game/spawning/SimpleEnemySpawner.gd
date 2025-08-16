@@ -6,6 +6,7 @@ class_name SimpleEnemySpawner
 # Only enemies that should spawn in the main rotation
 var normal_enemies = [
 	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1},
+	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": 1},  # ← ADDED: Now spawns normally
 	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2},
 	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3},
 	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4},
@@ -15,8 +16,7 @@ var normal_enemies = [
 ]
 
 # Enemies NOT in main spawn rotation:
-# - Swarm: Removed from spawning
-# - MiniBiter: Only spawned by Swarm (removed)
+# - Swarm: Available for special group spawning (future use)
 # - EnemyMissile: Only spawned by Diamond attacks
 # - GoldShip: Spawned separately by GoldenShipSpawner
 # - ChildShip: Only spawned by MotherShip attacks
@@ -38,8 +38,8 @@ func _preload_enemy_scenes() -> void:
 func generate_simple_spawn_list(level: int) -> Array[PackedScene]:
 	"""
 	Generate spawn list: Each available enemy spawns 'level' times
-	Level 1: 1 of each available enemy
-	Level 2: 2 of each available enemy
+	Level 1: 1 Biter + 1 MiniBiter
+	Level 2: 2 Biter + 2 MiniBiter + 2 Triangle
 	Level N: N of each available enemy
 	"""
 	var spawn_list: Array[PackedScene] = []
@@ -61,7 +61,7 @@ func generate_simple_spawn_list(level: int) -> Array[PackedScene]:
 	return spawn_list
 
 func _get_available_enemies_for_level(level: int) -> Array:
-	"""Get all enemy types that can spawn at this level (respect min_level)"""
+	"""Get all enemy types that can spawn at this level (including MiniBiter)"""
 	var available = []
 	
 	for enemy_def in normal_enemies:
@@ -97,7 +97,7 @@ func get_spawner_statistics(level: int) -> Dictionary:
 		"copies_per_enemy": level,
 		"total_enemies_per_batch": get_enemies_count_for_level(level),
 		"enemy_types": get_enemy_types_for_level(level),
-		"removed_from_spawning": ["Swarm", "MiniBiter", "EnemyMissile", "GoldShip", "ChildShip"]
+		"swarm_available_for_future": true
 	}
 
 func print_level_breakdown(start_level: int = 1, end_level: int = 15) -> void:
