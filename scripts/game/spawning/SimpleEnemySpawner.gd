@@ -1,3 +1,5 @@
+# REPLACE your SimpleEnemySpawner.gd with this fixed version:
+
 # scripts/game/spawning/SimpleEnemySpawner.gd
 extends RefCounted
 class_name SimpleEnemySpawner
@@ -5,21 +7,15 @@ class_name SimpleEnemySpawner
 # ===== ENEMY DEFINITIONS =====
 # Only enemies that should spawn in the main rotation
 var normal_enemies = [
-	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1},
-	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": 1},  # ← ADDED: Now spawns normally
-	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2},
-	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3},
-	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4},
-	{"scene": "res://scenes/actors/enemys/Star.tscn", "min_level": 5},
-	{"scene": "res://scenes/actors/enemys/Diamond.tscn", "min_level": 7},
-	{"scene": "res://scenes/actors/enemys/MotherShip.tscn", "min_level": 10},
+	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": 1, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Star.tscn", "min_level": 5, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Diamond.tscn", "min_level": 7, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/MotherShip.tscn", "min_level": 10, "max_level": 999},
 ]
-
-# Enemies NOT in main spawn rotation:
-# - Swarm: Available for special group spawning (future use)
-# - EnemyMissile: Only spawned by Diamond attacks
-# - GoldShip: Spawned separately by GoldenShipSpawner
-# - ChildShip: Only spawned by MotherShip attacks
 
 var _loaded_scenes: Dictionary = {}
 
@@ -37,43 +33,57 @@ func _preload_enemy_scenes() -> void:
 
 func generate_simple_spawn_list(level: int) -> Array[PackedScene]:
 	"""
-	Generate spawn list: Each available enemy spawns 'level' times
-	Level 1: 1 Biter + 1 MiniBiter
-	Level 2: 2 Biter + 2 MiniBiter + 2 Triangle
-	Level N: N of each available enemy
+	FIXED: Generate spawn list: Each available enemy spawns 'level' times
+	Level 1: 1 Biter + 1 MiniBiter = 2 total
+	Level 2: 2 Biter + 2 MiniBiter + 2 Triangle = 6 total  
+	Level 25: 25 of each available enemy = 25 * 8 = 200 total
 	"""
 	var spawn_list: Array[PackedScene] = []
 	
 	# Get enemies available at this level
 	var available_enemies = _get_available_enemies_for_level(level)
 	
+	print("Level %d: %d available enemy types" % [level, available_enemies.size()])
+	
 	# For each available enemy, add it 'level' times
 	for enemy_def in available_enemies:
 		var scene = _loaded_scenes.get(enemy_def.scene)
 		if scene:
+			var enemy_name = enemy_def.scene.get_file().get_basename()
+			print("  Adding %d copies of %s" % [level, enemy_name])
+			
 			for i in level:  # Spawn 'level' times
 				spawn_list.append(scene)
+		else:
+			push_error("Failed to get scene for: " + enemy_def.scene)
 	
-	print("SimpleSpawner Level %d: %d total enemies (%d types × %d copies each)" % [
-		level, spawn_list.size(), available_enemies.size(), level
-	])
+	print("Generated %d total enemies for level %d" % [spawn_list.size(), level])
 	
 	return spawn_list
 
 func _get_available_enemies_for_level(level: int) -> Array:
-	"""Get all enemy types that can spawn at this level (including MiniBiter)"""
+	"""FIXED: Get all enemy types that can spawn at this level"""
 	var available = []
 	
 	for enemy_def in normal_enemies:
-		if level >= enemy_def.min_level:
+		var min_level = enemy_def.get("min_level", 1)
+		var max_level = enemy_def.get("max_level", 999)
+		
+		if level >= min_level and level <= max_level:
 			available.append(enemy_def)
-	
+			
 	return available
 
 func get_enemies_count_for_level(level: int) -> int:
 	"""Get total number of enemies that will spawn per batch at this level"""
 	var available_types = _get_available_enemies_for_level(level)
-	return available_types.size() * level
+	var total = available_types.size() * level
+	
+	print("Level %d will spawn %d enemies per batch (%d types × %d copies)" % [
+		level, total, available_types.size(), level
+	])
+	
+	return total
 
 func get_enemy_types_for_level(level: int) -> Array[String]:
 	"""Get list of enemy type names for this level (for debugging)"""
@@ -96,11 +106,10 @@ func get_spawner_statistics(level: int) -> Dictionary:
 		"available_enemy_types": available_enemies.size(),
 		"copies_per_enemy": level,
 		"total_enemies_per_batch": get_enemies_count_for_level(level),
-		"enemy_types": get_enemy_types_for_level(level),
-		"swarm_available_for_future": true
+		"enemy_types": get_enemy_types_for_level(level)
 	}
 
-func print_level_breakdown(start_level: int = 1, end_level: int = 15) -> void:
+func print_level_breakdown(start_level: int = 1, end_level: int = 25) -> void:
 	"""Print spawning breakdown for multiple levels"""
 	print("\n=== SIMPLE SPAWNING BREAKDOWN ===")
 	for level in range(start_level, end_level + 1):

@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://b2s7bmy8sj8q4"]
+[gd_scene load_steps=3 format=3 uid="uid://b2s7bmy8sj8q4"]
 
 [ext_resource type="Script" path="res://scripts/game/MainMenu.gd" id="1_w4gnx"]
+[ext_resource type="Texture2D" uid="uid://cocrohd4mdb72" path="res://assets/backrounds/Main_menu.png" id="2_ghthh"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -9,26 +10,70 @@ offset_right = 40.0
 offset_bottom = 40.0
 script = ExtResource("1_w4gnx")
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="MainMenu" type="Sprite2D" parent="."]
+position = Vector2(1309.64, 690.777)
+rotation = 1.5708
+scale = Vector2(1.34527, 1.70527)
+texture = ExtResource("2_ghthh")
 
-[node name="BoxContainer" type="BoxContainer" parent="MarginContainer"]
+[node name="HeadLine" type="Label" parent="."]
 layout_mode = 2
+offset_left = 1215.0
+offset_top = 75.0
+offset_right = 1344.0
+offset_bottom = 103.0
+text = "Voide Gambit"
 
-[node name="Label" type="Label" parent="MarginContainer/BoxContainer"]
+[node name="Rules" type="Label" parent="."]
 layout_mode = 2
-text = "Space Haven"
+offset_left = 393.0
+offset_top = 371.0
+offset_right = 897.0
+offset_bottom = 966.0
+text = "How to Play
 
-[node name="StartGame" type="Button" parent="MarginContainer/BoxContainer"]
+Movement (choose one method)
+
+Right Click (press): Move toward cursor
+
+Right Click (hold): Continuous movement
+
+Space (hold): Move forward
+
+Blink
+
+F or Left Click: Dash instantly
+
+Collect & Progress
+
+Credits: Dropped by enemies, spend them in the Store
+
+Gold Coins: Dropped by rare golden ships, use them in the Casino
+
+Goal
+
+Survive as long as you can"
+
+[node name="StartGame" type="Button" parent="."]
 layout_mode = 2
+offset_left = 85.0
+offset_top = 297.0
+offset_right = 322.0
+offset_bottom = 477.0
 text = "Start game"
 
-[node name="Options" type="Button" parent="MarginContainer/BoxContainer"]
+[node name="Options" type="Button" parent="."]
 layout_mode = 2
-text = "Options"
+offset_left = 79.0
+offset_top = 613.0
+offset_right = 325.0
+offset_bottom = 787.0
+text = "Options(WIP)"
 
-[node name="Quit" type="Button" parent="MarginContainer/BoxContainer"]
+[node name="Quit" type="Button" parent="."]
 layout_mode = 2
+offset_left = 66.0
+offset_top = 920.0
+offset_right = 332.0
+offset_bottom = 1091.0
 text = "Quit"

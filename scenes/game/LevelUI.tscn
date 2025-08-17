@@ -7,8 +7,8 @@ script = ExtResource("1_6dthg")
 
 [node name="Bars" type="VBoxContainer" parent="."]
 offset_left = 4.0
-offset_right = 40.0
-offset_bottom = 66.0
+offset_right = 179.0
+offset_bottom = 101.0
 
 [node name="HPBarContainer" type="VBoxContainer" parent="Bars"]
 layout_mode = 2
@@ -44,29 +44,29 @@ show_percentage = false
 layout_mode = 2
 
 [node name="LevelLabel" type="Label" parent="."]
-offset_left = 572.0
-offset_top = 1.0
-offset_right = 612.0
-offset_bottom = 24.0
+offset_left = 1278.0
+offset_top = 2.0
+offset_right = 1327.0
+offset_bottom = 25.0
 text = "level x"
 
 [node name="Timer" type="Label" parent="."]
-offset_left = 575.0
-offset_top = 27.0
-offset_right = 622.0
-offset_bottom = 50.0
+offset_left = 1280.0
+offset_top = 33.0
+offset_right = 1327.0
+offset_bottom = 56.0
 text = "TIME"
 
 [node name="CreditLabel" type="Label" parent="."]
-offset_left = 1039.0
-offset_top = 3.0
-offset_right = 1084.0
-offset_bottom = 26.0
+offset_left = 2373.0
+offset_top = 8.0
+offset_right = 2418.0
+offset_bottom = 31.0
 text = "credit"
 
 [node name="GoldLabel" type="Label" parent="."]
-offset_left = 1044.0
-offset_top = 27.0
-offset_right = 1084.0
-offset_bottom = 50.0
+offset_left = 2375.0
+offset_top = 37.0
+offset_right = 2415.0
+offset_bottom = 60.0
 text = "gold"
