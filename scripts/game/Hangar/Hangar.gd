@@ -40,7 +40,7 @@ func _ready() -> void:
 	_refresh_ui()
 	_show_store()
 	
-	CheatAssistant.add_cheat_button_to(self, gm)
+	CheatAssistant.add_cheat_button_to(self, gm, pd)
 
 # ====== UI ======
 func _connect_signals() -> void:

@@ -2,7 +2,7 @@
 extends Node
 class_name CheatAssistant
 
-static func add_cheat_button_to(parent_node: Node, gm: GameManager) -> void:
+static func add_cheat_button_to(parent_node: Node, gm: GameManager, pd: PlayerData) -> void:
 	"""Add a cheat button to any parent node"""
 	var cheat_btn = Button.new()
 	cheat_btn.text = "CHEAT"
@@ -18,12 +18,15 @@ static func add_cheat_button_to(parent_node: Node, gm: GameManager) -> void:
 		print("CHEAT activated!")
 		print("Credits before: ", gm.credits)
 		print("Coins before: ", gm.coins)
+		print("Rerolls before: ", pd.current_rerolls)
 		
 		gm.add_credits(1000)
 		gm.add_coins(100)
+		pd.current_rerolls += 100
 		
 		print("Credits after: ", gm.credits)
 		print("Coins after: ", gm.coins)
+		print("Rerolls after: ", pd.current_rerolls)
 		
 		# Force refresh the hangar UI elements directly
 		_force_refresh_hangar_ui(parent_node)
