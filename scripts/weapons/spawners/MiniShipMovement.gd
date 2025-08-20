@@ -9,8 +9,8 @@ enum ShipState {
 }
 
 # ===== SHIP CONFIGURATION =====
-@export var max_range_from_player: float = 500.0
-@export var comfort_range: float = 150.0
+@export var max_range_from_player: float = 600.0
+@export var comfort_range: float = 350.0
 @export var strafe_range_inner: float = 250.0
 @export var strafe_range_outer: float = 350.0
 
