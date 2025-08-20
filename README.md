@@ -8,6 +8,7 @@ Void Gambit showcases solid software engineering applied to real-time interactiv
 
 **Core Systems:**
 - Four-weapon system with intelligent auto-targeting and distinct mechanics
+- AI weapon system that spawns ally ships with autonomous behavior
 - Component-based player architecture with modular movement, blinking, and weapon systems
 - Dynamic stat modification system with JSON-driven configuration
 - Multi-state enemy behavior system with performance-optimized movement patterns
@@ -31,45 +32,34 @@ Void Gambit showcases solid software engineering applied to real-time interactiv
 
 ## Technical Implementation
 
-### Companion Ship System
-**Challenge:** Ships that feel intelligent without interfering with player control
-**Solution:** Formation flying with autonomous combat behavior
-- **Player-relative positioning** maintains formation during movement
+### AI Weapon & Ally Ship System
+**Solution:** Weapon-spawned ally ships with autonomous combat behavior
+- **Dynamic spawning** creates ally ships through weapon system
+- **Formation flying** maintains intelligent positioning relative to player
 - **Multi-state behavior** switches between patrol, combat, and return modes
-- **Smart targeting** with spatial optimization and automatic target cleanup
-- **Performance optimization** using staggered calculations to maintain framerate
+- **Autonomous targeting** using optimized collision detection systems
+- **Performance optimization** through staggered calculations and object pooling considerations
 
-```gdscript
-# Target selection with spatial queries limited to nearby enemies
-func find_nearest_enemy() -> Node2D:
-    var space_state = get_world_2d().direct_space_state
-    var query = PhysicsShapeQueryParameters2D.new()
-    var results = space_state.intersect_shape(query, 32)  # Limit for performance
-```
-
-### Dynamic Spawning System
-**Challenge:** Balanced enemy variety without repetitive patterns
-**Solution:** Power budget allocation with anti-clustering logic
-- **Budget calculation** distributes enemy power across wave duration
-- **Variety preference** prevents spawning identical enemy types consecutively  
-- **Efficiency optimization** prioritizes exact-fit enemies for budget utilization
-- **Controlled overspend** allows tactical budget flexibility within tolerance limits
+### Dynamic Spawning & Probability Systems
+**Solution:** Power budget allocation with mathematical progression
+- **Bin-packing algorithm** distributes enemy power with variety balancing
+- **Probability distribution** using weighted selection and diminishing returns formulas
+- **Anti-frustration systems** with pity counters and escalating guarantees
+- **25-level progression** with sigmoid curves and psychological breakpoints
 
 ### Multi-State Enemy Behaviors
-**Challenge:** Natural enemy movement without expensive collision avoidance
 **Solution:** Individual behavior variation with optimized state transitions
 - **Zone-based positioning** with hysteresis buffers prevents oscillation
 - **Staggered calculations** spread expensive operations across frames
 - **Individual speed variation** (±25%) creates natural swarm behavior
 - **Behavioral states** dynamically switch between chase, maneuver, retreat, and strafe
 
-### Chain Laser Targeting
-**Challenge:** Dynamic laser chains that rebuild when enemies die
+### Chain Laser & Targeting Systems
 **Solution:** Spatial optimization with automatic chain reconstruction
-- **Physics-based queries** find chain targets within weapon range
-- **Dynamic rebuilding** handles target death without breaking the chain
+- **Spatial query optimization** limits targeting complexity for performance scaling
+- **Dynamic chain rebuilding** maintains targeting integrity when enemies are eliminated
+- **Mathematical targeting** implements precise angle and distance calculations
 - **Visual management** updates beam segments in real-time with automatic cleanup
-- **Damage optimization** applies continuous damage while maintaining visual effects
 
 ### Runtime Stat System
 Performance-optimized stat calculation supporting complex modifier stacking:
@@ -123,12 +113,12 @@ Items can spawn custom behavior nodes:
 ## Performance Engineering
 
 ### Real-Time Optimization Techniques
-**Challenge:** Maintaining 60fps with 50+ enemies and complex interactions
 **Solutions Implemented:**
 - **Staggered calculations** spread expensive operations (distance checks, targeting) across multiple frames
-- **Spatial query optimization** limits enemy searches to 32 nearest entities instead of checking all
+- **Built-in collision optimization** leverages Godot's C++ collision detection for efficient targeting
 - **Cached distance calculations** store expensive square root operations and reuse results
 - **Individual update intervals** give each enemy slightly different timing to prevent simultaneous expensive operations
+- **Object pooling considerations** designed into architecture for future scalability
 
 ### Memory Management
 - **Automatic cleanup** leverages Godot's node system for proper resource deallocation
