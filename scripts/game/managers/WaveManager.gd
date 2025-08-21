@@ -14,8 +14,9 @@ var golden_spawner: GoldenShipSpawner
 
 # ───── Tunables ─────
 @export var spawn_batch_interval: float = 1.0   # Time between spawn cycles
-@export var enemy_spawn_interval: float  = 0.3   # Interval inside a batch
+@export var enemy_spawn_interval: float  = 0.05  # Faster interval for queue draining
 @export var level_duration: float        = 60.0  # Wave duration
+@export var max_enemies_alive: int       = 250   # Enemy cap for performance
 
 # ───── References ─────
 @onready var gm = get_tree().root.get_node("GameManager")
@@ -108,6 +109,10 @@ func _physics_process(delta: float) -> void:
 func _spawn_new_batch() -> void:
 	_batch_count += 1
 	var new_enemies = simple_spawner.generate_simple_spawn_list(current_level)
+	var current_enemy_count = get_tree().get_nodes_in_group("Enemies").size()
+	print("Level %d - Batch %d: Generated %d enemies, Queue size: %d, Current enemies alive: %d" % [current_level, _batch_count, new_enemies.size(), _enemy_spawn_queue.size(), current_enemy_count])
+	
+	# Add enemies to queue (will be spawned when space available)
 	for enemy_scene in new_enemies:
 		_enemy_spawn_queue.append(enemy_scene)
 	_enemy_spawn_queue.shuffle()
@@ -120,10 +125,18 @@ func _spawn_golden_ship() -> void:
 		golden_spawner.apply_tier_scaling_to_golden_ship(golden_ship, current_level)
 		emit_signal("enemy_spawned", golden_ship)
 
-# ───── Queue draining (UNCHANGED) ─────
+# ───── Queue draining with enemy cap ─────
 func _spawn_from_queue(delta: float) -> void:
 	if _enemy_spawn_queue.is_empty():
 		return
+	
+	var current_enemy_count = get_tree().get_nodes_in_group("Enemies").size()
+	
+	# Only spawn if under the cap
+	if current_enemy_count >= max_enemies_alive:
+		return
+	
+	# Use timer-based spawning to prevent overshooting
 	if _spawn_timer <= 0.0:
 		_spawn_timer = enemy_spawn_interval
 		var enemy_scene = _enemy_spawn_queue.pop_front()

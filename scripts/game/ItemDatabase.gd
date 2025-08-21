@@ -54,7 +54,6 @@ func load_from_json(path: String = "res://data/items.json") -> void:
 	if typeof(weapons_array) == TYPE_ARRAY:
 		_load_weapons(weapons_array)
 		
-	print("ItemDatabase: Loaded %d items and %d weapons" % [_items_by_id.size(), _weapons_by_id.size()])
 
 func _load_items(items_array: Array) -> void:
 	for dict in items_array:
