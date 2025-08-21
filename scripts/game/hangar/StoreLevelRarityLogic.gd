@@ -113,8 +113,8 @@ func get_level_based_items(available_items: Array, available_weapons: Array, lev
 			# Update pity counters
 			_update_pity_counters(selected_item.rarity)
 			
-			# Remove selected item to prevent duplicates (optional - you may want duplicates)
-			# _remove_item_from_pools(selected_item, items_by_rarity)
+			# Remove selected item to prevent duplicates
+			_remove_selected_item(selected_item, items_by_rarity)
 	
 	return selected_items
 
@@ -314,3 +314,23 @@ func get_progression_milestones(level: int) -> Array[String]:
 func is_major_milestone(level: int) -> bool:
 	"""Check if this level represents a major progression milestone"""
 	return level in [4, 10, 18, 25]  # Rarity unlock levels
+
+func _remove_selected_item(selected_item, items_by_rarity: Dictionary) -> void:
+	"""Safely remove selected item from its rarity pool to prevent duplicates"""
+	if not selected_item:
+		return
+		
+	if not selected_item.has_method("get") and not ("rarity" in selected_item):
+		return
+		
+	var rarity = selected_item.rarity
+	if not items_by_rarity.has(rarity):
+		return
+		
+	var items_array = items_by_rarity[rarity]
+	if not items_array or items_array.size() == 0:
+		return
+		
+	var index = items_array.find(selected_item)
+	if index >= 0:
+		items_array.remove_at(index)
