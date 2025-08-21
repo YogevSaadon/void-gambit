@@ -1,7 +1,7 @@
 <!-- Hero GIFs -->
 <p align="center">
   <img src="assets/media/gif1.gif" width="49%" alt="Core gameplay">
-  <img src="assets/media/gif2.gif" width="49%" alt="Boss/wave highlight">
+  <img src="assets/media/gif3.gif" width="49%" alt="Boss/wave highlight">
 </p>
 
 # Void Gambit — 2D Bullet-Heaven (Godot 4)
