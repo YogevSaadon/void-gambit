@@ -1,12 +1,11 @@
 # scripts/actors/enemys/attacks/MissileLauncherAttack.gd
-extends Node2D
+extends BaseEntitySpawner
 class_name MissileLauncherAttack
 
 @export var shooting_range: float = 1000.0
 @export var fire_interval : float = 5.0
 @export var missile_scene  : PackedScene = preload("res://scenes/actors/enemys/EnemyMissle.tscn")
 
-var _owner_enemy  : BaseEnemy
 var _fire_timer   : float = 0.0
 var _range_timer  : float = 0.0
 var _player_pos   : Vector2
@@ -18,7 +17,12 @@ var _player_in_range : bool = false
 const RANGE_CHECK_INTERVAL := 0.2
 
 func _ready() -> void:
-	_owner_enemy = _find_parent_enemy()
+	# Set Diamond-specific entity limit (fewer missiles than MotherShip ships)
+	max_entities_per_spawner = 4
+	
+	# Call parent _ready() to initialize base functionality
+	super._ready()
+	
 	if not _owner_enemy:
 		return
 
@@ -29,6 +33,8 @@ func _ready() -> void:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.3
 
 func _physics_process(delta: float) -> void:
+	# Call parent for entity cleanup
+	super._physics_process(delta)
 	tick_attack(delta)
 
 func tick_attack(delta: float) -> void:
@@ -48,14 +54,30 @@ func _launch_missile() -> void:
 		push_error("MissileLauncherAttack: Missing muzzle or missile scene")
 		return
 
-	var missile = missile_scene.instantiate()
-	missile.global_position = muzzle.global_position
-	missile.power_level = _owner_enemy.power_level
+	# Use the new entity spawning system
+	var missile = try_spawn_entity()
+	if missile:
+		_flash()
+
+# ===== OVERRIDE BASE CLASS METHODS =====
+func _create_entity() -> Node:
+	"""Create a new EnemyMissile entity"""
+	if not missile_scene:
+		push_error("MissileLauncherAttack: No missile_scene configured")
+		return null
 	
+	var missile = missile_scene.instantiate()
 	get_tree().current_scene.add_child(missile)
-	# FIXED: Changed from _apply_power_scale() to _apply_combat_scaling()
-	missile._apply_combat_scaling()
-	_flash()
+	return missile
+
+func _setup_entity(entity: Node) -> void:
+	"""Configure the EnemyMissile after creation"""
+	# Call parent setup first (applies power scaling)
+	super._setup_entity(entity)
+	
+	# Position the missile at the muzzle
+	if muzzle:
+		entity.global_position = muzzle.global_position
 
 func _find_parent_enemy() -> BaseEnemy:
 	var p := get_parent()

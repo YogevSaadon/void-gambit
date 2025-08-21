@@ -1,5 +1,5 @@
 # scripts/actors/enemys/attacks/ChildShipSpawner.gd
-extends Node2D
+extends BaseEntitySpawner
 class_name ChildShipSpawner
 
 @export var shooting_range: float = 5000
@@ -7,7 +7,6 @@ class_name ChildShipSpawner
 @export var child_ship_scene: PackedScene = preload("res://scenes/actors/enemys/ChildShip.tscn")
 @export var spawn_offset_distance: float = 50.0
 
-var _owner_enemy  : BaseEnemy
 var _spawn_timer   : float = 0.0
 var _range_timer  : float = 0.0
 var _player_pos   : Vector2
@@ -19,7 +18,12 @@ var _player_in_range : bool = false
 const RANGE_CHECK_INTERVAL := 0.2
 
 func _ready() -> void:
-	_owner_enemy = _find_parent_enemy()
+	# Set MotherShip-specific entity limit
+	max_entities_per_spawner = 8
+	
+	# Call parent _ready() to initialize base functionality
+	super._ready()
+	
 	if not _owner_enemy:
 		return
 
@@ -30,6 +34,8 @@ func _ready() -> void:
 		weapon_sprite.scale *= 1.0 + (_owner_enemy.power_level - 1.0) * 0.4
 
 func _physics_process(delta: float) -> void:
+	# Call parent for entity cleanup
+	super._physics_process(delta)
 	tick_attack(delta)
 
 func tick_attack(delta: float) -> void:
@@ -49,17 +55,32 @@ func _spawn_child_ship() -> void:
 		push_error("ChildShipSpawner: Missing muzzle or child ship scene")
 		return
 
+	# Use the new entity spawning system
+	var child_ship = try_spawn_entity()
+	if child_ship:
+		_flash()
+
+# ===== OVERRIDE BASE CLASS METHODS =====
+func _create_entity() -> Node:
+	"""Create a new ChildShip entity"""
+	if not child_ship_scene:
+		push_error("ChildShipSpawner: No child_ship_scene configured")
+		return null
+	
 	var child_ship = child_ship_scene.instantiate()
-	
-	var angle = randf() * TAU
-	var spawn_position = muzzle.global_position + Vector2(cos(angle), sin(angle)) * spawn_offset_distance
-	child_ship.global_position = spawn_position
-	child_ship.power_level = _owner_enemy.power_level
-	
 	get_tree().current_scene.add_child(child_ship)
-	# FIXED: Changed from _apply_power_scale() to _apply_combat_scaling()
-	child_ship._apply_combat_scaling()
-	_flash()
+	return child_ship
+
+func _setup_entity(entity: Node) -> void:
+	"""Configure the ChildShip after creation"""
+	# Call parent setup first (applies power scaling)
+	super._setup_entity(entity)
+	
+	# Position the ship around the muzzle
+	if muzzle:
+		var angle = randf() * TAU
+		var spawn_position = muzzle.global_position + Vector2(cos(angle), sin(angle)) * spawn_offset_distance
+		entity.global_position = spawn_position
 
 func _find_parent_enemy() -> BaseEnemy:
 	var p := get_parent()
