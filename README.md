@@ -1,5 +1,11 @@
 # Void Gambit - Space Shooter
 
+<div align="center">
+  <img src="assets/media/gif1.gif" width="30%" />
+  <img src="assets/media/gif2.gif" width="30%" />
+  <img src="assets/media/gif3.gif" width="30%" />
+</div>
+
 **A performance-optimized space shooter demonstrating advanced software engineering practices and real-time system programming**
 
 ## What's Built
