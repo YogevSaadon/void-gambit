@@ -45,7 +45,7 @@ func _ready() -> void:
 # ───── Level configuration ─────
 func set_level(level: int) -> void:
 	current_level = level
-	level_duration = 10.0  # Fixed duration
+	level_duration = 35.0  # Fixed duration
 
 # ───── Level start ─────
 func start_level() -> void:
