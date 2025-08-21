@@ -1,3 +1,7 @@
+## Play My Game
+
+**[Play Void Gambit Online](https://yogevsaadon.github.io/void-gambit/)**
+
 <!-- Hero GIFs -->
 <p align="center">
   <img src="assets/media/gif1.gif" width="49%" alt="Core gameplay">
