@@ -113,32 +113,15 @@ func get_pool_statistics() -> Dictionary:
 
 func print_enemy_breakdown() -> void:
 	"""Print all enemies with their minimum levels"""
-	print("\n=== ENEMY POOL BREAKDOWN ===")
-	print("Normal Enemies:")
 	for enemy_def in normal_enemies:
 		var scene_name = enemy_def.scene.get_file().get_basename()
-		print("  %s: Min Level %d (Type: %s)" % [
-			scene_name, enemy_def.min_level, enemy_def.enemy_type
-		])
 	
-	print("Special Enemies (Not in main spawning):")
 	for enemy_def in special_enemies:
 		var scene_name = enemy_def.scene.get_file().get_basename()
-		print("  %s: Min Level %d (Type: %s)" % [
-			scene_name, enemy_def.min_level, enemy_def.enemy_type
-		])
 	
-	print("Removed from Spawning:")
 	var removed = ["EnemyMissile", "ChildShip"]
-	for enemy_name in removed:
-		print("  %s: No longer spawns via main system" % enemy_name)
-	
-	print("===============================\n")
 
 func print_level_progression(start_level: int = 1, end_level: int = 15) -> void:
 	"""Print which enemies are available at each level"""
-	print("\n=== LEVEL PROGRESSION ===")
 	for level in range(start_level, end_level + 1):
 		var available_types = get_enemy_types_for_level(level)
-		print("Level %d: %s" % [level, ", ".join(available_types)])
-	print("==========================\n")

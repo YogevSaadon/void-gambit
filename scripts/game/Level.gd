@@ -78,12 +78,6 @@ func _start_level() -> void:
 
 	if DEBUG_SPAWNS:
 		var info = PowerBudgetCalculator.get_level_info(game_manager.level_number)
-		print("\n=== LEVEL %d ===" % game_manager.level_number)
-		print("Power Budget : %d"  % info.power_budget)
-		print("Tier         : %s (×%.1f)" % [info.tier_name, info.tier_multiplier])
-		print("Wave Duration: %.0fs" % info.wave_duration)
-		print("Spawn Method : Camera‑aware Ring")
-		print("========================\n")
 
 # ====== WAVE SIGNAL HANDLERS ======
 func _on_wave_started(wave_number: int) -> void:

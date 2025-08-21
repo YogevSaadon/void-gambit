@@ -75,7 +75,6 @@ func _spawn_enemies() -> void:
 			enemy._apply_combat_scaling()
 	
 	emit_signal("swarm_spawned", spawned_enemies)
-	print("Swarm: Spawned %d %s enemies" % [spawn_count, enemy_type_to_spawn])
 
 # ===== CONFIGURATION METHODS =====
 func configure_swarm(enemy_type: String, count: int, position: Vector2 = Vector2.ZERO) -> void:

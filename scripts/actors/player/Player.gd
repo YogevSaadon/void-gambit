@@ -107,9 +107,6 @@ func take_damage(amount: int) -> void:
 		
 		if armor_value > 0:
 			var reduction_percent = (1.0 - damage_multiplier) * 100.0
-			print("Armor: %.0f → %.0f%% damage reduction (%.0f → %.0f damage)" % [
-				armor_value, reduction_percent, amount, effective_damage
-			])
 	
 	# Apply damage to shield first, then health
 	if shield > 0:
@@ -140,7 +137,6 @@ func destroy() -> void:
 		return
 	is_dead = true
 	
-	print("Player died! Returning to main menu...")
 	
 	# INSTANT: Stop all player functions immediately
 	set_physics_process(false)

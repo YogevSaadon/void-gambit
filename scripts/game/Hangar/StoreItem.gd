@@ -33,7 +33,6 @@ func purchase_item(pd: PlayerData, gm: GameManager, pem: PassiveEffectManager) -
 	var price = item.price if item else weapon.price
 	
 	if not gm.spend_credits(price):
-		print("StoreItem: Not enough credits to purchase item")
 		return false
 
 	if item:

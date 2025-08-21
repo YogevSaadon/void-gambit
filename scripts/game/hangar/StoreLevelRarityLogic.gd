@@ -169,7 +169,6 @@ func _apply_pity_system(base_weights: Dictionary, items_by_rarity: Dictionary, s
 			
 			if pity_count >= threshold and not items_by_rarity[rarity].is_empty():
 				# PITY TRIGGERED: Dramatically boost this rarity
-				print("PITY TRIGGERED for %s after %d visits!" % [rarity, pity_count])
 				adjusted_weights[rarity] = min(adjusted_weights[rarity] * 3.0, 50.0)  # Triple chance, cap at 50%
 				
 				# Reduce other rarities proportionally to maintain total ~100%

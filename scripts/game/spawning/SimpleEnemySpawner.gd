@@ -111,14 +111,5 @@ func get_spawner_statistics(level: int) -> Dictionary:
 
 func print_level_breakdown(start_level: int = 1, end_level: int = 25) -> void:
 	"""Print spawning breakdown for multiple levels"""
-	print("\n=== SIMPLE SPAWNING BREAKDOWN ===")
 	for level in range(start_level, end_level + 1):
 		var stats = get_spawner_statistics(level)
-		print("Level %d: %d enemies (%d types × %d copies) - Types: %s" % [
-			level,
-			stats.total_enemies_per_batch,
-			stats.available_enemy_types,
-			stats.copies_per_enemy,
-			", ".join(stats.enemy_types)
-		])
-	print("===================================\n")

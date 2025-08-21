@@ -15,26 +15,17 @@ static func add_cheat_button_to(parent_node: Node, gm: GameManager, pd: PlayerDa
 	parent_node.add_child(cheat_btn)
 	
 	cheat_btn.pressed.connect(func():
-		print("CHEAT activated!")
-		print("Credits before: ", gm.credits)
-		print("Coins before: ", gm.coins)
-		print("Rerolls before: ", pd.current_rerolls)
 		
 		gm.add_credits(1000)
 		gm.add_coins(100)
 		pd.current_rerolls += 100
 		
-		print("Credits after: ", gm.credits)
-		print("Coins after: ", gm.coins)
-		print("Rerolls after: ", pd.current_rerolls)
 		
 		# Force refresh the hangar UI elements directly
 		_force_refresh_hangar_ui(parent_node)
 		
-		print("Cheat completed!")
 	)
 	
-	print("Cheat button added successfully!")
 
 static func _force_refresh_hangar_ui(hangar_node: Node) -> void:
 	"""Force refresh all UI elements in the hangar"""
@@ -43,18 +34,15 @@ static func _force_refresh_hangar_ui(hangar_node: Node) -> void:
 	var store_panel = hangar_node.get_node_or_null("StoreSlotMachinePanel/StoreWrapper/StorePanel")
 	if store_panel and store_panel.has_method("_update_ui"):
 		store_panel._update_ui()
-		print("Store panel refreshed")
 	
 	# Refresh slot machine panel currency  
 	var slot_panel = hangar_node.get_node_or_null("StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel")
 	if slot_panel and slot_panel.has_method("_update_ui"):
 		slot_panel._update_ui()
-		print("Slot machine panel refreshed")
 	
 	# Try the main hangar refresh method
 	if hangar_node.has_method("_refresh_ui"):
 		hangar_node._refresh_ui()
-		print("Main hangar refreshed")
 	
 	# Manual fallback: find and update currency labels directly
 	_update_currency_labels(hangar_node)
@@ -67,10 +55,8 @@ static func _update_currency_labels(hangar_node: Node) -> void:
 	var store_currency = hangar_node.get_node_or_null("StoreSlotMachinePanel/StoreWrapper/StorePanel/StoreCurrencyLabel")
 	if store_currency:
 		store_currency.text = "Credits: %d" % gm.credits
-		print("Updated store currency label")
 	
 	# Find slot machine currency label
 	var slot_currency = hangar_node.get_node_or_null("StoreSlotMachinePanel/SlotWrapper/SlotMachinePanel/SlotMachineCurrencyLabel")
 	if slot_currency:
 		slot_currency.text = "Coins: %d" % gm.coins
-		print("Updated slot currency label")
