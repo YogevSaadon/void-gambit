@@ -36,8 +36,8 @@ func initialize(p_data: PlayerData) -> void:
 		
 	player_data = p_data
 	add_to_group("Player")
-	collision_layer = CollisionLayers.get_player_layer()
-	collision_mask = CollisionLayers.MASK_PLAYER
+	collision_layer = 1 << CollisionLayers.LAYER_PLAYER
+	collision_mask = 0  # Player detects nothing via collision
 
 	max_health = int(player_data.get_stat("max_hp"))
 	health = int(player_data.hp)
@@ -144,8 +144,8 @@ func destroy() -> void:
 	
 	# INSTANT: Make player invisible and disable collision
 	visible = false
-	collision_layer = CollisionLayers.get_player_layer()
-	collision_mask = CollisionLayers.MASK_PLAYER
+	collision_layer = 1 << CollisionLayers.LAYER_PLAYER
+	collision_mask = 0  # Player detects nothing via collision
 	
 	# INSTANT: Stop all movement
 	velocity = Vector2.ZERO

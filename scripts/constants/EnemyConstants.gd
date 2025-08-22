@@ -14,10 +14,77 @@ extends RefCounted
 # 2. Create methods to get stats by enemy type
 # 3. Link to enemy_stats.json for designer tweaking
 
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Move all base stats from enemy scripts
-# TODO: Define which stats should be in JSON vs code
-# TODO: Create stat getter methods
+# ===== ENEMY BASE STATS =====
+# Base stats at power level 1 - these scale with enemy power
+
+# Biter - Fast melee enemy
+const BITER_BASE_HEALTH = 20
+const BITER_BASE_SPEED = 120
+const BITER_BASE_DAMAGE = 12
+const BITER_DAMAGE_INTERVAL = 0.8
+
+# MiniBiter - Smaller, faster version  
+const MINI_BITER_BASE_HEALTH = 8
+const MINI_BITER_BASE_SPEED = 130
+const MINI_BITER_BASE_DAMAGE = 6
+const MINI_BITER_DAMAGE_INTERVAL = 0.7
+
+# Triangle - Basic ranged enemy
+const TRIANGLE_BASE_HEALTH = 40
+const TRIANGLE_BASE_SPEED = 100
+const TRIANGLE_BASE_DAMAGE = 15
+const TRIANGLE_DAMAGE_INTERVAL = 1.0
+
+# Rectangle - Tanky enemy
+const RECTANGLE_BASE_HEALTH = 60
+const RECTANGLE_BASE_SPEED = 90
+const RECTANGLE_BASE_DAMAGE = 15
+const RECTANGLE_DAMAGE_INTERVAL = 1.0
+
+# Tank - Heavy charging enemy
+const TANK_BASE_HEALTH = 80
+const TANK_BASE_SPEED = 85
+const TANK_BASE_DAMAGE = 20
+const TANK_DAMAGE_INTERVAL = 0.6
+
+# Star - Multi-shot enemy
+const STAR_BASE_HEALTH = 200
+const STAR_BASE_SPEED = 80
+const STAR_BASE_DAMAGE = 25
+const STAR_DAMAGE_INTERVAL = 1.5
+
+# Diamond - High-tier enemy
+const DIAMOND_BASE_HEALTH = 250
+const DIAMOND_BASE_SPEED = 70
+const DIAMOND_BASE_DAMAGE = 30
+const DIAMOND_DAMAGE_INTERVAL = 2.0
+
+# MotherShip - Boss-like enemy
+const MOTHERSHIP_BASE_HEALTH = 400
+const MOTHERSHIP_BASE_SPEED = 45
+const MOTHERSHIP_BASE_DAMAGE = 40
+const MOTHERSHIP_DAMAGE_INTERVAL = 2.5
+
+# ChildShip - Spawned by MotherShip
+const CHILDSHIP_BASE_HEALTH = 35
+const CHILDSHIP_BASE_SPEED = 130
+const CHILDSHIP_BASE_DAMAGE = 15
+const CHILDSHIP_DAMAGE_INTERVAL = 1.0
+
+# GoldShip - Special reward enemy
+const GOLDSHIP_BASE_HEALTH = 40
+const GOLDSHIP_BASE_SPEED = 90
+const GOLDSHIP_BASE_DAMAGE = 20
+const GOLDSHIP_DAMAGE_INTERVAL = 1.0
+
+# EnemyMissile - Explosive projectile enemy
+const ENEMY_MISSILE_BASE_HEALTH = 30
+const ENEMY_MISSILE_BASE_SPEED = 200
+const ENEMY_MISSILE_EXPLOSION_DAMAGE = 40.0
+const ENEMY_MISSILE_EXPLOSION_RADIUS = 80.0
+
+# TODO: Create stat getter methods by enemy type
+# TODO: Link to enemy_stats.json for designer tweaking
 
 # ===== DATA FILE =====
 # See: scripts/constants/data/enemy_stats.json

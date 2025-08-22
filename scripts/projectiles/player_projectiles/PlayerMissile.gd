@@ -13,8 +13,8 @@ var exploded: bool = false
 @onready var ttl_timer := $Timer
 
 func _ready() -> void:
-	collision_layer = CollisionLayers.get_player_projectile_layer()
-	collision_mask = CollisionLayers.get_enemy_layer()
+	collision_layer = 1 << CollisionLayers.LAYER_PLAYER_PROJECTILES
+	collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 
 	connect("body_entered",  Callable(self, "_on_Collision"))
 	connect("area_entered",  Callable(self, "_on_Collision"))

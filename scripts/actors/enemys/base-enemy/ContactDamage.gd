@@ -17,7 +17,7 @@ func _ready() -> void:
 	
 	# Make sure it has correct collision settings
 	zone.collision_layer = enemy.collision_layer  # Same layer as enemy
-	zone.collision_mask = CollisionLayers.MASK_CONTACT_DAMAGE                
+	zone.collision_mask = 1 << CollisionLayers.LAYER_PLAYER  # Contact damage zones detect player                
 	zone.monitoring = true
 	
 	# Connect signals if not already connected

@@ -6,8 +6,8 @@ class_name BaseBullet
 @export var speed: float = 1000.0
 @export var max_lifetime: float = 2.0
 @export var target_group: String = "Enemies"  # Override in children
-@export var bullet_collision_layer: int = 4   # Override in children  
-@export var bullet_collision_mask: int = 2    # Override in children
+@export var bullet_collision_layer: int = CollisionLayers.LAYER_PLAYER_PROJECTILES   # Override in children  
+@export var bullet_collision_mask: int = CollisionLayers.LAYER_ENEMIES    # Override in children
 
 # ====== Runtime ======
 var direction: Vector2 = Vector2.ZERO

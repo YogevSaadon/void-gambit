@@ -30,6 +30,6 @@ func _fire_once(target: Node) -> void:
 	if b.has_method("set_collision_properties"):
 		b.set_collision_properties()
 	else:
-		b.collision_layer = CollisionLayers.get_player_projectile_layer()
-		b.collision_mask = CollisionLayers.get_enemy_layer()
+		b.collision_layer = 1 << CollisionLayers.LAYER_PLAYER_PROJECTILES
+		b.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 	get_tree().current_scene.add_child(b)

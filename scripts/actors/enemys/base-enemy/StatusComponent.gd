@@ -28,7 +28,7 @@ func apply_infection(base_dps: float, duration: float) -> void:
 	if infection:
 		infection.stacks = min(infection.stacks + 1, 3)
 		# Each stack increases dps by 33%
-		infection.dps = base_dps * (1.0 + 0.33 * infection.stacks)
+		infection.dps = base_dps * (1.0 + CombatConstants.INFECTION_STACK_MULTIPLIER * infection.stacks)
 		infection.remaining_time = duration
 	else:
 		infection = DOT.new()

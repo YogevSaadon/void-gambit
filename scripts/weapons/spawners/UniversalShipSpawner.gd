@@ -63,7 +63,7 @@ func _setup_spawner_visuals() -> void:
 # ===== SHIP STAT CALCULATION =====
 func _calculate_ship_weapon_stats(pd: PlayerData) -> Dictionary:
 	"""Calculate weapon stats for spawned ships"""
-	var base_damage = round(final_damage * 0.33)  # Ships do 33% damage, rounded clean
+	var base_damage = round(final_damage * CombatConstants.SHIP_DAMAGE_REDUCTION)  # Ships do 33% damage, rounded clean
 	var fire_rate = final_fire_rate # From BaseWeapon (includes scaling if applicable)
 	var crit_chance = final_crit
 	

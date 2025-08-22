@@ -128,12 +128,12 @@ func _find_next_enemy_from(from_node: Node) -> Node:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, origin)
-	params.collision_mask = CollisionLayers.get_enemy_layer()
+	params.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
 	# Spatial query returns max 32 nearby enemies
-	var results = space_state.intersect_shape(params, 32)
+	var results = space_state.intersect_shape(params, PerformanceConstants.MAX_PHYSICS_QUERY_RESULTS)
 	
 	# Find closest in small result set (O(32), not O(all_enemies))
 	var best: Node = null

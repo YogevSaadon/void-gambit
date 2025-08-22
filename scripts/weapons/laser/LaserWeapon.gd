@@ -2,7 +2,7 @@ extends ShooterWeapon
 class_name LaserWeapon
 
 @export var base_reflects : int = 0
-@export var laser_damage: float = round(base_damage * 0.05)  # 1.0
+@export var laser_damage: float = round(base_damage * CombatConstants.LASER_DAMAGE_MULTIPLIER)  # 1.0
 var beam_scene : PackedScene = preload("res://scenes/weapons/laser/ChainLaserBeamController.tscn")
 var beam_instance : Node = null
 var final_reflects : int = 0

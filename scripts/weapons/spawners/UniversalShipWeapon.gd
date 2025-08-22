@@ -203,7 +203,7 @@ func _attempt_bio_spread(source_enemy: Node, spread_damage: float) -> void:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, source_enemy.global_position)
-	params.collision_mask = CollisionLayers.get_enemy_layer()
+	params.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
@@ -223,8 +223,8 @@ func _setup_projectile_collision(projectile: Node) -> void:
 		projectile.set_collision_properties()
 	else:
 		# Fallback: set collision manually
-		projectile.collision_layer = CollisionLayers.get_player_projectile_layer()
-		projectile.collision_mask = CollisionLayers.get_enemy_layer()
+		projectile.collision_layer = 1 << CollisionLayers.LAYER_PLAYER_PROJECTILES
+		projectile.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 
 func _create_muzzle_flash() -> void:
 	"""Visual muzzle flash effect"""

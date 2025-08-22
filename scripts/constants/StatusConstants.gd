@@ -14,10 +14,13 @@ extends RefCounted
 # 2. Find bio weapon values
 # 3. Extract spread chances
 
-# ===== CONSTANTS TO DEFINE =====
-# TODO: Tick intervals (0.5)
-# TODO: Max stacks (3)
-# TODO: Damage multipliers per stack (0.33)
+# ===== INFECTION/BIO STATUS =====
+const INFECTION_TICK_INTERVAL = 0.5  # Seconds between DoT ticks
+const MAX_INFECTION_STACKS = 3       # Maximum infection stacks
+# Note: INFECTION_STACK_MULTIPLIER is in CombatConstants.gd
+
+# TODO: Other status effects when added
+# TODO: Burn/freeze/poison if implemented
 # TODO: Spread radius and chance
 
 # ===== TESTING CHECKLIST =====

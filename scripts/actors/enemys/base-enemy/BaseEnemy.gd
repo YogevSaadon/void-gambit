@@ -93,8 +93,8 @@ func get_budget_power_level() -> int:
 	return _original_power_level
 
 func _setup_collision() -> void:
-	collision_layer = CollisionLayers.get_enemy_layer()
-	collision_mask = CollisionLayers.MASK_ENEMIES
+	collision_layer = 1 << CollisionLayers.LAYER_ENEMIES
+	collision_mask = 0  # Enemies don't detect via collision
 	monitoring = false
 	monitorable = true
 
@@ -214,11 +214,11 @@ func _spread_infection() -> void:
 	
 	params.shape = circle
 	params.transform = Transform2D(0, global_position)
-	params.collision_mask = CollisionLayers.get_enemy_layer()
+	params.collision_mask = 1 << CollisionLayers.LAYER_ENEMIES
 	params.collide_with_areas = true
 	params.collide_with_bodies = false
 	
-	var results = space_state.intersect_shape(params, 32)
+	var results = space_state.intersect_shape(params, PerformanceConstants.MAX_PHYSICS_QUERY_RESULTS)
 	
 	var best: Node = null
 	var best_d: float = radius
