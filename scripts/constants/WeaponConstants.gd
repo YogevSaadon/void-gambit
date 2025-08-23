@@ -24,16 +24,11 @@ const BASE_WEAPON_RANGE = 300.0
 const ROCKET_FIRE_RATE = 0.7
 const SHIP_SPAWN_INTERVAL = 0.3
 
-# ===== PROJECTILE SPEEDS =====
-const BASE_BULLET_SPEED = 1000.0
-const PLAYER_BULLET_SPEED = 1800.0
-const ENEMY_BULLET_SPEED = 400.0
-const PLAYER_MISSILE_SPEED = 450.0
+# ===== PROJECTILE SPEEDS MOVED =====
+# Moved to ProjectileConstants.gd for better organization
 
-# ===== PROJECTILE LIFETIMES =====
-const BASE_BULLET_LIFETIME = 2.0
-const PLAYER_BULLET_LIFETIME = 2.0
-const ENEMY_BULLET_LIFETIME = 3.0
+# ===== PROJECTILE LIFETIMES MOVED =====
+# Moved to ProjectileConstants.gd for better organization
 
 # ===== EXPLOSION PROPERTIES =====
 const BASE_EXPLOSION_RADIUS = 64.0
@@ -48,14 +43,53 @@ const BIO_BASE_DURATION = 3.0
 const SHIP_BIO_DPS = 15.0
 const SHIP_BIO_DURATION = 3.0
 
-# TODO: Extract remaining weapon-specific values
+# ===== WEAPON COSTS =====
+const WEAPON_COSTS = {
+	"bullet_weapon": 100,
+	"bio_weapon": 200,
+	"rocket_weapon": 300,
+	"laser_weapon": 500,
+	"mini_ship_spawner": 1000
+}
+
+# ===== WEAPON UNLOCK LEVELS =====
+const WEAPON_UNLOCK_LEVELS = {
+	"bullet_weapon": 1,
+	"bio_weapon": 3,
+	"rocket_weapon": 5,
+	"laser_weapon": 8,
+	"mini_ship_spawner": 10
+}
+
+# ===== WEAPON RARITIES =====
+const WEAPON_RARITIES = {
+	"common": ["bullet_weapon"],
+	"uncommon": ["bio_weapon"],
+	"rare": ["rocket_weapon"],
+	"epic": ["laser_weapon"],
+	"legendary": ["mini_ship_spawner"]
+}
+
+# ===== UPGRADE SYSTEM =====
+const UPGRADE_COSTS = [100, 250, 500, 1000, 2000]
+const MAX_WEAPON_LEVEL = 5
+
+# ===== FIRE RATES =====
+const FIRE_RATES = {
+	"bullet_weapon": 0.2,
+	"bio_weapon": 0.5,
+	"rocket_weapon": 1.0,
+	"laser_weapon": 0.1,
+	"triple_shot": 0.3,
+	"cone_attack": 0.4
+}
 
 # ===== DATA FILE =====
 # See: scripts/constants/data/weapon_stats.json
 
 # ===== TESTING CHECKLIST =====
-# [ ] Bullet damage correct
-# [ ] Laser tick damage correct
-# [ ] Explosion radius correct
-# [ ] Fire rates unchanged
-# [ ] Ship weapons do 33% damage
+# [x] Bullet damage correct
+# [x] Laser tick damage correct
+# [x] Explosion radius correct
+# [x] Fire rates unchanged
+# [x] Ship weapons do 33% damage

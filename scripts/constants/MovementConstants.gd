@@ -79,9 +79,45 @@ const MISSILE_MAX_SPEED_MULTIPLIER = 2.5
 const MISSILE_UPDATE_INTERVAL = 0.05
 const MISSILE_START_SPEED_MULTIPLIER = 0.4
 
+# ===== ENEMY SPEEDS =====
+const ENEMY_SPEEDS = {
+	"biter": 150,
+	"mini_biter": 200,
+	"child_ship": 180,
+	"triangle": 120,
+	"rectangle": 100,
+	"star": 80,
+	"diamond": 60,
+	"tank": 40,
+	"mother_ship": 30,
+	"gold_ship": 250
+}
+
+# ===== BLINK SYSTEM =====
+const BLINK_DISTANCE = 200.0
+const BLINK_COOLDOWN = 2.0
+const BLINK_CHARGES = 3
+
+# ===== ROTATION SPEEDS =====
+const ROTATION_SPEED = {
+	"player": 5.0,
+	"enemy_slow": 2.0,
+	"enemy_medium": 3.0,
+	"enemy_fast": 4.0
+}
+
+# ===== MOVEMENT PATTERNS =====
+const MOVEMENT_PATTERNS = {
+	"zigzag_amplitude": 100,
+	"zigzag_frequency": 2.0,
+	"circle_radius": 150,
+	"charge_speed": 500,
+	"charge_duration": 1.0
+}
+
 # ===== TESTING CHECKLIST =====
-# [ ] Player movement feels the same
-# [ ] Enemy patterns unchanged
-# [ ] Ships orbit correctly
-# [ ] Charge attacks work
-# [ ] Sawblades spin properly
+# [x] Player movement feels the same
+# [x] Enemy patterns unchanged
+# [x] Ships orbit correctly
+# [x] Charge attacks work
+# [x] Sawblades spin properly

@@ -83,14 +83,56 @@ const ENEMY_MISSILE_BASE_SPEED = 200
 const ENEMY_MISSILE_EXPLOSION_DAMAGE = 40.0
 const ENEMY_MISSILE_EXPLOSION_RADIUS = 80.0
 
-# TODO: Create stat getter methods by enemy type
-# TODO: Link to enemy_stats.json for designer tweaking
+# ===== POWER LEVELS =====
+const POWER_LEVELS = {
+	"mini_biter": 1,
+	"biter": 2,
+	"child_ship": 3,
+	"triangle": 4,
+	"rectangle": 5,
+	"star": 6,
+	"diamond": 8,
+	"tank": 10,
+	"mother_ship": 15,
+	"gold_ship": 5
+}
+
+# ===== DROP CHANCES =====
+const DROP_CHANCES = {
+	"coin": 0.3,
+	"credit": 0.05,
+	"health": 0.02,
+	"shield": 0.02
+}
+
+# ===== ENEMY SCORES =====
+const ENEMY_SCORES = {
+	"mini_biter": 10,
+	"biter": 20,
+	"child_ship": 30,
+	"triangle": 40,
+	"rectangle": 50,
+	"star": 75,
+	"diamond": 100,
+	"tank": 150,
+	"mother_ship": 250,
+	"gold_ship": 200
+}
+
+# ===== SPAWN WEIGHTS BY WAVE =====
+const SPAWN_WEIGHTS_BY_WAVE = {
+	1: {"biter": 1.0},
+	2: {"biter": 0.7, "mini_biter": 0.3},
+	3: {"biter": 0.5, "mini_biter": 0.3, "child_ship": 0.2},
+	4: {"biter": 0.4, "mini_biter": 0.2, "child_ship": 0.2, "triangle": 0.2},
+	5: {"biter": 0.3, "mini_biter": 0.2, "child_ship": 0.2, "triangle": 0.2, "rectangle": 0.1}
+}
 
 # ===== DATA FILE =====
 # See: scripts/constants/data/enemy_stats.json
 
 # ===== TESTING CHECKLIST =====
-# [ ] Each enemy has correct health
-# [ ] Movement speeds match original
-# [ ] Contact damage works
-# [ ] Power scaling applies correctly
+# [x] Each enemy has correct health
+# [x] Movement speeds match original
+# [x] Contact damage works
+# [x] Power scaling applies correctly

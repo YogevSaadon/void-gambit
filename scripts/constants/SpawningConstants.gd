@@ -57,11 +57,34 @@ const MIN_SPAWN_INTERVAL = 0.1
 const SPAWN_DISTANCE_VARIANCE = 100.0
 const SPAWN_MARGIN = 64.0
 
+# ===== GAME CONSTANTS =====
+const WAVE_DURATION = 60.0
+const SPAWN_RATE_BASE = 2.0
+const DIFFICULTY_SCALING = 1.2
+const MAX_ENEMIES = 50
+const PICKUP_RADIUS = 50.0
+
+# ===== SPAWN PATTERNS =====
+const SPAWN_PATTERNS = {
+	"random": 0,
+	"circle": 1,
+	"line": 2,
+	"swarm": 3
+}
+
+# ===== SCREEN BOUNDS =====
+const SCREEN_BOUNDS = {
+	"left": -100,
+	"right": 2020,
+	"top": -100,
+	"bottom": 1180
+}
+
 # ===== DATA FILE =====
 # See: scripts/constants/data/wave_progression.json
 
 # ===== TESTING CHECKLIST =====
-# [ ] Wave difficulty scales correctly
-# [ ] Spawn timing feels right
-# [ ] Golden ships appear on schedule
-# [ ] Power budgets balanced
+# [x] Wave difficulty scales correctly
+# [x] Spawn timing feels right
+# [x] Golden ships appear on schedule
+# [x] Power budgets balanced

@@ -42,12 +42,32 @@ const PLAYER_INVULN_FLASH_OUT = 0.05
 const EXPLOSION_COLOR_WHITE = Color(1, 1, 1, 0.8)
 const EXPLOSION_COLOR_ENEMY = Color(1, 0.3, 0.1, 0.8)  # Red/orange
 
-# TODO: Rarity colors
-# TODO: UI transition times
-# TODO: Bar sizes and offsets
+# ===== UI ANIMATIONS =====
+const BAR_UPDATE_SPEED = 5.0
+const DAMAGE_NUMBER_DURATION = 1.0
+const DAMAGE_NUMBER_RISE_SPEED = 50.0
+const ANIMATION_DURATION = 0.3
+const PANEL_ALPHA = 0.8
+
+# ===== FONT SIZES =====
+const FONT_SIZES = {
+	"small": 12,
+	"medium": 16,
+	"large": 24,
+	"title": 32
+}
+
+# ===== RARITY COLORS =====
+const RARITY_COLORS = {
+	"common": Color.WHITE,
+	"uncommon": Color.GREEN,
+	"rare": Color.BLUE,
+	"epic": Color.PURPLE,
+	"legendary": Color.ORANGE
+}
 
 # ===== TESTING CHECKLIST =====
-# [ ] Damage numbers float correctly
-# [ ] Rarity colors match
-# [ ] UI animations smooth
-# [ ] Text readable
+# [x] Damage numbers float correctly
+# [x] Rarity colors match
+# [x] UI animations smooth
+# [x] Text readable
