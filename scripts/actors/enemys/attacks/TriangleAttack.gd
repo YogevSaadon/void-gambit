@@ -2,9 +2,9 @@
 extends Node2D
 class_name SingleShotWeapon
 
-@export var base_damage   : float = 15.0
-@export var shooting_range: float = 400.0
-@export var fire_interval : float = 3.0
+@export var base_damage   : float = AttackConstants.TRIANGLE_ATTACK_DAMAGE
+@export var shooting_range: float = AttackConstants.TRIANGLE_ATTACK_RANGE
+@export var fire_interval : float = AttackConstants.TRIANGLE_FIRE_INTERVAL
 @export var bullet_scene  : PackedScene = preload("res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn")
 
 var _owner_enemy  : BaseEnemy
@@ -17,7 +17,7 @@ var _player_in_range : bool = false
 @onready var muzzle        : Node2D   = $Muzzle
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-const RANGE_CHECK_INTERVAL := 0.2
+const RANGE_CHECK_INTERVAL := AttackConstants.RANGE_CHECK_INTERVAL
 
 func _ready() -> void:
 	_owner_enemy = _find_parent_enemy()

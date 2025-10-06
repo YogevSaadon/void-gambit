@@ -4,16 +4,16 @@ class_name MotherShip
 
 func _enter_tree() -> void:
 	enemy_type = "mother_ship"
-	
+
 	# ── Base stats at power-level 1 ─────
-	max_health = 400            # Much tankier than Diamond (250)
+	max_health = EnemyConstants.MOTHERSHIP_BASE_HEALTH
 	max_shield = 0
-	speed = 45                  # Much slower than Diamond (45)
+	speed = EnemyConstants.MOTHERSHIP_BASE_SPEED
 	shield_recharge_rate = 0
-	
+
 	# ── Contact damage (huge ship) ─────
-	damage = 40                 # Higher than Diamond (30)
-	damage_interval = 2.5       # Much slower than Diamond (2.0)
+	damage = EnemyConstants.MOTHERSHIP_BASE_DAMAGE
+	damage_interval = EnemyConstants.MOTHERSHIP_DAMAGE_INTERVAL
 
 	
 	# Call parent's _enter_tree to apply power scaling

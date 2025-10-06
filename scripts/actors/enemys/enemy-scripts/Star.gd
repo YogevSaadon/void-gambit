@@ -4,16 +4,16 @@ class_name Star
 
 func _enter_tree() -> void:
 	enemy_type = "star"
-	
+
 	# ── Base stats at power-level 1 ─────
-	max_health = 200            # Much tankier than Triangle (40)
+	max_health = EnemyConstants.STAR_BASE_HEALTH
 	max_shield = 0
-	speed = 80                  # Much slower than Triangle (100)
+	speed = EnemyConstants.STAR_BASE_SPEED
 	shield_recharge_rate = 0
-	
+
 	# ── Contact damage (fortress ship) ─────
-	damage = 25                 # Much higher than Triangle (15)
-	damage_interval = 1.5       # Much slower than Triangle (1.0)
+	damage = EnemyConstants.STAR_BASE_DAMAGE
+	damage_interval = EnemyConstants.STAR_DAMAGE_INTERVAL
 	
 
 	# ── FIXED: Disable velocity rotation for spinning ─────

@@ -2,12 +2,12 @@
 extends Node2D
 class_name TripleShotAttack
 
-@export var base_damage   : float = 10.0
-@export var shooting_range: float = 350.0
-@export var burst_interval: float = 3.0
-@export var shots_per_burst: int = 3
-@export var shot_delay    : float = 0.15
-@export var spread_angle  : float = 15.0
+@export var base_damage   : float = AttackConstants.TRIPLE_SHOT_DAMAGE
+@export var shooting_range: float = AttackConstants.TRIPLE_SHOT_RANGE
+@export var burst_interval: float = AttackConstants.TRIPLE_SHOT_BURST_INTERVAL
+@export var shots_per_burst: int = AttackConstants.TRIPLE_SHOT_SHOTS_PER_BURST
+@export var shot_delay    : float = AttackConstants.TRIPLE_SHOT_SHOT_DELAY
+@export var spread_angle  : float = AttackConstants.TRIPLE_SHOT_SPREAD_ANGLE
 @export var bullet_scene  : PackedScene = preload("res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn")
 
 var _owner_enemy  : BaseEnemy
@@ -23,7 +23,7 @@ var _player_in_range : bool = false
 @onready var muzzle        : Node2D   = $Muzzle
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-const RANGE_CHECK_INTERVAL := 0.2
+const RANGE_CHECK_INTERVAL := AttackConstants.RANGE_CHECK_INTERVAL
 
 func _ready() -> void:
 	_owner_enemy = _find_parent_enemy()

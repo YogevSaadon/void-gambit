@@ -5,7 +5,7 @@ class_name RocketWeapon
 
 @export var missile_scene: PackedScene = preload("res://scenes/projectiles/player_projectiles/PlayerMissile.tscn")
 @export var base_expl_damage: float = round(base_damage * CombatConstants.EXPLOSION_DAMAGE_MULTIPLIER)  # 30.0
-@export var base_radius: float = 64.0
+@export var base_radius: float = WeaponConstants.BASE_EXPLOSION_RADIUS
 # inherited base_fire_rate set in Inspector (e.g. 0.7)
 
 func _damage_type_key() -> String:

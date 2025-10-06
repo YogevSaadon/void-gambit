@@ -2,10 +2,10 @@
 extends BaseEntitySpawner
 class_name ChildShipSpawner
 
-@export var shooting_range: float = 5000
-@export var spawn_interval : float = 6.0
+@export var shooting_range: float = AttackConstants.CHILD_SHIP_SPAWNER_RANGE
+@export var spawn_interval : float = AttackConstants.CHILD_SHIP_SPAWN_INTERVAL
 @export var child_ship_scene: PackedScene = preload("res://scenes/actors/enemys/ChildShip.tscn")
-@export var spawn_offset_distance: float = 50.0
+@export var spawn_offset_distance: float = AttackConstants.CHILD_SHIP_SPAWN_OFFSET_DISTANCE
 
 var _spawn_timer   : float = 0.0
 var _range_timer  : float = 0.0
@@ -15,7 +15,7 @@ var _player_in_range : bool = false
 @onready var muzzle        : Node2D   = $Muzzle
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-const RANGE_CHECK_INTERVAL := 0.2
+const RANGE_CHECK_INTERVAL := AttackConstants.RANGE_CHECK_INTERVAL
 
 func _ready() -> void:
 	# Set MotherShip-specific entity limit

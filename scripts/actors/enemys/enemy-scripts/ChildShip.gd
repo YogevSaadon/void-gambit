@@ -3,17 +3,17 @@ extends BaseEnemy
 class_name ChildShip
 
 func _enter_tree() -> void:
-	enemy_type = "child_ship"  
-	
+	enemy_type = "child_ship"
+
 	# ── Base stats at power-level 1 ─────
-	max_health = 35             # Slightly weaker than Triangle (40)
+	max_health = EnemyConstants.CHILDSHIP_BASE_HEALTH
 	max_shield = 0
-	speed = 130                 # Faster than Triangle (100)
+	speed = EnemyConstants.CHILDSHIP_BASE_SPEED
 	shield_recharge_rate = 0
 
 	# Contact-damage numbers (same as Triangle)
-	damage = 15                 
-	damage_interval = 1.0       
+	damage = EnemyConstants.CHILDSHIP_BASE_DAMAGE
+	damage_interval = EnemyConstants.CHILDSHIP_DAMAGE_INTERVAL       
 
 	# Call parent's _enter_tree
 	super._enter_tree()

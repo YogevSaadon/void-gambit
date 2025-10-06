@@ -2,8 +2,8 @@
 extends BaseEntitySpawner
 class_name MissileLauncherAttack
 
-@export var shooting_range: float = 1000.0
-@export var fire_interval : float = 5.0
+@export var shooting_range: float = AttackConstants.MISSILE_LAUNCHER_RANGE
+@export var fire_interval : float = AttackConstants.MISSILE_LAUNCHER_INTERVAL
 @export var missile_scene  : PackedScene = preload("res://scenes/actors/enemys/EnemyMissle.tscn")
 
 var _fire_timer   : float = 0.0
@@ -14,7 +14,7 @@ var _player_in_range : bool = false
 @onready var muzzle        : Node2D   = $Muzzle
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
-const RANGE_CHECK_INTERVAL := 0.2
+const RANGE_CHECK_INTERVAL := AttackConstants.RANGE_CHECK_INTERVAL
 
 func _ready() -> void:
 	# Set Diamond-specific entity limit (fewer missiles than MotherShip ships)

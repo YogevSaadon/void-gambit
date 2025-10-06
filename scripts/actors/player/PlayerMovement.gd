@@ -3,15 +3,15 @@ extends Node
 class_name PlayerMovement
 
 # ===== MOVEMENT CONFIGURATION =====
-@export var accel_time: float        = 0.25  # Time to reach max speed
-@export var decel_time: float        = 0.30  # Time to decelerate from blink
-@export var arrival_threshold: float = 8.0   # Consider "arrived" when this close
-@export var movement_smoothing: float = 12.0 # Target‑pos lerp factor
-@export var slowdown_distance: float  = 40.0 # Start slowing this close to target
+@export var accel_time: float        = MovementConstants.PLAYER_ACCEL_TIME
+@export var decel_time: float        = MovementConstants.PLAYER_DECEL_TIME
+@export var arrival_threshold: float = MovementConstants.PLAYER_ARRIVAL_THRESHOLD
+@export var movement_smoothing: float = MovementConstants.PLAYER_MOVEMENT_SMOOTHING
+@export var slowdown_distance: float  = MovementConstants.PLAYER_SLOWDOWN_DISTANCE
 
 # ===== ROTATION CONFIGURATION =====
-@export var rotation_speed: float          = 8.0
-@export var min_velocity_for_rotation: float = 30.0
+@export var rotation_speed: float          = MovementConstants.PLAYER_ROTATION_SPEED
+@export var min_velocity_for_rotation: float = MovementConstants.PLAYER_MIN_VELOCITY_FOR_ROTATION
 
 # ===== INTERNAL STATE =====
 var owner_player: Player     = null
@@ -114,7 +114,7 @@ func _update_target_smoothing(delta: float) -> void:
 		target_pos = target_pos.lerp(target_pos_smooth, movement_smoothing * delta)
 
 		# Snap when almost there
-		if target_pos.distance_to(target_pos_smooth) < 2.0:
+		if target_pos.distance_to(target_pos_smooth) < MovementConstants.PLAYER_SNAP_THRESHOLD:
 			target_pos = target_pos_smooth
 
 func _update_movement_physics(delta: float) -> void:
@@ -148,7 +148,7 @@ func _update_movement_physics(delta: float) -> void:
 		var deceleration_rate = 1.0 / decel_time
 		current_vel = current_vel.move_toward(Vector2.ZERO, max_speed * deceleration_rate * delta)
 
-		if current_vel.length() < 10.0:
+		if current_vel.length() < MovementConstants.PLAYER_STOP_THRESHOLD:
 			current_vel   = Vector2.ZERO
 			blink_slide   = false
 			movement_locked = true

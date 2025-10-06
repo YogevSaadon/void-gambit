@@ -3,10 +3,10 @@ extends Node2D
 class_name ConeAttack
 
 # ───── TUNABLES ──────────────────────────────────────────────
-@export var base_damage   : float       = 15.0
-@export var shooting_range: float       = 500.0     # pixels
-@export var fire_interval : float       = 3.0       # seconds between shots
-@export var cone_angle    : float       = 45.0      # degrees - angle between the two shots
+@export var base_damage   : float       = AttackConstants.CONE_ATTACK_DAMAGE
+@export var shooting_range: float       = AttackConstants.CONE_ATTACK_RANGE
+@export var fire_interval : float       = AttackConstants.CONE_FIRE_INTERVAL
+@export var cone_angle    : float       = AttackConstants.CONE_ANGLE
 @export var bullet_scene  : PackedScene = preload(
 	"res://scenes/projectiles/enemy_projectiles/EnemyBullet.tscn"
 )
@@ -24,7 +24,7 @@ var _player_in_range : bool = false
 @onready var weapon_sprite : Sprite2D = $WeaponSprite
 
 # How often we re-check distance to player (seconds)
-const RANGE_CHECK_INTERVAL := 0.2
+const RANGE_CHECK_INTERVAL := AttackConstants.RANGE_CHECK_INTERVAL
 
 func _ready() -> void:
 	_owner_enemy = _find_parent_enemy()

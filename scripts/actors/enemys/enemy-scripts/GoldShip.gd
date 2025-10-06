@@ -4,14 +4,14 @@ class_name GoldShip
 
 func _enter_tree() -> void:
 	enemy_type = "gold_ship"
-	
-	max_health = 40
+
+	max_health = EnemyConstants.GOLDSHIP_BASE_HEALTH
 	max_shield = 0
-	speed = 90
+	speed = EnemyConstants.GOLDSHIP_BASE_SPEED
 	shield_recharge_rate = 0
-	
-	damage = 20
-	damage_interval = 1.0
+
+	damage = EnemyConstants.GOLDSHIP_BASE_DAMAGE
+	damage_interval = EnemyConstants.GOLDSHIP_DAMAGE_INTERVAL
 	
 	power_level = 1
 	

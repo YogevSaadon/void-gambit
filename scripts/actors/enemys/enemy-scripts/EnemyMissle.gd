@@ -7,16 +7,16 @@ class_name EnemyMissile
 # CHALLENGE: Balance threat level with fair gameplay mechanics
 # BEHAVIOR: Homes toward player, explodes on contact, no drops (consumable unit)
 
-@export var explosion_damage: float = 40.0
-@export var explosion_radius: float = 80.0
+@export var explosion_damage: float = EnemyConstants.ENEMY_MISSILE_EXPLOSION_DAMAGE
+@export var explosion_radius: float = EnemyConstants.ENEMY_MISSILE_EXPLOSION_RADIUS
 
 var has_exploded: bool = false
 
 func _enter_tree() -> void:
 	enemy_type = "missile"
-	max_health = 30
+	max_health = EnemyConstants.ENEMY_MISSILE_BASE_HEALTH
 	max_shield = 0
-	speed = 200
+	speed = EnemyConstants.ENEMY_MISSILE_BASE_SPEED
 	shield_recharge_rate = 0
 	damage = 0  # No contact damage - explosion only
 	damage_interval = 0.0

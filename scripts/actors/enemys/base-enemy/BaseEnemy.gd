@@ -13,7 +13,7 @@ signal died
 @export var shield_recharge_rate: float = 0.0
 
 # ───── Universal Spaceship Movement ─────
-@export var rotation_speed: float = 3.0
+@export var rotation_speed: float = MovementConstants.ENEMY_ROTATION_SPEED
 @export var disable_velocity_rotation: bool = false
 
 # ───── Enemy metadata ─────

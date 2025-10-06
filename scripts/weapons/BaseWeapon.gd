@@ -2,9 +2,9 @@ extends Node2D
 class_name BaseWeapon
 
 # universal bases
-@export var base_damage     : float = 20.0
+@export var base_damage     : float = WeaponConstants.BASE_WEAPON_DAMAGE
 @export var base_crit       : float = 0.0
-@export var base_fire_rate  : float = 1.0  # Base fire rate - all weapons have this
+@export var base_fire_rate  : float = WeaponConstants.BASE_WEAPON_FIRE_RATE
 
 # runtime
 var final_damage    : float = 0.0

@@ -4,16 +4,16 @@ class_name Triangle
 
 func _enter_tree() -> void:
 	enemy_type = "smart_ship"
-	
+
 	# ── Base stats at power-level 1 ─────
-	max_health = 40          # Tougher than Biter (20)
+	max_health = EnemyConstants.TRIANGLE_BASE_HEALTH
 	max_shield = 0
-	speed = 100              # Slightly slower than Biter (120) - more tactical
+	speed = EnemyConstants.TRIANGLE_BASE_SPEED
 	shield_recharge_rate = 0
-	
+
 	# ── Contact damage (all ships are dangerous to touch) ─────
-	damage = 15              # Between Biter (12) and its toughness  
-	damage_interval = 1.0    # Standard contact damage timing
+	damage = EnemyConstants.TRIANGLE_BASE_DAMAGE
+	damage_interval = EnemyConstants.TRIANGLE_DAMAGE_INTERVAL
 	
 	
 	# Call parent's _enter_tree to apply power scaling

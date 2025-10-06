@@ -3,17 +3,17 @@ extends BaseEnemy
 class_name MiniBiter
 
 func _enter_tree() -> void:
-   enemy_type = "mini_biter"  
-   
+   enemy_type = "mini_biter"
+
    # ── Base stats at power-level 1 ─────
-   max_health = 8              # Much weaker than Biter (20)
+   max_health = EnemyConstants.MINI_BITER_BASE_HEALTH
    max_shield = 0
-   speed = 130                 # Faster than Biter (120)
+   speed = EnemyConstants.MINI_BITER_BASE_SPEED
    shield_recharge_rate = 0
 
    # Contact-damage numbers
-   damage = 6                  # Weaker than Biter (12)
-   damage_interval = 0.7       # Slightly faster than Biter (0.8)
+   damage = EnemyConstants.MINI_BITER_BASE_DAMAGE
+   damage_interval = EnemyConstants.MINI_BITER_DAMAGE_INTERVAL
 
    # ── FIXED: Disable velocity rotation for spinning ─────
    disable_velocity_rotation = true
