@@ -15,7 +15,7 @@
 	  "name": "Emergency Rations",
 	  "description": "+15 Max HP",
 	  "rarity": "common",
-	  "price": 17,
+	  "price": 16,
 	  "stackable": true,
 	  "unique": false,
 	  "category": "stat",
