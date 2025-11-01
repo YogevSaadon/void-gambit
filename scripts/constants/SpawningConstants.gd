@@ -2,20 +2,13 @@
 class_name SpawningConstants
 extends RefCounted
 
-#right now sould be ignored before spawning system is not finished and im still experimenting
-
 # ===== WHAT THIS AFFECTS =====
 # - Power budget calculations
 # - Spawn intervals and batch sizes
 # - Wave duration and progression
 # - Enemy tier multipliers
 # - Golden ship spawning
-
-# ===== IMPLEMENTATION STEPS =====
-# 1. Extract from PowerBudgetCalculator.gd
-# 2. Find spawn timing in WaveManager.gd
-# 3. Extract tier breakpoints and multipliers
-# 4. Link to wave_progression.json
+# - Enemy unlock levels
 
 # ===== WAVE MANAGEMENT =====
 const SPAWN_BATCH_INTERVAL = 1.0
@@ -56,6 +49,16 @@ const MIN_SPAWN_INTERVAL = 0.1
 # ===== LEVEL SPAWN SETTINGS =====
 const SPAWN_DISTANCE_VARIANCE = 100.0
 const SPAWN_MARGIN = 64.0
+
+# ===== ENEMY UNLOCK LEVELS =====
+const BITER_MIN_LEVEL = 1
+const MINI_BITER_MIN_LEVEL = 1
+const TRIANGLE_MIN_LEVEL = 2
+const RECTANGLE_MIN_LEVEL = 3
+const TANK_MIN_LEVEL = 4
+const STAR_MIN_LEVEL = 5
+const DIAMOND_MIN_LEVEL = 7
+const MOTHERSHIP_MIN_LEVEL = 10
 
 # ===== GAME CONSTANTS =====
 const WAVE_DURATION = 60.0

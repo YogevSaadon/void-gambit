@@ -12,11 +12,11 @@ signal level_completed(level_number: int)
 var simple_spawner: SimpleEnemySpawner
 var golden_spawner: GoldenShipSpawner
 
-# ───── Tunables ─────
-@export var spawn_batch_interval: float = 1.0   # Time between spawn cycles
-@export var enemy_spawn_interval: float  = 0.05  # Faster interval for queue draining
-@export var level_duration: float        = 60.0  # Wave duration
-@export var max_enemies_alive: int       = 250   # Enemy cap for performance
+# ───── Constants ─────
+var spawn_batch_interval: float = SpawningConstants.SPAWN_BATCH_INTERVAL
+var enemy_spawn_interval: float = SpawningConstants.ENEMY_SPAWN_INTERVAL
+var level_duration: float = SpawningConstants.LEVEL_DURATION
+var max_enemies_alive: int = SpawningConstants.MAX_ENEMIES_ALIVE
 
 # ───── References ─────
 @onready var gm = get_tree().root.get_node("GameManager")
@@ -46,26 +46,26 @@ func _ready() -> void:
 # ───── Level configuration ─────
 func set_level(level: int) -> void:
 	current_level = level
-	level_duration = 35.0  # Fixed duration
+	level_duration = SpawningConstants.FIXED_DURATION
 
 # ───── Level start ─────
 func start_level() -> void:
 	# Core timers
 	_level_timer  = level_duration
-	_batch_timer  = 0.1                       # first batch almost instantly
+	_batch_timer  = SpawningConstants.INITIAL_BATCH_TIMER
 	_batch_count  = 0
 	_level_running = true
 	_enemy_spawn_queue.clear()
 
-	# ── Golden‑Ship scheduling (UNCHANGED) ───────────────────────────────────
+	# ── Golden‑Ship scheduling ───────────────────────────────────
 	_golden_ships_required = int(pd.get_stat("golden_ship_count"))
 	_golden_ships_spawned  = 0
 
 	if _golden_ships_required > 0:
-		_golden_ship_timer = 1.0
+		_golden_ship_timer = SpawningConstants.GOLDEN_SHIP_INITIAL_TIMER
 
 		if _golden_ships_required > 1:
-			var remaining_time  = level_duration * 0.5 - _golden_ship_timer
+			var remaining_time  = level_duration * SpawningConstants.GOLDEN_SHIP_TIMING_MULTIPLIER - _golden_ship_timer
 			var remaining_ships = max(1, _golden_ships_required - 1)
 			_golden_ship_interval = remaining_time / remaining_ships
 		else:
@@ -193,15 +193,15 @@ func get_spawning_statistics() -> Dictionary:
 
 # ───── Simple tier system for colors ─────
 func _get_tier_multiplier(level: int) -> int:
-	if level < 6: return 1
-	elif level < 12: return 2
-	elif level < 18: return 3
-	elif level < 24: return 4
-	else: return 5
+	if level < SpawningConstants.TIER_1_BREAKPOINT: return SpawningConstants.TIER_1_MULTIPLIER
+	elif level < SpawningConstants.TIER_2_BREAKPOINT: return SpawningConstants.TIER_2_MULTIPLIER
+	elif level < SpawningConstants.TIER_3_BREAKPOINT: return SpawningConstants.TIER_3_MULTIPLIER
+	elif level < SpawningConstants.TIER_4_BREAKPOINT: return SpawningConstants.TIER_4_MULTIPLIER
+	else: return SpawningConstants.TIER_5_MULTIPLIER
 
 func _get_tier_name(level: int) -> String:
-	if level < 6: return "White"
-	elif level < 12: return "Green"
-	elif level < 18: return "Blue"
-	elif level < 24: return "Purple"
+	if level < SpawningConstants.TIER_1_BREAKPOINT: return "White"
+	elif level < SpawningConstants.TIER_2_BREAKPOINT: return "Green"
+	elif level < SpawningConstants.TIER_3_BREAKPOINT: return "Blue"
+	elif level < SpawningConstants.TIER_4_BREAKPOINT: return "Purple"
 	else: return "Orange"

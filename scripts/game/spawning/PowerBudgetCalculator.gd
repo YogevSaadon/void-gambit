@@ -11,10 +11,9 @@ static func get_power_budget(level: int) -> int:
 	Calculate total power budget for a level using gradual scaling
 	Provides steady progression without exponential growth
 	"""
-	var base_budget: int = 10
-	var scaling_factor = 1.0 + (level - 1) * 0.1  # 10% per level
-	var final_budget = int(base_budget * scaling_factor)
-	
+	var scaling_factor = 1.0 + (level - 1) * SpawningConstants.BUDGET_SCALING_PER_LEVEL
+	var final_budget = int(SpawningConstants.BASE_BUDGET * scaling_factor)
+
 	return final_budget
 
 # ===== TIER SCALING CALCULATION =====
@@ -23,39 +22,39 @@ static func get_tier_multiplier(level: int) -> int:
 	Calculate tier multiplier for enemy scaling with controlled progression
 	White(1x) → Green(2x) → Blue(3x) → Purple(4x) → Orange(5x)
 	"""
-	if level < 6:
-		return 1     # White tier: Levels 1-5
-	elif level < 12:
-		return 2     # Green tier: Levels 6-11
-	elif level < 18:
-		return 3     # Blue tier: Levels 12-17
-	elif level < 24:
-		return 4     # Purple tier: Levels 18-23
+	if level < SpawningConstants.TIER_1_BREAKPOINT:
+		return SpawningConstants.TIER_1_MULTIPLIER
+	elif level < SpawningConstants.TIER_2_BREAKPOINT:
+		return SpawningConstants.TIER_2_MULTIPLIER
+	elif level < SpawningConstants.TIER_3_BREAKPOINT:
+		return SpawningConstants.TIER_3_MULTIPLIER
+	elif level < SpawningConstants.TIER_4_BREAKPOINT:
+		return SpawningConstants.TIER_4_MULTIPLIER
 	else:
-		return 5     # Orange tier: Levels 24+
+		return SpawningConstants.TIER_5_MULTIPLIER
 
 static func get_tier_name(level: int) -> String:
 	"""Get tier name for debugging/UI"""
-	if level < 6: 
+	if level < SpawningConstants.TIER_1_BREAKPOINT:
 		return "White"
-	elif level < 12: 
+	elif level < SpawningConstants.TIER_2_BREAKPOINT:
 		return "Green"
-	elif level < 18: 
-		return "Blue" 
-	elif level < 24: 
+	elif level < SpawningConstants.TIER_3_BREAKPOINT:
+		return "Blue"
+	elif level < SpawningConstants.TIER_4_BREAKPOINT:
 		return "Purple"
-	else: 
+	else:
 		return "Orange"
 
 static func get_tier_color(level: int) -> Color:
 	"""Get tier color for visual effects"""
-	if level < 6:
+	if level < SpawningConstants.TIER_1_BREAKPOINT:
 		return Color.WHITE
-	elif level < 12:
+	elif level < SpawningConstants.TIER_2_BREAKPOINT:
 		return Color.GREEN
-	elif level < 18:
+	elif level < SpawningConstants.TIER_3_BREAKPOINT:
 		return Color.CYAN
-	elif level < 24:
+	elif level < SpawningConstants.TIER_4_BREAKPOINT:
 		return Color.MAGENTA
 	else:
 		return Color.ORANGE
@@ -67,12 +66,12 @@ static func get_wave_duration(level: int) -> float:
 	Gradually increases from 30s to 60s over first 5 levels
 	"""
 	if level <= 1:
-		return 30.0
+		return SpawningConstants.MIN_WAVE_DURATION
 	elif level >= 5:
-		return 60.0
+		return SpawningConstants.MAX_WAVE_DURATION
 	else:
 		var progress = (level - 1) / 4.0
-		return lerp(30.0, 60.0, progress)
+		return lerp(SpawningConstants.MIN_WAVE_DURATION, SpawningConstants.MAX_WAVE_DURATION, progress)
 
 # ===== SPAWN INTERVAL CALCULATION =====
 static func get_spawn_interval(level: int, wave_duration: float, enemy_count: int) -> float:
@@ -82,11 +81,11 @@ static func get_spawn_interval(level: int, wave_duration: float, enemy_count: in
 	"""
 	if enemy_count <= 1:
 		return 1.0
-	
-	var usable_time = wave_duration * 0.9  # 10% buffer
+
+	var usable_time = wave_duration * SpawningConstants.USABLE_TIME_BUFFER
 	var interval = usable_time / enemy_count
-	
-	return max(interval, 0.1)  # Minimum interval for performance
+
+	return max(interval, SpawningConstants.MIN_SPAWN_INTERVAL)
 
 # ===== DEBUG UTILITIES =====
 static func get_level_info(level: int) -> Dictionary:

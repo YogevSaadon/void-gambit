@@ -7,14 +7,14 @@ class_name SimpleEnemySpawner
 # ===== ENEMY DEFINITIONS =====
 # Only enemies that should spawn in the main rotation
 var normal_enemies = [
-	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": 1, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": 1, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": 2, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": 3, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": 4, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/Star.tscn", "min_level": 5, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/Diamond.tscn", "min_level": 7, "max_level": 999},
-	{"scene": "res://scenes/actors/enemys/MotherShip.tscn", "min_level": 10, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Biter.tscn", "min_level": SpawningConstants.BITER_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/MiniBiter.tscn", "min_level": SpawningConstants.MINI_BITER_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Triangle.tscn", "min_level": SpawningConstants.TRIANGLE_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Rectangle.tscn", "min_level": SpawningConstants.RECTANGLE_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Tank.tscn", "min_level": SpawningConstants.TANK_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Star.tscn", "min_level": SpawningConstants.STAR_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/Diamond.tscn", "min_level": SpawningConstants.DIAMOND_MIN_LEVEL, "max_level": 999},
+	{"scene": "res://scenes/actors/enemys/MotherShip.tscn", "min_level": SpawningConstants.MOTHERSHIP_MIN_LEVEL, "max_level": 999},
 ]
 
 var _loaded_scenes: Dictionary = {}
