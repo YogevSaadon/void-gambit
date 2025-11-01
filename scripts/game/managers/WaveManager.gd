@@ -46,7 +46,6 @@ func _ready() -> void:
 # ───── Level configuration ─────
 func set_level(level: int) -> void:
 	current_level = level
-	level_duration = SpawningConstants.FIXED_DURATION
 
 # ───── Level start ─────
 func start_level() -> void:

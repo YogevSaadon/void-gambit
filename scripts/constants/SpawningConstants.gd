@@ -11,11 +11,10 @@ extends RefCounted
 # - Enemy unlock levels
 
 # ===== WAVE MANAGEMENT =====
-const SPAWN_BATCH_INTERVAL = 1.0
+const SPAWN_BATCH_INTERVAL = 2.0  # Increased from 1.0 - spawns batches half as often
 const ENEMY_SPAWN_INTERVAL = 0.05
-const LEVEL_DURATION = 60.0
+const LEVEL_DURATION = 30.0  # All levels are 30 seconds
 const MAX_ENEMIES_ALIVE = 250
-const FIXED_DURATION = 35.0
 const INITIAL_BATCH_TIMER = 0.1
 const GOLDEN_SHIP_INITIAL_TIMER = 1.0
 const GOLDEN_SHIP_TIMING_MULTIPLIER = 0.5  # level_duration * 0.5
